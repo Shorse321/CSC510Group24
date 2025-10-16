@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+    <h2>Register</h2>
+    <form method="post">
+        Username: <input type="text" name="username"><br>
+        Password: <input type="password" name="password"><br>
+        Role:
+        <select name="role">
+            <option value="customer">Customer</option>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+        </select><br>
+        <input type="submit" value="Register">
+    </form>
+    <a href="{{ url_for('login') }}">Already have an account? Login here</a>
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p style='color:red'>{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+</body>
+</html>
