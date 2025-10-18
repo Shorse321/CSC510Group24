@@ -1,6 +1,7 @@
 from models.user import User
 from database.db import db
 from flask_login import login_user, logout_user, current_user
+# Removed: from flask import session 
 
 class AuthController:
 
@@ -32,7 +33,10 @@ class AuthController:
         user = User.get_by_username(username)
         if not user or not user.check_password(password):
             return False, "Incorrect username or password.", None
+        
+        # Removed: session.permanent = True 
         login_user(user)
+        
         return True, "Login successful", user
 
     @staticmethod

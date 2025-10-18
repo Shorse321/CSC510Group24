@@ -1,20 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Customer/User Register{% endblock %}
 {% block content %}
-<h2>Register</h2>
+<h2>Customer/User Register New Account</h2>
 <form method="POST">
-  Username: <input type="text" name="username" required><br>
-  Password: <input type="password" name="password" required><br>
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username" required>
+  
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required>
 
   {% if current_user.is_authenticated and current_user.role == 'admin' %}
-  Role:
-  <select name="role">
+  <label for="role">Role:</label>
+  <select name="role" id="role">
     <option value="customer">Customer</option>
     <option value="staff">Staff</option>
     <option value="admin">Admin</option>
-  </select><br>
+  </select>
   {% endif %}
 
-  <input type="submit" value="Register">
+  <input type="submit" value="Register Account">
 </form>
 {% endblock %}

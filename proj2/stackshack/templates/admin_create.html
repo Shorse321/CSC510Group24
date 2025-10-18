@@ -3,13 +3,18 @@
 {% block content %}
 <h2>Create a New Staff/Admin</h2>
 <form method="POST">
-  <label>Username:</label> <input type="text" name="username" required><br>
-  <label>Password:</label> <input type="password" name="password" required><br>
-  <label>Role:</label>
-  <select name="role">
+  <label for="username">Username:</label> 
+  <input type="text" id="username" name="username" required>
+  
+  <label for="password">Password:</label> 
+  <input type="password" id="password" name="password" required>
+  
+  <label for="role">Role:</label>
+  <select name="role" id="role">
     <option value="staff">Staff</option>
     <option value="admin">Admin</option>
-  </select><br><br>
+  </select>
+  
   <input type="submit" value="Create User">
 </form>
 {% endblock %}

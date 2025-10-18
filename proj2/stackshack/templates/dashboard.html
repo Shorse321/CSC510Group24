@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2>Welcome, {{ user.username }}!</h2>
-<p>Your Role: {{ user.role }}</p>
+<h2>Welcome, {{ current_user.username }}!</h2>
+<p>Your Role: <strong>{{ current_user.role | upper }}</strong></p>
 
-{% if user.role == 'admin' %}
-  <p><a href="{{ url_for('auth.create_user_admin') }}">Create User</a> | 
-     <a href="{{ url_for('auth.manage_users') }}">Manage Users</a></p>
+{% if current_user.role == 'admin' %}
+  <div class="admin-links" style="margin-top: 20px;">
+    <h3>Admin Tools</h3>
+    <p>
+      <a href="{{ url_for('auth.create_user_admin') }}" style="text-decoration:none; background: var(--secondary-color); color: white; padding: 10px 15px; border-radius: 4px; display: inline-block; margin-right: 10px; transition: background-color 0.3s;">Create Staff/Admin</a>
+      <a href="{{ url_for('auth.manage_users') }}" style="text-decoration:none; background: var(--secondary-color); color: white; padding: 10px 15px; border-radius: 4px; display: inline-block; transition: background-color 0.3s;">Manage Users</a>
+    </p>
+  </div>
 {% endif %}
 {% endblock %}

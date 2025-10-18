@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template # Added render_template here
 from config import config
 from database.db import init_db, login_manager
 from routes.auth_routes import auth_bp
@@ -18,7 +18,13 @@ def create_app(config_name='development'):
 
     @app.route('/')
     def home():
-        return "<h2>Welcome to Stack Shack!</h2><a href='/auth/login'>Login</a>"
+        # Render the new home.html template
+        return render_template('home.html')
+    
+    # New route for the menu page
+    @app.route('/menu')
+    def menu():
+        return render_template('menu.html')
 
     return app
 
