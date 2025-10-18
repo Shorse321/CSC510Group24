@@ -1,85 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask
+from config import config
+from database.db import init_db, login_manager
+from routes.auth_routes import auth_bp
+from models.user import User
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'stackshack_secret'
+def create_app(config_name='development'):
+    app = Flask(__name__)
+    app.config.from_object(config[config_name])
 
-# MySQL Database Configuration
-# Format: mysql+pymysql://username:password@host:port/database_name
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/stackshack'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    init_db(app)
 
-db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-# User Model
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(50), nullable=False)  # admin, staff, customer
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    @app.route('/')
+    def home():
+        return "<h2>Welcome to Stack Shack!</h2><a href='/auth/login'>Login</a>"
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
-        
-        if User.query.filter_by(username=username).first():
-            flash("Username already exists.")
-            return render_template('register.html')
-        
-        new_user = User(
-            username=username, 
-            password=generate_password_hash(password), 
-            role=role
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        flash("Registration successful! Please log in.")
-        return redirect(url_for('login'))
-    
-    return render_template('register.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        
-        flash("Incorrect username or password.")
-    
-    return render_template('login.html')
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html', user=current_user)
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('Logged out successfully!')
-    return redirect(url_for('login'))
-
-# Initialize database tables
-with app.app_context():
-    db.create_all()
+    return app
 
 if __name__ == '__main__':
+    app = create_app('development')
     app.run(debug=True)
