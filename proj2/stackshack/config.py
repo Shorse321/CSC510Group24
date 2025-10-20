@@ -27,7 +27,15 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    
+    # REMOVED the strict check:
+    # if not SQLALCHEMY_DATABASE_URI:
+    #     raise ValueError("No DATABASE_URL set for Production environment.")
+    
+    # The application will now rely on the deployment environment to set DATABASE_URL. 
+    # If not set, Flask-SQLAlchemy will fail on connection, which is fine for production.
+    pass
 
 config = {
     'development': DevelopmentConfig,
