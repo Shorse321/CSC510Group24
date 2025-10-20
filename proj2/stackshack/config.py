@@ -2,29 +2,28 @@ import os
 import secrets
 from dotenv import load_dotenv
 
-# Load environment variables from .env file (if present) for development
-load_dotenv() 
+load_dotenv()
 
 class Config:
-    # Fallback key: Use environment variable, otherwise generate a temporary key
-    SECRET_KEY = os.getenv('SECRET_KEY') 
-    if not SECRET_KEY:
-        SECRET_KEY = secrets.token_urlsafe(32)
-        print("Warning: SECRET_KEY not set in environment. Using a temporary key.")
-        
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'stackshack_secret_key')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SESSION_PROTECTION = 'strong' 
-    
+    SESSION_PROTECTION = 'strong'
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    
+    # Build database URI from environment variables
+    DB_USER = os.environ.get('DB_USER', 'root')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'root')
+    DB_HOST = os.environ.get('DB_HOST', 'localhost')
+    DB_NAME = os.environ.get('DB_NAME', 'stackshack')
+    
     SQLALCHEMY_DATABASE_URI = (
-        os.getenv('DATABASE_URL') or
-        f"mysql+pymysql://{os.getenv('DB_USER', 'root')}:{os.getenv('DB_PASSWORD', 'root')}@{os.getenv('DB_HOST', 'localhost')}:3306/stackshack"
+        os.environ.get('DATABASE_URL') or
+        f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:3306/{DB_NAME}'
     )
-    # Ensure a new, unique key is generated on every run for development stability.
+    
     SECRET_KEY = secrets.token_urlsafe(32)
-
 
 class ProductionConfig(Config):
     DEBUG = False
@@ -37,7 +36,6 @@ class ProductionConfig(Config):
     # The application will now rely on the deployment environment to set DATABASE_URL. 
     # If not set, Flask-SQLAlchemy will fail on connection, which is fine for production.
     pass
-
 
 config = {
     'development': DevelopmentConfig,
