@@ -8,8 +8,16 @@
   <div class="admin-links" style="margin-top: 20px;">
     <h3>Admin Tools</h3>
     <p>
-      <a href="{{ url_for('auth.create_user_admin') }}" style="text-decoration:none; background: var(--secondary-color); color: white; padding: 10px 15px; border-radius: 4px; display: inline-block; margin-right: 10px; transition: background-color 0.3s;">Create Staff/Admin</a>
-      <a href="{{ url_for('auth.manage_users') }}" style="text-decoration:none; background: var(--secondary-color); color: white; padding: 10px 15px; border-radius: 4px; display: inline-block; transition: background-color 0.3s;">Manage Users</a>
+      <a href="{{ url_for('auth.create_user_admin') }}" class="admin-links">Create Staff/Admin</a>
+      <a href="{{ url_for('auth.manage_users') }}" class="admin-links">Manage Users</a>
+      <a href="{{ url_for('menu.view_items') }}" class="admin-links">Manage Menu</a>
+    </p>
+  </div>
+{% elif current_user.role == 'staff' %}
+  <div class="admin-links" style="margin-top: 20px;">
+    <h3>Staff Tools</h3>
+    <p>
+      <a href="{{ url_for('menu.view_items') }}" class="admin-links">Manage Menu</a>
     </p>
   </div>
 {% endif %}
