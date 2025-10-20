@@ -1,30 +1,33 @@
 import os
-import secrets # Import the secrets module
+import secrets
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
-    # Production uses environment or a hardcoded key for session continuity
     SECRET_KEY = os.environ.get('SECRET_KEY', 'stackshack_secret_key')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
-    # Enforce strong session protection
-    SESSION_PROTECTION = 'strong' 
-    
+    SESSION_PROTECTION = 'strong'
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    
+    # Build database URI from environment variables
+    DB_USER = os.environ.get('DB_USER', 'root')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'root')
+    DB_HOST = os.environ.get('DB_HOST', 'localhost')
+    DB_NAME = os.environ.get('DB_NAME', 'stackshack')
+    
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL') or
-        'mysql+pymysql://root:root@localhost:3306/stackshack'
+        f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:3306/{DB_NAME}'
     )
-    # FIX: Override SECRET_KEY to generate a new key on every run.
-    # This invalidates previous session cookies on app restart, forcing a logout.
+    
     SECRET_KEY = secrets.token_urlsafe(32)
-
 
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-
 
 config = {
     'development': DevelopmentConfig,
