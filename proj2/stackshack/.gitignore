@@ -1,0 +1,9 @@
+# .gitignore content
+# Environment/Secrets
+.env
+
+# Python specific
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
