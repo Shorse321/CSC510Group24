@@ -7,6 +7,11 @@ auth_bp = Blueprint('auth', __name__)
 # User registration
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Handles user registration. Renders the registration form on GET. 
+    Processes form data on POST, defaulting to 'customer' role unless 
+    an admin is currently logged in.
+    """
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -26,6 +31,10 @@ def register():
 # Login route
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Handles user login. Redirects logged-in users to the dashboard. 
+    Processes login form data on POST and establishes the user session upon success.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('auth.dashboard'))
 
@@ -44,6 +53,10 @@ def login():
 @auth_bp.route('/dashboard')
 @login_required
 def dashboard():
+    """
+    The main dashboard page, accessible only to logged-in users. 
+    Displays user-specific information and admin links if applicable.
+    """
     return render_template('dashboard.html', user=current_user)
 
 
@@ -51,6 +64,9 @@ def dashboard():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    """
+    Logs out the current user and redirects to the login page.
+    """
     success, msg = AuthController.logout_user_account()
     flash(msg, 'success')
     return redirect(url_for('auth.login'))
@@ -60,6 +76,10 @@ def logout():
 @auth_bp.route('/admin/create-user', methods=['GET', 'POST'])
 @login_required
 def create_user_admin():
+    """
+    Admin-only route to create new staff or admin users directly. 
+    Requires current user role to be 'admin'.
+    """
     if current_user.role != 'admin':
         flash("Unauthorized access", "error")
         return redirect(url_for('auth.dashboard'))
@@ -79,6 +99,10 @@ def create_user_admin():
 @auth_bp.route('/admin/manage-users', methods=['GET', 'POST'])
 @login_required
 def manage_users():
+    """
+    Admin-only route to view all users, update user roles, and delete accounts. 
+    Requires current user role to be 'admin'.
+    """
     if current_user.role != 'admin':
         flash("Unauthorized access", "error")
         return redirect(url_for('auth.dashboard'))
