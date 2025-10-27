@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Order History{% endblock %}
+{% block content %}
+<h2>Your Order History</h2>
+
+{% if orders %}
+<table>
+  <thead>
+    <tr>
+      <th>Order #</th>
+      <th>Date</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Items Ordered</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    
+    {% set base_style = "padding: 4px 10px; border-radius: 4px; font-size: 0.9em; font-weight: bold;" %}
+    {% set status_style = base_style %}
+
+    {% if order.status == 'Completed' %}
+        {% set status_style = base_style ~ " background: var(--success-bg); color: var(--success-text);" %}
+    {% elif order.status == 'Pending' %}
+        {% set status_style = base_style ~ " background: #fdf5e6; color: #cc8400;" %}
+    {% else %}
+        {% set status_style = base_style ~ " background: var(--error-bg); color: var(--error-text);" %}
+    {% endif %}
+
+    <tr>
+      <td><strong>{{ order.id }}</strong></td>
+      <td>{{ order.ordered_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td><strong>${{ "%.2f"|format(order.total_price) }}</strong></td>
+      <td>
+        <span class="status-span {{ status_class }}">
+          {{ order.status }}
+        </span>
+      </td>
+      <td>
+        <ul>
+        {% for item in order.items.all() %}
+            <li style="font-size: 0.9em;">
+                {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price) }})
+            </li>
+        {% endfor %}
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="text-align: center; color: #999; margin-top: 40px; font-size: 1.1em;">
+  You have no past orders yet. Click "Create New Order" to get started!
+</p>
+{% endif %}
+<div style="margin-top: 25px;">
+    <a href="{{ url_for('order.create_order_form') }}" 
+       class="admin-links" 
+       style="display: inline-block; text-decoration: none; color: white;">
+        Create New Order
+    </a>
+</div>
+{% endblock %}
