@@ -174,12 +174,24 @@
     }
     
     /* Admin Links Styling (from dashboard.html) */
+    /* Refined to ensure dashboard links look like buttons */
+    .admin-links {
+      display: flex;
+      flex-direction: column; 
+    }
+    .admin-links p {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
     .admin-links a {
       text-decoration: none;
-      display: inline-block;
-      margin-right: 10px;
+      margin-right: 0; 
       margin-bottom: 10px;
       padding: 10px 15px;
+      display: inline-block;
+      font-weight: bold;
+      border-radius: 6px;
     }
 
     /* Tables */
@@ -220,6 +232,32 @@
         margin-top: 0; /* Override default button margin */
         display: block; /* Ensure full button height is used */
     }
+
+    /* ------------------------------------------------ */
+    /* NEW CSS RULES FOR ORDER HISTORY STATUS BADGES */
+    /* ------------------------------------------------ */
+    /* Base style for all status spans (applied via class="status-span") */
+    .status-span {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-weight: bold;
+      display: inline-block;
+    }
+    /* Specific status colors */
+    .status-Pending {
+      background: #fdf5e6; /* Light Yellow */
+      color: #cc8400; /* Dark Orange */
+    }
+    .status-Completed {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+    .status-Failed {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
   </style>
 </head>
 <body>
