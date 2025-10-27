@@ -113,15 +113,13 @@ def manage_users():
         if 'update_role' in request.form:
             user_id = request.form.get('user_id')
             new_role = request.form.get('role')
-            # FIX: Capture success and message from controller
-            success, msg = AuthController.update_user_role(user_id, new_role)
-            flash(msg, 'success' if success else 'error')
+            AuthController.update_user_role(user_id, new_role)
+            flash("Role updated successfully", "success")
 
         elif 'delete_user' in request.form:
             user_id = request.form.get('user_id')
-            # FIX: Capture success and message from controller
-            success, msg = AuthController.delete_user(user_id)
-            flash(msg, 'success' if success else 'error')
+            AuthController.delete_user(user_id)
+            flash("User deleted successfully", "success")
 
         return redirect(url_for('auth.manage_users'))
 

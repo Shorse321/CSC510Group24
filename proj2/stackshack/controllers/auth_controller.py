@@ -88,9 +88,15 @@ class AuthController:
     def update_user_role(user_id, new_role):
         """
         Updates the role of a specified user.
+
+        Args:
+            user_id (int): The ID of the user to update.
+            new_role (str): The new role to assign ('customer', 'staff', 'admin').
+
+        Returns:
+            tuple: (success (bool), message (str))
         """
-        # FIX: Use modern db.session.get()
-        user = db.session.get(User, int(user_id)) 
+        user = User.query.get(user_id)
         if not user:
             return False, "User not found"
         user.role = new_role
@@ -101,9 +107,14 @@ class AuthController:
     def delete_user(user_id):
         """
         Deletes a user account from the database.
+
+        Args:
+            user_id (int): The ID of the user to delete.
+
+        Returns:
+            tuple: (success (bool), message (str))
         """
-        # FIX: Use modern db.session.get()
-        user = db.session.get(User, int(user_id))
+        user = User.query.get(user_id)
         if not user:
             return False, "User not found"
         db.session.delete(user)
