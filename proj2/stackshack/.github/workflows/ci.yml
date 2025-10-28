@@ -1,0 +1,57 @@
+name: Stack Shack CI/CD & Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Runs nightly at 00:00 UTC for periodic testing (Q12.2)
+    - cron: '0 0 * * *' 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install all requirements including pytest and coverage tools
+        pip install -r proj2/stackshack/requirements.txt pytest pytest-html pytest-cov
+        
+    - name: Run Tests with Coverage
+      # Run tests from the application directory
+      working-directory: proj2/stackshack
+      env:
+        FLASK_ENV: testing
+        # FIX: Quote the value to prevent YAML parsing error due to the colons in the URI
+        SQLALCHEMY_DATABASE_URI: 'sqlite:///:memory:' 
+        SECRET_KEY: test_secret_ci
+      run: |
+        # Generates coverage.xml report
+        pytest --html=test_report.html --self-contained-html --cov=. --cov-report=xml
+        
+    - name: Upload Coverage Report to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        # Codecov automatically finds the coverage.xml generated above
+        files: ./proj2/stackshack/coverage.xml
+        name: stackshack-coverage-report
+        fail_ci_if_error: true
+      # NOTE: Codecov is FREE for public/open-source repositories like this one.
+        
+    - name: Archive Test Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: pytest-report-${{ github.sha }}
+        path: proj2/stackshack/test_report.html
