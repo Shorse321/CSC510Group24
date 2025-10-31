@@ -9,8 +9,11 @@ def app():
     """Create application for testing"""
     app = create_app('development')
     app.config['TESTING'] = True
+    
+    # Use SQLite in-memory database for tests (works on GitHub Actions!)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['WTF_CSRF_ENABLED'] = False
+    app.config['SECRET_KEY'] = 'test-secret-key'
     
     with app.app_context():
         db.create_all()
