@@ -1,8 +1,11 @@
-name: Tests & Coverage
+# .github/workflows/tests.yml
+name: Python Tests, Coverage, & Badge
 
 on:
   push:
+    branches: [ main, master ]
   pull_request:
+    branches: [ main, master ]
 
 jobs:
   test:
@@ -10,13 +13,14 @@ jobs:
     
     defaults:
       run:
+        # CRITICAL: Sets working directory to the package root for clean imports
         working-directory: ./proj2/stackshack
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
         python-version: "3.10"
@@ -25,26 +29,43 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov pytest-html
 
-    - name: Run tests with coverage
+    - name: Run ALL Tests with Coverage
+      env:
+        # Use a temporary testing secret key for the environment
+        SECRET_KEY: ${{ secrets.SECRET_KEY_TEST }}
       run: |
-        pytest menuManagementTests/ \
-          --cov=models.menu_item \
-          --cov=controllers.menu_controller \
-          --cov=routes.menu_routes \
+        # FIX: Explicitly run tests from BOTH directories (tests/ and menuManagementTests/)
+        # PYTHONPATH=. ensures Python resolves the 'models' and 'controllers' imports correctly.
+        PYTHONPATH=. pytest tests/ menuManagementTests/ \
+          --cov=. \
           --cov-report=xml \
-          --cov-report=term
+          --html=test-results.html \
+          --self-contained-html
 
-    - name: Upload coverage report to GitHub
+    - name: Upload Test Artifacts (HTML Report)
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
-        path: ./proj2/stackshack/coverage.xml
+        name: pytest-html-report
+        path: ./proj2/stackshack/test-results.html
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./proj2/stackshack/coverage.xml
-        fail_ci_if_error: false
+        fail_ci_if_error: true
+
+    - name: Generate Coverage Badge
+      uses: shields/badge-action@2.1.0
+      with:
+        message: ${{ steps.coverage.outputs.coverage }}%
+        color: ${{ steps.coverage.outputs.color }}
+        path: badge.svg
+        
+    - name: Create Badge Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-badge
+        path: ./proj2/stackshack/badge.svg
