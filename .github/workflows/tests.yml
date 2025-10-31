@@ -13,7 +13,7 @@ jobs:
     
     defaults:
       run:
-        # CRITICAL: Sets working directory to the package root for correct file access
+        # CRITICAL: Sets working directory to the package root for clean imports
         working-directory: ./proj2/stackshack
 
     steps:
@@ -28,17 +28,17 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Install testing dependencies
+        # Install packages including testing libraries
         pip install -r requirements.txt
         pip install pytest pytest-cov pytest-html
 
     - name: Run ALL Tests and Generate Coverage Report
       env:
-        # Set dummy key for environment consistency
-        SECRET_KEY: 'ci-testing-key-12345'
+        # FIX: Provide a SECRET_KEY, which is all the sqlite test needs.
+        SECRET_KEY: 'ci-testing-key-12345' 
       run: |
-        # FIX: PYTHONPATH=. resolves the ImportError by telling Python to treat 
-        # the current directory (stackshack/) as the package root.
+        # PYTHONPATH=. resolves the ImportError by treating 'stackshack' as a package.
+        # Tests now run against the fast, in-memory SQLite database.
         PYTHONPATH=. pytest tests/ menuManagementTests/ \
           --cov=. \
           --cov-report=xml \
@@ -46,7 +46,6 @@ jobs:
           --self-contained-html
 
     - name: Upload coverage report to Codecov
-      # This step handles the badge data upload automatically.
       uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

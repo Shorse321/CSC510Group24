@@ -1,16 +1,31 @@
-# stackshack/conftest.py
+# proj2/stackshack/tests/conftest.py
 import pytest
-from app import create_app
-from database.db import db
-from models.user import User
-from sqlalchemy.orm import Session # Import Session for explicit control
+import os
+import sys
+from sqlalchemy.orm import Session 
+from flask_login import current_user
+from flask import Flask # Required for testing tools
 
-# The majority of the test files' 32 passed tests depend on the initial setup in app().
+# CRITICAL FIX: Add the parent package (stackshack) to sys.path 
+# so Python can resolve imports correctly.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Use definitive ABSOLUTE imports
+from stackshack.app import create_app
+from stackshack.database.db import db
+from stackshack.models.user import User
+# Importing Menu Item is necessary for the create_test_item fixture (even as a placeholder)
+from stackshack.models.menu_item import MenuItem 
+
 
 @pytest.fixture(scope='session')
 def app():
     """Session-scoped application fixture configured for testing."""
-    app = create_app('development')
+    # FIX: Explicitly call create_app('testing')
+    app = create_app('testing') 
+    
+    # Although TestingConfig should cover this, keeping the update block 
+    # ensures maximum resilience for the in-memory SQLite setup.
     app.config.update({
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 
@@ -63,8 +78,6 @@ def create_test_item():
     return lambda: None
 
 
-# CRITICAL FIX: Refactored db_session fixture to use db.session.remove()
-# This fixes the AttributeError that caused the 9 Errors.
 @pytest.fixture
 def db_session(app):
     """Function-scoped database session fixture for transactional testing."""
@@ -75,7 +88,6 @@ def db_session(app):
         transaction = connection.begin()
         
         # 2. Clear the current session scope and bind the test connection
-        # FIX: Use the correct Flask-SQLAlchemy API: db.session.remove()
         db.session.remove() 
         db.session.bind = connection
         
