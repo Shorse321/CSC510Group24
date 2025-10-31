@@ -1,7 +1,7 @@
 # 🍔 Stack Shack - Build Your Own Burger
 
 Stack Shack is a campus dining management system that allows customers to build custom burgers and enables staff/admins to manage the menu efficiently. Built with Flask (Python) backend and a clean HTML/CSS frontend.
-
+[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Shorse321/CSC510Group24)
 ## 📋 Table of Contents
 - [Features](#features)
 - [Tech Stack](#tech-stack)
