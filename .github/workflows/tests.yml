@@ -1,5 +1,5 @@
 # .github/workflows/tests.yml
-name: Python Tests, Coverage, & Badge
+name: Python Tests, Coverage, & Codecov Upload
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     
     defaults:
       run:
-        # CRITICAL: Sets working directory to the package root for clean imports
+        # CRITICAL: Sets working directory to the package root for correct file access
         working-directory: ./proj2/stackshack
 
     steps:
@@ -28,42 +28,27 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        # Install testing dependencies
         pip install -r requirements.txt
         pip install pytest pytest-cov pytest-html
 
-    - name: Run ALL Tests with Coverage
+    - name: Run ALL Tests and Generate Coverage Report
       env:
-        # Use a temporary testing secret key for the environment
-        SECRET_KEY: ${{ secrets.SECRET_KEY_TEST }}
+        # Set dummy key for environment consistency
+        SECRET_KEY: 'ci-testing-key-12345'
       run: |
-        # FIX: PYTHONPATH=. ensures Python resolves imports correctly from the package root.
+        # FIX: PYTHONPATH=. resolves the ImportError by telling Python to treat 
+        # the current directory (stackshack/) as the package root.
         PYTHONPATH=. pytest tests/ menuManagementTests/ \
           --cov=. \
           --cov-report=xml \
           --html=test-results.html \
           --self-contained-html
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4 # Using the latest recommended Codecov action version
+    - name: Upload coverage report to Codecov
+      # This step handles the badge data upload automatically.
+      uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./proj2/stackshack/coverage.xml
         fail_ci_if_error: true
-
-    # -----------------------------------------------------
-    # FIX: Use a working action to generate the coverage badge SVG
-    # -----------------------------------------------------
-    - name: Generate Coverage Badge
-      id: coverage
-      uses: tj-actions/coverage-badge@v3 # Replaced missing shields action with reliable alternative
-      with:
-        # Source file is the one uploaded to Codecov
-        coverage_file: ./proj2/stackshack/coverage.xml
-        
-    - name: Commit and Push Badge
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: "CI: Auto-generated coverage badge"
-        # The badge SVG file is generated in the root of the working directory
-        files: badge.svg
-        commit_options: '--no-verify'
