@@ -1,8 +1,11 @@
+# .github/workflows/tests.yml
 name: Tests & Coverage
 
 on:
   push:
+    branches: [ main, master ]
   pull_request:
+    branches: [ main, master ]
 
 jobs:
   test:
@@ -10,7 +13,8 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./proj2/stackshack
+        # This working directory is correct
+        working-directory: ./proj2/stackshack 
 
     steps:
     - name: Checkout repository
@@ -29,10 +33,12 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        pytest menuManagementTests/ \
-          --cov=models.menu_item \
-          --cov=controllers.menu_controller \
-          --cov=routes.menu_routes \
+        # FIX 1: Add PYTHONPATH=. to fix imports for the 'tests/' directory
+        # FIX 2: Add the 'tests/' directory to the pytest command
+        PYTHONPATH=. pytest menuManagementTests/ tests/ \
+          --cov=models \
+          --cov=controllers \
+          --cov=routes \
           --cov-report=xml \
           --cov-report=term
 
