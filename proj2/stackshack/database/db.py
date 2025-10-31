@@ -19,7 +19,7 @@ def init_db(app):
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    with app.app_context():
-        db.create_all()
+    # The tables will be created by the test fixture in conftest.py
+    # or by running a 'flask db upgrade' command for production.
 
     return db

@@ -26,19 +26,21 @@ class DevelopmentConfig(Config):
     SECRET_KEY = secrets.token_urlsafe(32)
 
 class ProductionConfig(Config):
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    
-    # REMOVED the strict check:
-    # if not SQLALCHEMY_DATABASE_URI:
-    #     raise ValueError("No DATABASE_URL set for Production environment.")
-    
-    # The application will now rely on the deployment environment to set DATABASE_URL. 
-    # If not set, Flask-SQLAlchemy will fail on connection, which is fine for production.
+    # ... (your production config) ...
     pass
+
+# ---- ADD THIS NEW CLASS ----
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory SQLite DB
+    WTF_CSRF_ENABLED = False  # Disable forms CSRF for tests
+    SECRET_KEY = 'test-secret-key' # Use a simple key for tests
+# --------------------------
+
 
 config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
+    'testing': TestingConfig,  # <-- ADD THIS LINE
     'default': DevelopmentConfig
 }
