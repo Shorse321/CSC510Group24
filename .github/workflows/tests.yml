@@ -36,36 +36,34 @@ jobs:
         # Use a temporary testing secret key for the environment
         SECRET_KEY: ${{ secrets.SECRET_KEY_TEST }}
       run: |
-        # FIX: Explicitly run tests from BOTH directories (tests/ and menuManagementTests/)
-        # PYTHONPATH=. ensures Python resolves the 'models' and 'controllers' imports correctly.
+        # FIX: PYTHONPATH=. ensures Python resolves imports correctly from the package root.
         PYTHONPATH=. pytest tests/ menuManagementTests/ \
           --cov=. \
           --cov-report=xml \
           --html=test-results.html \
           --self-contained-html
 
-    - name: Upload Test Artifacts (HTML Report)
-      uses: actions/upload-artifact@v4
-      with:
-        name: pytest-html-report
-        path: ./proj2/stackshack/test-results.html
-
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4 # Using the latest recommended Codecov action version
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./proj2/stackshack/coverage.xml
         fail_ci_if_error: true
 
+    # -----------------------------------------------------
+    # FIX: Use a working action to generate the coverage badge SVG
+    # -----------------------------------------------------
     - name: Generate Coverage Badge
-      uses: shields/badge-action@2.1.0
+      id: coverage
+      uses: tj-actions/coverage-badge@v3 # Replaced missing shields action with reliable alternative
       with:
-        message: ${{ steps.coverage.outputs.coverage }}%
-        color: ${{ steps.coverage.outputs.color }}
-        path: badge.svg
+        # Source file is the one uploaded to Codecov
+        coverage_file: ./proj2/stackshack/coverage.xml
         
-    - name: Create Badge Artifact
-      uses: actions/upload-artifact@v4
+    - name: Commit and Push Badge
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        name: coverage-badge
-        path: ./proj2/stackshack/badge.svg
+        commit_message: "CI: Auto-generated coverage badge"
+        # The badge SVG file is generated in the root of the working directory
+        files: badge.svg
+        commit_options: '--no-verify'
