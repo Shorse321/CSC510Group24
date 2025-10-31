@@ -1,30 +1,34 @@
-name: Tests
+name: Tests & Coverage
 
 on:
   push:
-    branches: [ '**' ]  # Run on all branches
+    branches: [ main ]
   pull_request:
-    branches: [ '**' ]  # Run on all PRs
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
+    defaults:
+      run:
+        working-directory: ./proj2/stackshack
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
-    
+        python-version: "3.10"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov
-    
+
     - name: Run tests with coverage
       run: |
         pytest menuManagementTests/ \
@@ -33,12 +37,16 @@ jobs:
           --cov=routes.menu_routes \
           --cov-report=xml \
           --cov-report=term
-    
+
+    - name: Upload coverage report to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ./proj2/stackshack/coverage.xml
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+        file: ./proj2/stackshack/coverage.xml
         fail_ci_if_error: false
