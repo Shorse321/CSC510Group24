@@ -7,13 +7,9 @@ from models.menu_item import MenuItem
 @pytest.fixture(scope='function')
 def app():
     """Create application for testing"""
-    app = create_app('development')
-    app.config['TESTING'] = True
-    
-    # Use SQLite in-memory database for tests (works on GitHub Actions!)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['WTF_CSRF_ENABLED'] = False
-    app.config['SECRET_KEY'] = 'test-secret-key'
+    app = create_app('testing')  # <--- THE ONLY CHANGE YOU NEED
+
+    # All the other config is now handled by TestingConfig
     
     with app.app_context():
         db.create_all()
