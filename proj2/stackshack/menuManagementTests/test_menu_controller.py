@@ -2,7 +2,7 @@ import pytest
 from flask_login import login_user
 from controllers.menu_controller import MenuController
 from models.menu_item import MenuItem
-from database.db import db  # ADD THIS LINE
+from database.db import db
 
 class TestMenuController:
     """Test MenuController business logic"""
@@ -36,12 +36,11 @@ class TestMenuController:
         assert msg == 'Item not found'
         assert item is None
 
-    def test_create_item_unauthorized(self, app, customer_user, client):
+    # ===== FIXED TESTS START HERE =====
+
+    def test_create_item_unauthorized(self, app, customer_user):
         """Test that customers cannot create items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(customer_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(customer_user)
             success, msg, item = MenuController.create_item(
                 name='New Item',
@@ -52,12 +51,9 @@ class TestMenuController:
             assert success is False
             assert 'Unauthorized' in msg
 
-    def test_create_item_as_admin(self, app, admin_user, client):
+    def test_create_item_as_admin(self, app, admin_user):
         """Test admin can create items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(admin_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(admin_user)
             success, msg, item = MenuController.create_item(
                 name='Admin Item',
@@ -70,12 +66,9 @@ class TestMenuController:
             assert success is True
             assert item.name == 'Admin Item'
 
-    def test_create_item_as_staff(self, app, staff_user, client):
+    def test_create_item_as_staff(self, app, staff_user):
         """Test staff can create items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(staff_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(staff_user)
             success, msg, item = MenuController.create_item(
                 name='Staff Item',
@@ -86,12 +79,9 @@ class TestMenuController:
             assert success is True
             assert item.name == 'Staff Item'
 
-    def test_create_item_missing_fields(self, app, admin_user, client):
+    def test_create_item_missing_fields(self, app, admin_user):
         """Test creating item with missing required fields"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(admin_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(admin_user)
             success, msg, item = MenuController.create_item(
                 name='',  # Missing name
@@ -102,12 +92,9 @@ class TestMenuController:
             assert success is False
             assert 'required' in msg.lower()
 
-    def test_update_item_as_admin(self, app, admin_user, sample_menu_item, client):
+    def test_update_item_as_admin(self, app, admin_user, sample_menu_item):
         """Test admin can update items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(admin_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(admin_user)
             success, msg, item = MenuController.update_item(
                 item_id=sample_menu_item.id,
@@ -118,23 +105,17 @@ class TestMenuController:
             assert item.name == 'Updated Name'
             assert float(item.price) == 7.99
 
-    def test_delete_item_staff_unauthorized(self, app, staff_user, sample_menu_item, client):
+    def test_delete_item_staff_unauthorized(self, app, staff_user, sample_menu_item):
         """Test that staff cannot delete items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(staff_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(staff_user)
             success, msg, _ = MenuController.delete_item(sample_menu_item.id)
             assert success is False
             assert 'Unauthorized' in msg
 
-    def test_delete_item_as_admin(self, app, admin_user, sample_menu_item, client):
+    def test_delete_item_as_admin(self, app, admin_user, sample_menu_item):
         """Test admin can delete items"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(admin_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(admin_user)
             item_id = sample_menu_item.id
             success, msg, _ = MenuController.delete_item(item_id)
@@ -144,12 +125,9 @@ class TestMenuController:
             deleted_item = MenuItem.query.get(item_id)
             assert deleted_item is None
 
-    def test_toggle_availability(self, app, admin_user, sample_menu_item, client):
+    def test_toggle_availability(self, app, admin_user, sample_menu_item):
         """Test toggling item availability"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(admin_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(admin_user)
             original_status = sample_menu_item.is_available
             
@@ -157,12 +135,9 @@ class TestMenuController:
             assert success is True
             assert item.is_available != original_status
 
-    def test_toggle_healthy_choice(self, app, staff_user, sample_menu_item, client):
+    def test_toggle_healthy_choice(self, app, staff_user, sample_menu_item):
         """Test toggling healthy choice status"""
-        with client:
-            with client.session_transaction() as sess:
-                sess['_user_id'] = str(staff_user.id)
-            
+        with app.test_request_context():  # <--- THE FIX
             login_user(staff_user)
             original_status = sample_menu_item.is_healthy_choice
             
@@ -170,6 +145,8 @@ class TestMenuController:
             assert success is True
             assert item.is_healthy_choice != original_status
             
+    # ===== UNCHANGED TESTS (WERE ALREADY PASSING) =====
+
     def test_get_items_by_category(self, app, multiple_menu_items):
         """Test getting items filtered by category"""
         success, msg, items = MenuController.get_items_by_category('patty')
