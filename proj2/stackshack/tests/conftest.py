@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session # Import Session for explicit control
 @pytest.fixture(scope='session')
 def app():
     """Session-scoped application fixture configured for testing."""
-    app = create_app('development')
+    app = create_app('testing')
     app.config.update({
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 
