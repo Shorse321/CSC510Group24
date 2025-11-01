@@ -1,69 +1,128 @@
 {% extends "base.html" %}
-{% block title %}Create New Order{% endblock %}
+{% block title %}Create Burger{% endblock %}
+
 {% block content %}
-<h2>Place New Order</h2>
-<p>Select the items and quantities you wish to order from our menu.</p>
-
-{% if items %}
-<form method="POST" action="{{ url_for('order.place_order') }}">
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Price</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in items %}
-      <tr class="{% if item.is_healthy_choice %}healthy-row{% endif %}">
-        <td>
-          <strong>{{ item.name }}</strong> 
-          {% if item.is_healthy_choice %}
-          <span style="font-size: 0.8em; color: #16a085;">💚</span>
-          {% endif %}
-        </td>
-        <td>{{ item.category | capitalize }}</td>
-        <td>${{ "%.2f"|format(item.price) }}</td>
-        <td>
-          <input type="hidden" name="name_{{ item.id }}" value="{{ item.name }}">
-          <input type="hidden" name="price_{{ item.id }}" value="{{ item.price }}">
-          
-          <input type="number" 
-                 name="quantity_{{ item.id }}" 
-                 value="0" 
-                 min="0" 
-                 style="width: 70px; padding: 5px; text-align: center; margin: 0 auto; display: block;"
-                 placeholder="0">
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <div style="margin-top: 25px; text-align: right;">
-    
-    <input type="submit" value="Place Order" class="cta-button" style="background: var(--primary-color); border: none;">
-    
-    <a href="{{ url_for('auth.dashboard') }}" 
-       class="cta-button" 
-       style="background: #95a5a6; 
-              margin-left: 10px;
-              /* Force button appearance and override default link styles */
-              display: inline-block !important; 
-              color: white !important;
-              text-decoration: none !important;
-              padding: 10px 18px;
-              border-radius: 6px;
-              line-height: 1;">
-        Cancel
-    </a>
+<div class="burger-builder">
+  <!-- LEFT: Burger Visualization -->
+  <div class="burger-visual">
+    <div class="layer" id="top-bun" data-category="bun"></div>
+    <div class="layer" id="sauce" data-category="sauce"></div>
+    <div class="layer" id="topping" data-category="topping"></div>
+    <div class="layer" id="cheese" data-category="cheese"></div>
+    <div class="layer" id="patty" data-category="patty"></div>
+    <div class="layer" id="bottom-bun" data-category="bun"></div>
+    <div id="total-price">Total: ₹0</div>
   </div>
-</form>
-{% else %}
-<p style="text-align: center; color: #999; margin-top: 40px; font-size: 1.1em;">
-  The menu is currently unavailable.
-</p>
-{% endif %}
+
+  <!-- RIGHT: Ingredient selection -->
+  <div class="ingredient-list">
+    <h3 id="current-category">Select an ingredient</h3>
+    <div id="ingredient-cards"></div>
+  </div>
+</div>
+
+<style>
+.burger-builder {
+  display: flex;
+  gap: 50px;
+  align-items: flex-start;
+  margin: 40px;
+}
+.burger-visual {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.layer {
+  width: 220px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  margin: 5px 0;
+  transition: transform 0.3s, border 0.3s;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.layer:hover { transform: scale(1.05); border: 2px solid #007bff; }
+.layer.active { border: 3px solid #007bff; }
+
+#top-bun { background-image: url('/static/images/bun/default.jpg'); background-position: top; }
+#bottom-bun { background-image: url('/static/images/bun/default.jpg'); background-position: bottom; }
+
+.ingredient-list { flex: 1; }
+.ingredient-card {
+  border: 1px solid #ddd; padding: 10px; border-radius: 6px; margin-bottom: 10px;
+  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+}
+.ingredient-card:hover { background: #f9f9f9; }
+.ingredient-info { display: flex; flex-direction: column; }
+.ingredient-name { font-weight: bold; }
+.ingredient-price { color: var(--primary-color); font-weight: bold; }
+.healthy-icon { font-size: 1.2em; margin-top: 4px; }
+.add-btn { padding: 5px 10px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; }
+</style>
+
+<script>
+const layers = document.querySelectorAll('.layer');
+const ingredientCardsDiv = document.getElementById('ingredient-cards');
+const currentCategory = document.getElementById('current-category');
+const totalPriceEl = document.getElementById('total-price');
+
+// Track selected ingredients
+const selectedIngredients = {
+  'top-bun': null, 'sauce': null, 'topping': null, 'cheese': null, 'patty': null, 'bottom-bun': null
+};
+
+function updateTotalPrice() {
+  let total = 0;
+  let breakdown = '';
+  for (const [layer, ing] of Object.entries(selectedIngredients)) {
+    if (ing) {
+      total += parseFloat(ing.price);
+      breakdown += `${layer}: ₹${ing.price} | `;
+    }
+  }
+  totalPriceEl.textContent = `Total: ₹${total} (${breakdown.slice(0,-3)})`;
+}
+
+layers.forEach(layer => {
+  layer.addEventListener('mouseenter', () => {
+    layers.forEach(l => l.classList.remove('active'));
+    layer.classList.add('active');
+    const category = layer.dataset.category;
+    currentCategory.textContent = `Choose your ${category}`;
+
+    // Fetch ingredients
+    fetch(`/orders/ingredients/${category}`)
+      .then(res => res.json())
+      .then(data => {
+        ingredientCardsDiv.innerHTML = '';
+        data.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'ingredient-card';
+          card.innerHTML = `
+            <div class="ingredient-info">
+              <span class="ingredient-name">${item.name}</span>
+              <span>${item.description}</span>
+              <span class="ingredient-price">₹${item.price}</span>
+              ${item.is_healthy ? '<span class="healthy-icon">💚</span>' : ''}
+            </div>
+            <button class="add-btn">Add to Burger</button>
+          `;
+
+          const addBtn = card.querySelector('.add-btn');
+          addBtn.addEventListener('click', () => {
+            selectedIngredients[layer.id] = item;
+            layer.style.backgroundImage = `url(${item.image_url})`;
+            updateTotalPrice();
+          });
+
+          ingredientCardsDiv.appendChild(card);
+        });
+      });
+  });
+});
+</script>
 {% endblock %}
