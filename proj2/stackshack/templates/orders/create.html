@@ -5,19 +5,24 @@
 <div class="burger-builder">
   <!-- LEFT: Burger Visualization -->
   <div class="burger-visual">
-    <div class="layer" id="top-bun" data-category="bun"></div>
-    <div class="layer" id="sauce" data-category="sauce"></div>
-    <div class="layer" id="topping" data-category="topping"></div>
-    <div class="layer" id="cheese" data-category="cheese"></div>
-    <div class="layer" id="patty" data-category="patty"></div>
-    <div class="layer" id="bottom-bun" data-category="bun"></div>
-    <div id="total-price">Total: ₹0</div>
+    <div class="burger-stack" id="burger-stack">
+      <!-- Burger layers will be dynamically generated here -->
+    </div>
   </div>
 
   <!-- RIGHT: Ingredient selection -->
   <div class="ingredient-list">
     <h3 id="current-category">Select an ingredient</h3>
     <div id="ingredient-cards"></div>
+    
+    <!-- Total Price Display -->
+    <div id="total-price-container">
+      <div id="total-price">
+        <div class="price-header">Order Summary</div>
+        <div id="price-breakdown"></div>
+        <div class="price-total">Total: ₹0</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -33,96 +38,473 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  position: sticky;
+  top: 20px;
 }
+
+.burger-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .layer {
   width: 220px;
   height: 80px;
   background-size: cover;
   background-position: center;
-  margin: 5px 0;
-  transition: transform 0.3s, border 0.3s;
+  margin: 2px 0;
+  transition: transform 0.3s, border 0.3s, opacity 0.3s;
   border-radius: 10px;
   cursor: pointer;
+  position: relative;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
 }
-.layer:hover { transform: scale(1.05); border: 2px solid #007bff; }
+
+.layer.filled {
+  border: 2px solid transparent;
+}
+
+.layer:hover { transform: scale(1.05); border-color: #007bff; }
 .layer.active { border: 3px solid #007bff; }
 
-#top-bun { background-image: url('/static/images/bun/default.jpg'); background-position: top; }
-#bottom-bun { background-image: url('/static/images/bun/default.jpg'); background-position: bottom; }
+.layer.empty::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #999;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: none;
+  z-index: 10;
+}
+
+.layer.filled:hover .remove-btn {
+  display: block;
+}
 
 .ingredient-list { flex: 1; }
+
+#ingredient-cards {
+  min-height: 400px;
+}
+
 .ingredient-card {
-  border: 1px solid #ddd; padding: 10px; border-radius: 6px; margin-bottom: 10px;
-  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+  border: 1px solid #ddd; 
+  padding: 10px; 
+  border-radius: 6px; 
+  margin-bottom: 10px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  cursor: pointer;
 }
 .ingredient-card:hover { background: #f9f9f9; }
 .ingredient-info { display: flex; flex-direction: column; }
 .ingredient-name { font-weight: bold; }
 .ingredient-price { color: var(--primary-color); font-weight: bold; }
 .healthy-icon { font-size: 1.2em; margin-top: 4px; }
-.add-btn { padding: 5px 10px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+.ingredient-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--primary-color);
+  background: white;
+  color: var(--primary-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.qty-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.qty-display {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.add-btn { 
+  padding: 8px 15px; 
+  background: var(--primary-color); 
+  color: white; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
+}
+
+/* Improved Total Price Styling */
+#total-price-container {
+  margin-top: 30px;
+}
+
+#total-price {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.price-header {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 10px;
+}
+
+#price-breakdown {
+  font-size: 0.95em;
+  margin-bottom: 15px;
+  line-height: 1.8;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-label {
+  text-transform: capitalize;
+  opacity: 0.9;
+}
+
+.breakdown-price {
+  font-weight: bold;
+}
+
+.price-total {
+  font-size: 1.4em;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 15px;
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+}
 </style>
 
 <script>
-const layers = document.querySelectorAll('.layer');
+const burgerStack = document.getElementById('burger-stack');
 const ingredientCardsDiv = document.getElementById('ingredient-cards');
 const currentCategory = document.getElementById('current-category');
-const totalPriceEl = document.getElementById('total-price');
+const priceBreakdownEl = document.getElementById('price-breakdown');
+const priceTotalEl = document.querySelector('.price-total');
 
-// Track selected ingredients
+// Track selected ingredients - now arrays to support multiple items
 const selectedIngredients = {
-  'top-bun': null, 'sauce': null, 'topping': null, 'cheese': null, 'patty': null, 'bottom-bun': null
+  'bun': [{type: 'top', item: null}], // top bun
+  'sauce': [],
+  'topping': [],
+  'cheese': [],
+  'patty': [],
+  'bottom-bun': [{type: 'bottom', item: null}] // bottom bun
 };
+
+let activeCategory = null;
+let ingredientQuantities = {}; // Track quantities for each ingredient card
+
+function renderBurger() {
+  burgerStack.innerHTML = '';
+  
+  // Top bun
+  const topBun = selectedIngredients['bun'][0];
+  const topBunEl = createLayerElement('top-bun', 'bun', topBun.item, 'Top Bun');
+  burgerStack.appendChild(topBunEl);
+  
+  // Sauce layers
+  selectedIngredients['sauce'].forEach((sauce, idx) => {
+    const sauceEl = createLayerElement(`sauce-${idx}`, 'sauce', sauce.item, 'Sauce');
+    burgerStack.appendChild(sauceEl);
+  });
+  
+  // Add empty sauce if none
+  if (selectedIngredients['sauce'].length === 0) {
+    const emptySauce = createLayerElement('sauce-empty', 'sauce', null, 'Sauce');
+    burgerStack.appendChild(emptySauce);
+  }
+  
+  // Topping layers
+  selectedIngredients['topping'].forEach((topping, idx) => {
+    const toppingEl = createLayerElement(`topping-${idx}`, 'topping', topping.item, 'Topping');
+    burgerStack.appendChild(toppingEl);
+  });
+  
+  // Add empty topping if none
+  if (selectedIngredients['topping'].length === 0) {
+    const emptyTopping = createLayerElement('topping-empty', 'topping', null, 'Topping');
+    burgerStack.appendChild(emptyTopping);
+  }
+  
+  // Cheese layers
+  selectedIngredients['cheese'].forEach((cheese, idx) => {
+    const cheeseEl = createLayerElement(`cheese-${idx}`, 'cheese', cheese.item, 'Cheese');
+    burgerStack.appendChild(cheeseEl);
+  });
+  
+  // Add empty cheese if none
+  if (selectedIngredients['cheese'].length === 0) {
+    const emptyCheese = createLayerElement('cheese-empty', 'cheese', null, 'Cheese');
+    burgerStack.appendChild(emptyCheese);
+  }
+  
+  // Patty layers
+  selectedIngredients['patty'].forEach((patty, idx) => {
+    const pattyEl = createLayerElement(`patty-${idx}`, 'patty', patty.item, 'Patty');
+    burgerStack.appendChild(pattyEl);
+  });
+  
+  // Add at least one patty layer (required)
+  if (selectedIngredients['patty'].length === 0) {
+    const emptyPatty = createLayerElement('patty-empty', 'patty', null, 'Patty');
+    burgerStack.appendChild(emptyPatty);
+  }
+  
+  // Bottom bun
+  const bottomBun = selectedIngredients['bottom-bun'][0];
+  const bottomBunEl = createLayerElement('bottom-bun', 'bun', bottomBun.item, 'Bottom Bun');
+  burgerStack.appendChild(bottomBunEl);
+  
+  // Re-attach event listeners
+  attachLayerListeners();
+}
+
+function createLayerElement(id, category, item, label) {
+  const layer = document.createElement('div');
+  layer.className = 'layer';
+  layer.id = id;
+  layer.dataset.category = category;
+  layer.dataset.label = label;
+  
+  if (item) {
+    layer.classList.add('filled');
+    layer.style.backgroundImage = `url(${item.image_url})`;
+    
+    // Add remove button (except for required items)
+    const canRemove = !id.includes('top-bun') && !id.includes('bottom-bun') && 
+                      (category !== 'patty' || selectedIngredients['patty'].length > 1);
+    
+    if (canRemove) {
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.innerHTML = '×';
+      removeBtn.onclick = (e) => {
+        e.stopPropagation();
+        removeLayer(id, category);
+      };
+      layer.appendChild(removeBtn);
+    }
+  } else {
+    layer.classList.add('empty');
+    if (category === 'bun') {
+      layer.style.backgroundImage = "url('/static/images/bun/default.jpg')";
+      if (id === 'top-bun') {
+        layer.style.backgroundPosition = 'top';
+      } else {
+        layer.style.backgroundPosition = 'bottom';
+      }
+    }
+  }
+  
+  return layer;
+}
+
+function removeLayer(layerId, category) {
+  const index = parseInt(layerId.split('-').pop());
+  if (!isNaN(index)) {
+    selectedIngredients[category].splice(index, 1);
+  }
+  renderBurger();
+  updateTotalPrice();
+}
+
+function attachLayerListeners() {
+  const layers = document.querySelectorAll('.layer');
+  layers.forEach(layer => {
+    layer.addEventListener('mouseenter', () => {
+      layers.forEach(l => l.classList.remove('active'));
+      layer.classList.add('active');
+      const category = layer.dataset.category;
+      activeCategory = category;
+      currentCategory.textContent = `Choose your ${category}`;
+      loadIngredients(category);
+    });
+  });
+}
+
+function loadIngredients(category) {
+  fetch(`/orders/ingredients/${category}`)
+    .then(res => res.json())
+    .then(data => {
+      ingredientCardsDiv.innerHTML = '';
+      data.forEach(item => {
+        const itemId = `${category}-${item.id}`;
+        if (!ingredientQuantities[itemId]) {
+          ingredientQuantities[itemId] = 1;
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'ingredient-card';
+        
+        const showQuantity = category === 'cheese' || category === 'topping' || category === 'patty';
+        
+        card.innerHTML = `
+          <div class="ingredient-info">
+            <span class="ingredient-name">${item.name}</span>
+            <span>${item.description}</span>
+            <span class="ingredient-price">₹${item.price}</span>
+            ${item.is_healthy ? '<span class="healthy-icon">💚</span>' : ''}
+          </div>
+          <div class="ingredient-actions">
+            ${showQuantity ? `
+              <div class="quantity-control">
+                <button class="qty-btn qty-minus" data-item-id="${itemId}">-</button>
+                <span class="qty-display" data-item-id="${itemId}">${ingredientQuantities[itemId]}</span>
+                <button class="qty-btn qty-plus" data-item-id="${itemId}">+</button>
+              </div>
+            ` : ''}
+            <button class="add-btn" data-item-id="${itemId}">Add</button>
+          </div>
+        `;
+
+        // Quantity controls
+        if (showQuantity) {
+          const minusBtn = card.querySelector('.qty-minus');
+          const plusBtn = card.querySelector('.qty-plus');
+          const qtyDisplay = card.querySelector('.qty-display');
+          
+          minusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (ingredientQuantities[itemId] > 1) {
+              ingredientQuantities[itemId]--;
+              qtyDisplay.textContent = ingredientQuantities[itemId];
+            }
+          });
+          
+          plusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (ingredientQuantities[itemId] < 10) {
+              ingredientQuantities[itemId]++;
+              qtyDisplay.textContent = ingredientQuantities[itemId];
+            }
+          });
+        }
+
+        const addBtn = card.querySelector('.add-btn');
+        addBtn.addEventListener('click', () => {
+          addIngredient(category, item, itemId);
+        });
+
+        ingredientCardsDiv.appendChild(card);
+      });
+    });
+}
+
+function addIngredient(category, item, itemId) {
+  const quantity = ingredientQuantities[itemId] || 1;
+  
+  if (category === 'bun') {
+    // Replace existing bun
+    selectedIngredients['bun'][0].item = item;
+    selectedIngredients['bottom-bun'][0].item = item;
+  } else if (category === 'sauce') {
+    // Replace or add sauce (single item)
+    selectedIngredients['sauce'] = [{item: item}];
+  } else if (category === 'cheese' || category === 'topping' || category === 'patty') {
+    // Add multiple items based on quantity
+    for (let i = 0; i < quantity; i++) {
+      selectedIngredients[category].push({item: item});
+    }
+  }
+  
+  renderBurger();
+  updateTotalPrice();
+}
 
 function updateTotalPrice() {
   let total = 0;
-  let breakdown = '';
-  for (const [layer, ing] of Object.entries(selectedIngredients)) {
-    if (ing) {
-      total += parseFloat(ing.price);
-      breakdown += `${layer}: ₹${ing.price} | `;
-    }
+  let breakdownHTML = '';
+  let itemCounts = {};
+  
+  // Count items by name
+  for (const [category, items] of Object.entries(selectedIngredients)) {
+    items.forEach(entry => {
+      if (entry.item) {
+        const name = entry.item.name;
+        const price = parseFloat(entry.item.price);
+        if (!itemCounts[name]) {
+          itemCounts[name] = {count: 0, price: price, category: category};
+        }
+        itemCounts[name].count++;
+        total += price;
+      }
+    });
   }
-  totalPriceEl.textContent = `Total: ₹${total} (${breakdown.slice(0,-3)})`;
+  
+  // Generate breakdown
+  for (const [name, data] of Object.entries(itemCounts)) {
+    const itemTotal = data.price * data.count;
+    breakdownHTML += `
+      <div class="breakdown-item">
+        <span class="breakdown-label">${name} ${data.count > 1 ? `(x${data.count})` : ''}</span>
+        <span class="breakdown-price">₹${itemTotal.toFixed(2)}</span>
+      </div>
+    `;
+  }
+  
+  priceBreakdownEl.innerHTML = breakdownHTML || '<div style="text-align: center; opacity: 0.7;">No ingredients added yet</div>';
+  priceTotalEl.textContent = `Total: ₹${total.toFixed(2)}`;
 }
 
-layers.forEach(layer => {
-  layer.addEventListener('mouseenter', () => {
-    layers.forEach(l => l.classList.remove('active'));
-    layer.classList.add('active');
-    const category = layer.dataset.category;
-    currentCategory.textContent = `Choose your ${category}`;
-
-    // Fetch ingredients
-    fetch(`/orders/ingredients/${category}`)
-      .then(res => res.json())
-      .then(data => {
-        ingredientCardsDiv.innerHTML = '';
-        data.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'ingredient-card';
-          card.innerHTML = `
-            <div class="ingredient-info">
-              <span class="ingredient-name">${item.name}</span>
-              <span>${item.description}</span>
-              <span class="ingredient-price">₹${item.price}</span>
-              ${item.is_healthy ? '<span class="healthy-icon">💚</span>' : ''}
-            </div>
-            <button class="add-btn">Add to Burger</button>
-          `;
-
-          const addBtn = card.querySelector('.add-btn');
-          addBtn.addEventListener('click', () => {
-            selectedIngredients[layer.id] = item;
-            layer.style.backgroundImage = `url(${item.image_url})`;
-            updateTotalPrice();
-          });
-
-          ingredientCardsDiv.appendChild(card);
-        });
-      });
-  });
-});
+// Initialize burger
+renderBurger();
+updateTotalPrice();
 </script>
 {% endblock %}
