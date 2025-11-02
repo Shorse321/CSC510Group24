@@ -1,4 +1,4 @@
-# 🍔 Stack Shack - Build Your Own Burger
+# 🍔 Stack Shack - Build Your Own Burger (Version 1.0)
 
 <div align="center">
 
