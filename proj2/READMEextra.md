@@ -1,18 +1,25 @@
-# 🍔 Stack Shack - Build Your Own Burger
+# 🍔 Stack Shack - Build Your Own Burger (Version 1.0)
 
-Stack Shack is a campus dining management system that allows customers to build custom burgers and enables staff/admins to manage the menu efficiently. Built with Flask (Python) backend and a clean HTML/CSS frontend.
+<div align="center">
 
+[![Tests](https://github.com/Shorse321/CSC510Group24/actions/workflows/tests.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/graph/badge.svg?token=M71DB8ZDSC)](https://codecov.io/gh/Shorse321/CSC510Group24)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/flask-3.0.0-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![MySQL](https://img.shields.io/badge/mysql-8.0-blue.svg)](https://www.mysql.com/)
 
-## 📋 Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Team](#team)
+[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
+[![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
+
+**Group 24** • CSC 510 - Software Engineering
+
+*Build your perfect burger with custom ingredients!*
+
+[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Testing](#testing) • [Team](#team)
+
+</div>
 
 ---
 
