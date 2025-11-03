@@ -70,7 +70,7 @@
   <p>We're not just a burger joint; we're a community! At Stack Shack, we focus on quality ingredients, fast service, and a friendly atmosphere. Our digital system allows customers to view our full menu, and our staff to manage orders and user accounts efficiently.</p>
   
   <div style="margin-top: 40px;">
-    <a href="{{ url_for('menu') }}" class="cta-button">View Our Delicious Menu</a>
+    <a href="{{ url_for('menu.browse_ingredients') }}" class="cta-button">View Our Fresh Ingredients</a>
     
     {% if not current_user.is_authenticated %}
       <a href="{{ url_for('auth.register') }}" class="cta-button" style="background: #e67e22; margin-left: 15px;">Customer/User Register</a>
