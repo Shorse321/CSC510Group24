@@ -31,9 +31,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        # FIX 1: Add PYTHONPATH=. to fix imports for the 'tests/' directory
-        # FIX 2: Add the 'tests/' directory to the pytest command
-        PYTHONPATH=. pytest menuManagementTests/ tests/ \
+        PYTHONPATH=. pytest tests/ \
           --cov=models \
           --cov=controllers \
           --cov=routes \
