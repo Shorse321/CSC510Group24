@@ -188,3 +188,23 @@ def healthy_choices():
         items = []
     
     return render_template('menu/healthy.html', items=items)
+
+
+# Public view - Browse all available ingredients
+@menu_bp.route('/browse-ingredients', methods=['GET'])
+def browse_ingredients():
+    """Public view of all available menu items/ingredients"""
+    success, msg, items = MenuController.get_available_items()
+    
+    if not success:
+        flash(msg, "error")
+        items = []
+    
+    # Group items by category for better display
+    categorized_items = {}
+    for item in items:
+        if item.category not in categorized_items:
+            categorized_items[item.category] = []
+        categorized_items[item.category].append(item)
+    
+    return render_template('menu/browse_ingredients.html', categorized_items=categorized_items)
