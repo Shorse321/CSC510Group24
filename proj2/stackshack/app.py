@@ -19,7 +19,9 @@ def create_app(config_name='development'):
     app.config.from_object(config[config_name])
 
     init_db(app)
-
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.jinja_env.auto_reload = True
+    app.jinja_env.cache = {}
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
@@ -37,7 +39,7 @@ def create_app(config_name='development'):
         return render_template('menu.html')
 
     return app
-
+    
 if __name__ == '__main__':
     app = create_app('development')
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

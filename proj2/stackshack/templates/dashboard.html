@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2>Welcome, {{ current_user.username }}!</h2>
-<p>Your Role: <strong>{{ current_user.role | upper }}</strong></p>
-
+<h2 style="color: #e67e22; font-family: Momo Signature">Welcome, {{ current_user.username }}!</h2>
+<p >Your Role: <strong>{{ current_user.role | upper }}</strong></p>
 <div class="admin-links" style="margin-top: 20px;">
     <h3>Order Tools</h3>
     <p>

@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Stack Shack{% endblock %}</title>
-  <style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Momo+Signature&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+ <style>
     /* CSS Variables for easy color changes */
     :root {
       --primary-color: #f39c12; /* Orange - Stack Shack brand color */
@@ -25,7 +28,7 @@
 
     /* Base Styling */
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: "Roboto";
       margin: 0;
       padding: 0;
       background: var(--background-color);
@@ -55,6 +58,7 @@
         color: inherit; /* Inherit white color from header */
         text-decoration: none;
         transition: opacity 0.3s;
+        font-family: "Momo Signature";
     }
     .logo-link:hover {
         opacity: 0.9;
@@ -65,9 +69,11 @@
       color: white;
       margin-left: 15px;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 450;
       padding: 8px 12px;
       border-radius: 4px;
+      font-size: large;
+      font-family: "Roboto";
       transition: background-color 0.3s;
     }
 
@@ -172,7 +178,13 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         transform: translateY(-1px);
     }
-    
+    .logo-icon {
+  width: 45px;           /* Adjust size as needed */
+  height: 45px;
+  vertical-align: middle; /* Keeps text and image aligned */
+  margin-right: 10px;     /* Space between image and text */
+  border-radius: 8px;     /* Optional – makes it look smoother */
+}
     /* Admin Links Styling (from dashboard.html) */
     /* Refined to ensure dashboard links look like buttons */
     .admin-links {
@@ -263,7 +275,8 @@
 <body>
   <header>
     <a href="{{ url_for('home') }}" class="logo-link">
-      <h1>🍔 Stack Shack</h1>
+      <h1><img src="{{ url_for('static', filename='images/hamburger_icon.webp') }}" alt="Stack Shack Logo" class="logo-icon">
+  Stack Shack</h1>
     </a>
     <nav>
       <a href="{{ url_for('menu') }}">Menu</a> 

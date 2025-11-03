@@ -13,10 +13,10 @@ class DevelopmentConfig(Config):
     DEBUG = True
     
     # Build database URI from environment variables
-    DB_USER = os.environ.get('DB_USER', 'root')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'root')
-    DB_HOST = os.environ.get('DB_HOST', 'localhost')
-    DB_NAME = os.environ.get('DB_NAME', 'stackshack')
+    DB_USER = os.environ.get('DB_USER')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD')
+    DB_HOST = os.environ.get('DB_HOST')
+    DB_NAME = os.environ.get('DB_NAME')
     
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL') or
