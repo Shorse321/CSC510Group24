@@ -222,7 +222,6 @@ def test_25_admin_delete_staff_user_nominal(client, login, db_session):
     db_session.commit()
     user_id = user_to_delete.id
 
-    # FIX: Check the response of the POST request, which contains the flash message
     response = client.post('/auth/admin/manage-users', data=dict(
         user_id=user_id,
         delete_user='Delete'
@@ -236,7 +235,6 @@ def test_26_admin_update_nonexistent_user_role_off_nominal(client, login):
     """T26: Off-Nominal - Admin attempts to update role of a non-existent user."""
     login('test_admin', 'adminpass')
     
-    # This now passes after fixing auth_routes.py
     response = client.post('/auth/admin/manage-users', data=dict(
         user_id='99999',
         role='admin',
@@ -249,7 +247,6 @@ def test_27_admin_delete_nonexistent_user_off_nominal(client, login):
     """T27: Off-Nominal - Admin attempts to delete a non-existent user."""
     login('test_admin', 'adminpass')
     
-    # This now passes after fixing auth_routes.py
     response = client.post('/auth/admin/manage-users', data=dict(
         user_id='99999',
         delete_user='Delete'
@@ -262,9 +259,7 @@ def test_28_admin_cannot_delete_self_ui_security(client, login):
     login('test_admin', 'adminpass')
     response = client.get('/auth/admin/manage-users', follow_redirects=True)
     
-    # FIX: Assert the presence of the exclusion text (You), which confirms the template logic ran.
     assert b'(You)' in response.data
-    # This avoids the previous flawed check for `name="delete_user"` that failed due to other users being present.
 
 
 # --- CONTROLLER LOGIC (DIRECT TESTING) (T29 - T32) ---
@@ -272,7 +267,7 @@ def test_28_admin_cannot_delete_self_ui_security(client, login):
 # This test requires the `app` fixture to provide a minimal Flask context.
 def test_29_controller_register_admin_unauthorized_security(db_session, app):
     """T29: Security - Directly test that AuthController blocks non-admin role elevation."""
-    # FIX: Wrap in a request context to initialize Flask-Login proxies (current_user)
+    
     with app.test_request_context(): 
         # current_user resolves to AnonymousUserMixin in this context
         success, msg, user = AuthController.register_user(

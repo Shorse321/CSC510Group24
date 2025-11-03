@@ -89,7 +89,6 @@ class AuthController:
         """
         Updates the role of a specified user.
         """
-        # FIX: Use modern db.session.get()
         user = db.session.get(User, int(user_id)) 
         if not user:
             return False, "User not found"
@@ -102,7 +101,6 @@ class AuthController:
         """
         Deletes a user account from the database.
         """
-        # FIX: Use modern db.session.get()
         user = db.session.get(User, int(user_id))
         if not user:
             return False, "User not found"

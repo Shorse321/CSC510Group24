@@ -1,5 +1,5 @@
 import pymysql
-
+# Test connection to MySQL database
 try:
     connection = pymysql.connect(
         host='localhost',
