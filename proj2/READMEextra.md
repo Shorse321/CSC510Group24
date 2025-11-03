@@ -13,6 +13,8 @@
 [![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
 [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
+[![DOI](https://zenodo.org/badge/1044477954.svg)](https://doi.org/10.5281/zenodo.17509156)
+
 **Group 24** • CSC 510 - Software Engineering
 
 *Build your perfect burger with custom ingredients!*
