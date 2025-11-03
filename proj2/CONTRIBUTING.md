@@ -23,10 +23,10 @@ We'd also love PRs. If you're thinking of a large pull request (PR), we advise o
 3.  **Make sure the tests pass on your machine.** From the `proj2/stackshack/` directory, run:
     ```bash
     # On macOS/Linux
-    PYTHONPATH=. pytest menuManagementTests/ tests/
+    PYTHONPATH=. pytest tests/
     
     # On Windows (PowerShell)
-    $env:PYTHONPATH="."; pytest menuManagementTests/ tests/
+    $env:PYTHONPATH="."; pytest tests/
     ```
 4.  **Create a new branch:** `git checkout -b my-branch-name`.
 5.  **Make your change, add tests,** and make sure the tests still pass with your changes.
