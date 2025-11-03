@@ -20,8 +20,14 @@
       <div id="total-price">
         <div class="price-header">Order Summary</div>
         <div id="price-breakdown"></div>
-        <div class="price-total">Total: $0</div>
+        <div class="price-total">Total: $0.00</div>
       </div>
+      
+      <!-- Place Order Form -->
+      <form id="place-order-form" method="POST" action="{{ url_for('order.place_order') }}">
+        <div id="hidden-inputs"></div>
+        <button type="submit" id="place-order-btn" class="place-order-btn">Place Order</button>
+      </form>
     </div>
   </div>
 </div>
@@ -145,7 +151,11 @@
   font-size: 0.9em;
   color: #666;
 }
-.healthy-icon { font-size: 1.2em; margin-top: 4px; }
+.healthy-icon { 
+  width: 30px;
+  height: 30px;
+  margin-top: 4px;
+}
 
 .ingredient-actions {
   display: flex;
@@ -251,6 +261,38 @@
   border-top: 2px solid rgba(255, 255, 255, 0.5);
   letter-spacing: 1px;
 }
+
+#place-order-form {
+  margin-top: 20px;
+}
+
+.place-order-btn {
+  width: 100%;
+  padding: 15px;
+  background: white;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.place-order-btn:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.place-order-btn:disabled {
+  background: #ccc;
+  border-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+}
 </style>
 
 <script>
@@ -259,14 +301,17 @@ const ingredientCardsDiv = document.getElementById('ingredient-cards');
 const currentCategory = document.getElementById('current-category');
 const priceBreakdownEl = document.getElementById('price-breakdown');
 const priceTotalEl = document.querySelector('.price-total');
+const placeOrderForm = document.getElementById('place-order-form');
+const hiddenInputsDiv = document.getElementById('hidden-inputs');
+const placeOrderBtn = document.getElementById('place-order-btn');
 
-// Track selected ingredients - now arrays to support multiple items
+// Track selected ingredients - arrays to support multiple items
 const selectedIngredients = {
-  'bun': [{ item: { image_url: '/static/images/bun/default.jpg', name: 'Plain Bun', price: '2.0', id: 'default-bun' } }],
-  'sauce': [{ item: { image_url: '/static/images/sauce/default.png', name: 'Ketchup', price: '0.5', id: 'default-sauce' } }],
-  'topping': [{ item: { image_url: '/static/images/topping/default.png', name: 'Lettuce', price: '0.5', id: 'default-topping' } }],
-  'cheese': [{ item: { image_url: '/static/images/cheese/default.jpg', name: 'Swiss cheese', price: '1.0', id: 'default-cheese' } }],
-  'patty': [{ item: { image_url: '/static/images/patty/default.jpg', name: 'Chicken Patty', price: '3.0', id: 'default-patty' } }]
+  'bun': [],
+  'sauce': [],
+  'topping': [],
+  'cheese': [],
+  'patty': []
 };
 
 let ingredientQuantities = {};
@@ -275,12 +320,16 @@ let activeCategory = null;
 function renderBurger() {
   burgerStack.innerHTML = '';
 
-  // Top bun (shared bun item)
-  const bunItem = selectedIngredients['bun'][0].item;
-  const topBunEl = createLayerElement('top-bun', 'bun', bunItem, 'Top Bun');
-  topBunEl.style.backgroundPosition = 'center top';
-  topBunEl.style.backgroundSize = '100% 200%';
-  burgerStack.appendChild(topBunEl);
+  // Top bun
+  if (selectedIngredients['bun'].length > 0) {
+    const bunItem = selectedIngredients['bun'][0].item;
+    const topBunEl = createLayerElement('top-bun', 'bun', bunItem, 'Top Bun');
+    topBunEl.style.backgroundPosition = 'center top';
+    topBunEl.style.backgroundSize = '100% 200%';
+    burgerStack.appendChild(topBunEl);
+  } else {
+    burgerStack.appendChild(createLayerElement('top-bun-empty', 'bun', null, 'Top Bun'));
+  }
 
   // Sauce
   selectedIngredients['sauce'].forEach((sauce, idx) => {
@@ -315,11 +364,16 @@ function renderBurger() {
     burgerStack.appendChild(createLayerElement('patty-empty', 'patty', null, 'Patty'));
   }
 
-  // Bottom bun (same bun item reused)
-  const bottomBunEl = createLayerElement('bottom-bun', 'bun', bunItem, 'Bottom Bun');
-  bottomBunEl.style.backgroundPosition = 'center bottom';
-  bottomBunEl.style.backgroundSize = '100% 200%';
-  burgerStack.appendChild(bottomBunEl);
+  // Bottom bun
+  if (selectedIngredients['bun'].length > 0) {
+    const bunItem = selectedIngredients['bun'][0].item;
+    const bottomBunEl = createLayerElement('bottom-bun', 'bun', bunItem, 'Bottom Bun');
+    bottomBunEl.style.backgroundPosition = 'center bottom';
+    bottomBunEl.style.backgroundSize = '100% 200%';
+    burgerStack.appendChild(bottomBunEl);
+  } else {
+    burgerStack.appendChild(createLayerElement('bottom-bun-empty', 'bun', null, 'Bottom Bun'));
+  }
 
   attachLayerListeners();
 }
@@ -346,7 +400,7 @@ function createLayerElement(id, category, item, label) {
       }
     }
   
-    const canRemove = !id.includes('top-bun') && !id.includes('bottom-bun');
+    const canRemove = true; // All items are now removable
     
     if (canRemove) {
       const removeBtn = document.createElement('button');
@@ -366,6 +420,19 @@ function createLayerElement(id, category, item, label) {
 }
 
 function removeLayer(layerId, category) {
+  // Handle bun removal specially - remove the entire bun (both top and bottom)
+  if (category === 'bun') {
+    selectedIngredients['bun'] = [];
+    renderBurger();
+    updateTotalPrice();
+    
+    // Refresh the ingredient list to update quantities
+    if (activeCategory === 'bun') {
+      loadIngredients('bun');
+    }
+    return;
+  }
+  
   const index = parseInt(layerId.split('-').pop());
   if (!isNaN(index)) {
     const removedItem = selectedIngredients[category][index]?.item;
@@ -379,13 +446,13 @@ function removeLayer(layerId, category) {
       }
     }
 
-    // If category is now empty, re-add empty placeholder
-    if (selectedIngredients[category].length === 0) {
-      selectedIngredients[category] = [];
-    }
-
     renderBurger();
     updateTotalPrice();
+    
+    // Refresh the ingredient list to update quantities
+    if (activeCategory === category) {
+      loadIngredients(category);
+    }
   }
 }
 
@@ -396,9 +463,17 @@ function loadIngredients(category) {
       ingredientCardsDiv.innerHTML = '';
       data.forEach(item => {
         const itemId = `${category}-${item.id}`;
-        if (!ingredientQuantities[itemId]) {
-          ingredientQuantities[itemId] = 0;
+        
+        // Calculate current quantity based on selectedIngredients
+        let currentQty = 0;
+        if (category === 'cheese' || category === 'topping' || category === 'patty') {
+          currentQty = selectedIngredients[category].filter(entry => 
+            String(entry.item.id) === String(item.id)
+          ).length;
         }
+        
+        // Store in ingredientQuantities for display
+        ingredientQuantities[itemId] = currentQty;
         
         const card = document.createElement('div');
         card.className = 'ingredient-card';
@@ -410,13 +485,13 @@ function loadIngredients(category) {
             <span class="ingredient-name">${item.name}</span>
             <span class="ingredient-description">${item.description}</span>
             <span class="ingredient-price">$${item.price}</span>
-            ${item.is_healthy ? '<span class="healthy-icon">💚</span>' : ''}
+            ${item.is_healthy ? '<img class="healthy-icon" src="/static/images/healthyicon.png" alt="Healthy">' : ''}
           </div>
           <div class="ingredient-actions">
             ${showQuantity ? `
               <div class="quantity-control">
                 <button class="qty-btn qty-minus" data-item-id="${itemId}">-</button>
-                <span class="qty-display" data-item-id="${itemId}">${ingredientQuantities[itemId]}</span>
+                <span class="qty-display" data-item-id="${itemId}">${currentQty}</span>
                 <button class="qty-btn qty-plus" data-item-id="${itemId}">+</button>
               </div>
             ` : `<button class="add-btn" data-item-id="${itemId}">Add</button>`}
@@ -478,7 +553,7 @@ function addIngredient(category, item, itemId) {
 
   if (category === 'bun') {
     // Update single bun item (used for both top & bottom visuals)
-    selectedIngredients['bun'][0].item = item;
+    selectedIngredients['bun'] = [{ item: item }];
   } else if (category === 'sauce') {
     selectedIngredients['sauce'] = [{ item: item }];
   }
@@ -491,14 +566,14 @@ function updateIngredientQuantity(category, item, itemId) {
   if (item && item.id !== undefined && item.id !== null) item.id = String(item.id);
 
   const quantity = ingredientQuantities[itemId];
-  // remove previous instances of this same item (by id)
+  
+  // Remove ALL instances of this item from the category
   selectedIngredients[category] = selectedIngredients[category].filter(entry => {
-    // entry.item.id might be string or number -> coerce to string for comparison
-    const eId = entry.item && entry.item.id !== undefined && entry.item.id !== null ? String(entry.item.id) : '';
-    return eId !== String(item.id);
+    const entryId = entry.item && entry.item.id !== undefined && entry.item.id !== null ? String(entry.item.id) : '';
+    return entryId !== String(item.id);
   });
 
-  // Add quantity times (only non-default items will have numeric/string id not starting with 'default-')
+  // Add the item back 'quantity' times
   for (let i = 0; i < quantity; i++) {
     selectedIngredients[category].push({ item: item });
   }
@@ -506,6 +581,7 @@ function updateIngredientQuantity(category, item, itemId) {
   renderBurger();
   updateTotalPrice();
 }
+
 function updateTotalPrice() {
   let total = 0;
   let breakdownHTML = '';
@@ -515,47 +591,130 @@ function updateTotalPrice() {
     items.forEach(entry => {
       if (!entry.item) return;
 
-      const rawId = entry.item.id;
-      const idStr = rawId === undefined || rawId === null ? '' : String(rawId);
-
       const price = Number(entry.item.price);
       const safePrice = Number.isFinite(price) ? price : 0;
       const name = entry.item.name || 'Unknown';
+      const itemId = entry.item.id;
 
       // Count bun only once (shared for top & bottom)
       if (category === 'bun' && itemCounts['bun']) return;
 
       if (!itemCounts[name]) {
-        itemCounts[name] = { count: 0, price: safePrice };
+        itemCounts[name] = { 
+          count: 0, 
+          price: safePrice,
+          itemId: itemId 
+        };
       }
       itemCounts[name].count++;
       total += safePrice;
     });
   }
 
-  for (const [name, data] of Object.entries(itemCounts)) {
-    const itemTotal = data.price * data.count;
-    breakdownHTML += `
-      <div class="breakdown-item">
-        <span class="breakdown-label">${name} ${data.count > 1 ? `(x${data.count})` : ''}</span>
-        <span class="breakdown-price">$${itemTotal.toFixed(2)}</span>
-      </div>
-    `;
+  // Check if bun and patty are present
+  const hasBun = selectedIngredients['bun'].length > 0;
+  const hasPatty = selectedIngredients['patty'].length > 0;
+  const canPlaceOrder = hasBun && hasPatty;
+
+  if (Object.keys(itemCounts).length > 0) {
+    for (const [name, data] of Object.entries(itemCounts)) {
+      const itemTotal = data.price * data.count;
+      breakdownHTML += `
+        <div class="breakdown-item">
+          <span class="breakdown-label">${name} ${data.count > 1 ? `(x${data.count})` : ''}</span>
+          <span class="breakdown-price">${itemTotal.toFixed(2)}</span>
+        </div>
+      `;
+    }
+    priceBreakdownEl.innerHTML = breakdownHTML;
+    
+    // Enable button only if bun and patty are present
+    if (canPlaceOrder) {
+      placeOrderBtn.disabled = false;
+      placeOrderBtn.title = '';
+    } else {
+      placeOrderBtn.disabled = true;
+      if (!hasBun && !hasPatty) {
+        placeOrderBtn.title = 'Please add a bun and at least one patty';
+      } else if (!hasBun) {
+        placeOrderBtn.title = 'Please add a bun';
+      } else if (!hasPatty) {
+        placeOrderBtn.title = 'Please add at least one patty';
+      }
+    }
+  } else {
+    priceBreakdownEl.innerHTML = '<div style="text-align: center; opacity: 0.7;">No ingredients added yet</div>';
+    placeOrderBtn.disabled = true;
+    placeOrderBtn.title = 'Please add ingredients to your burger';
   }
 
-  priceBreakdownEl.innerHTML = Object.keys(itemCounts).length
-    ? breakdownHTML
-    : '<div style="text-align: center; opacity: 0.7;">No ingredients added yet</div>';
-
-  priceTotalEl.textContent = `Total: $${total.toFixed(2)}`;
+  priceTotalEl.textContent = `Total: ${total.toFixed(2)}`;
+  
+  // Update hidden form inputs
+  updateFormInputs(itemCounts);
 }
 
-// Initialize burger
+function updateFormInputs(itemCounts) {
+  // Clear existing hidden inputs
+  hiddenInputsDiv.innerHTML = '';
+  
+  // Create hidden inputs for each item in the format expected by the backend
+  for (const [name, data] of Object.entries(itemCounts)) {
+    const itemId = data.itemId;
+    
+    // Create hidden inputs: quantity_ID, price_ID, name_ID
+    const quantityInput = document.createElement('input');
+    quantityInput.type = 'hidden';
+    quantityInput.name = `quantity_${itemId}`;
+    quantityInput.value = data.count;
+    hiddenInputsDiv.appendChild(quantityInput);
+    
+    const priceInput = document.createElement('input');
+    priceInput.type = 'hidden';
+    priceInput.name = `price_${itemId}`;
+    priceInput.value = data.price.toFixed(2);
+    hiddenInputsDiv.appendChild(priceInput);
+    
+    const nameInput = document.createElement('input');
+    nameInput.type = 'hidden';
+    nameInput.name = `name_${itemId}`;
+    nameInput.value = name;
+    hiddenInputsDiv.appendChild(nameInput);
+  }
+}
+
+// Form submission handler
+placeOrderForm.addEventListener('submit', function(e) {
+  // Check if bun is present
+  const hasBun = selectedIngredients['bun'].length > 0;
+  const hasPatty = selectedIngredients['patty'].length > 0;
+  
+  if (!hasBun || !hasPatty) {
+    e.preventDefault();
+    let message = 'Cannot place order: ';
+    if (!hasBun && !hasPatty) {
+      message += 'Please add a bun and at least one patty.';
+    } else if (!hasBun) {
+      message += 'Please add a bun.';
+    } else if (!hasPatty) {
+      message += 'Please add at least one patty.';
+    }
+    alert(message);
+    return false;
+  }
+  
+  // Disable button to prevent double submission
+  placeOrderBtn.disabled = true;
+  placeOrderBtn.textContent = 'Placing Order...';
+});
+
+// Initialize burger with empty state
 renderBurger();
 updateTotalPrice();
-// ✅ Load a default category when the page first loads
+
+// Load a default category when the page first loads
 window.addEventListener('DOMContentLoaded', () => {
-  const defaultCategory = 'bun'; // show bun ingredients first
+  const defaultCategory = 'bun';
   const defaultLayer = document.querySelector(`[data-category="${defaultCategory}"]`);
   if (defaultLayer) {
     defaultLayer.classList.add('active');
