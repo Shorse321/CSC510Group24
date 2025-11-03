@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Momo+Signature&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
 <style>
   /* Local styling for the home page hero */
   .hero {
@@ -23,6 +27,7 @@
     font-size: 1.2em;
     margin-bottom: 30px;
     font-weight: 300;
+    margin-right: 30px;
   }
 
   .cta-button {
@@ -58,38 +63,57 @@
     border-radius: 8px;
     background: var(--card-background);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    font-family: "Momo Signature";
   }
+  .logo-icon {
+  width: 55px;           /* Adjust size as needed */
+  height: 55px;
+  vertical-align: middle; /* Keeps text and image aligned */
+  margin-right: 10px;     /* Space between image and text */
+  border-radius: 8px;     /* Optional – makes it look smoother */
+}
+.logo1-icon {
+  width: 45px;           /* Adjust size as needed */
+  height: 45px;
+  vertical-align: middle; /* Keeps text and image aligned */
+  margin-right: 10px;     /* Space between image and text */
+  border-radius: 8px;     /* Optional – makes it look smoother */
+}
 
   .feature-card h3 {
     color: var(--primary-dark);
   }
+  .feature-card p {
+    color: black;
+    font-family: "Roboto";
+  }
 </style>
 
 <div class="hero">
-  <h2>Welcome to Stack Shack 🍔</h2>
-  <p>We're not just a burger joint; we're a community! At Stack Shack, we focus on quality ingredients, fast service, and a friendly atmosphere. Our digital system allows customers to view our full menu, and our staff to manage orders and user accounts efficiently.</p>
+  <h2>Welcome to <span style="font-family: Momo Signature;">Stack Shack!</span> <img src="{{ url_for('static', filename='images/home_burger_icon.png') }}" alt="Stack Shack Logo" class="logo-icon"></h2>
+  <p style="font-size: x-large; font-weight: 400;">We're not just a burger joint; we're a community!</p>
   
   <div style="margin-top: 40px;">
-    <a href="{{ url_for('menu') }}" class="cta-button">View Our Delicious Menu</a>
+    <a href="{{ url_for('menu') }}" class="cta-button" style="background: #e67e22;">View Our Delicious Menu</a>
     
     {% if not current_user.is_authenticated %}
       <a href="{{ url_for('auth.register') }}" class="cta-button" style="background: #e67e22; margin-left: 15px;">Customer/User Register</a>
-      <a href="{{ url_for('auth.login') }}" class="cta-button" style="background: #2ecc71; margin-left: 15px;">Login</a>
+      <a href="{{ url_for('auth.login') }}" class="cta-button" style="background: #e67e22; margin-left: 15px;">Login</a>
     {% endif %}
   </div>
 </div>
 
 <div class="features">
     <div class="feature-card">
-        <h3>🥩 Quality Stacks</h3>
+        <h3><img src="{{ url_for('static', filename='images/meat_icon.png') }}" alt="Meat Logo" class="logo1-icon"> Quality Stacks</h3>
         <p>Hand-pressed patties and fresh, locally sourced toppings make every bite perfect.</p>
     </div>
     <div class="feature-card">
-        <h3>🚀 Speedy Service</h3>
+        <h3> <img src="{{ url_for('static', filename='images/fast_icon.png') }}" alt="Service Logo" class="logo1-icon">Speedy Service</h3>
         <p>Our goal is to get your food from the grill to your hands in record time.</p>
     </div>
     <div class="feature-card">
-        <h3>💻 Modern System</h3>
+        <h3><img src="{{ url_for('static', filename='images/software_icon.png') }}" alt="Software Logo" class="logo1-icon">  Advance Software</h3>
         <p>Efficient role-based access ensures smooth operations for all our team members.</p>
     </div>
 </div>
