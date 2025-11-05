@@ -3,10 +3,9 @@ from config import config
 from database.db import init_db, login_manager, db 
 from routes.auth_routes import auth_bp
 from routes.menu_routes import menu_bp
-from routes.order_routes import order_bp # NEW IMPORT
+from routes.order_routes import order_bp
 from models.user import User
 
-# NEW IMPORTS: Import models so SQLAlchemy can discover them
 from models.order import Order, OrderItem 
 from models.menu_item import MenuItem
 
@@ -28,7 +27,7 @@ def create_app(config_name='development'):
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(menu_bp, url_prefix='/menu')
-    app.register_blueprint(order_bp, url_prefix='/orders') # NEW ROUTE REGISTRATION
+    app.register_blueprint(order_bp, url_prefix='/orders')
 
     @app.route('/')
     def home():

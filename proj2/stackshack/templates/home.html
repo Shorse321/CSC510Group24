@@ -94,7 +94,7 @@
   <p style="font-size: x-large; font-weight: 400;">We're not just a burger joint; we're a community!</p>
   
   <div style="margin-top: 40px;">
-    <a href="{{ url_for('menu') }}" class="cta-button" style="background: #e67e22;">View Our Delicious Menu</a>
+    <a href="{{ url_for('menu.browse_ingredients') }}" class="cta-button">View Our Fresh Ingredients</a>
     
     {% if not current_user.is_authenticated %}
       <a href="{{ url_for('auth.register') }}" class="cta-button" style="background: #e67e22; margin-left: 15px;">Customer/User Register</a>

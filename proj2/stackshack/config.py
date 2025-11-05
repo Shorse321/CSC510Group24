@@ -29,18 +29,16 @@ class ProductionConfig(Config):
     # ... (your production config) ...
     pass
 
-# ---- ADD THIS NEW CLASS ----
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory SQLite DB
     WTF_CSRF_ENABLED = False  # Disable forms CSRF for tests
     SECRET_KEY = 'test-secret-key' # Use a simple key for tests
-# --------------------------
 
 
 config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
-    'testing': TestingConfig,  # <-- ADD THIS LINE
+    'testing': TestingConfig,
     'default': DevelopmentConfig
 }

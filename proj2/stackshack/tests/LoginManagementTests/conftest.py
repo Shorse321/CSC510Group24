@@ -3,14 +3,13 @@ import pytest
 from app import create_app
 from database.db import db
 from models.user import User
-from sqlalchemy.orm import Session # Import Session for explicit control
+from sqlalchemy.orm import Session
 
-# The majority of the test files' 32 passed tests depend on the initial setup in app().
 
 @pytest.fixture(scope='session')
 def app():
     """Session-scoped application fixture configured for testing."""
-    app = create_app('development')
+    app = create_app('testing')
     app.config.update({
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 
@@ -63,8 +62,6 @@ def create_test_item():
     return lambda: None
 
 
-# CRITICAL FIX: Refactored db_session fixture to use db.session.remove()
-# This fixes the AttributeError that caused the 9 Errors.
 @pytest.fixture
 def db_session(app):
     """Function-scoped database session fixture for transactional testing."""
@@ -75,7 +72,6 @@ def db_session(app):
         transaction = connection.begin()
         
         # 2. Clear the current session scope and bind the test connection
-        # FIX: Use the correct Flask-SQLAlchemy API: db.session.remove()
         db.session.remove() 
         db.session.bind = connection
         
