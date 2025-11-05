@@ -11,7 +11,7 @@ class Order(db.Model):
     status = db.Column(db.String(50), nullable=False, default='Pending')
     ordered_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    items = db.relationship('OrderItem', backref='order', lazy='dynamic')
+    items = db.relationship('OrderItem', backref='order', lazy='dynamic',cascade='all, delete-orphan')
     user = db.relationship('User', backref=db.backref('orders', lazy='dynamic'))
 
     def to_dict(self):
