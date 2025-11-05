@@ -301,15 +301,6 @@ stackshack/
 
 Edit `config.py` to change database settings. By default, it reads from `.env` file.
 
-### Adding New Menu Categories
-
-To add new categories, update the ENUM in `models/menu_item.py`:
-```python
-category = db.Column(db.Enum('bun', 'patty', 'cheese', 'topping', 'sauce', 'drink'), nullable=False)
-```
-
-Then update the dropdown in templates.
-
 ---
 
 ## 🧪 Testing
