@@ -171,7 +171,7 @@ This creates an admin account with:
 
 ⚠️ **Change this password after first login in production!**
 
-### 8. (Optional) Seed Sample Menu Data
+### 8. Seed Sample Menu Data
 ```bash
 python seed_menu.py
 ```
