@@ -1,4 +1,4 @@
-# 🍔 Stack Shack - Build Your Own Burger (Version 1.0)
+# 🍔 Stack Shack - Build Your Own Burger! (Version 1.0)
 
 <div align="center">
 
@@ -30,18 +30,17 @@
 ### For Customers
 - Browse available menu items
 - View nutritional information (calories, protein)
-- See healthy choice options
-- Custom burger builder (coming soon)
-
-### For Staff
-- Manage menu items (add, edit, view)
-- Toggle item availability
-- Mark items as healthy choices
+- Custom burger builder
 
 ### For Admins
 - Full menu management (including delete)
 - User management
 - Create staff/admin accounts
+  
+### For Staff
+- Manage menu items (add, edit, view)
+- Toggle ingredient availability
+- Mark items as healthy choices
 
 ---
 
@@ -238,31 +237,60 @@ http://localhost:5000
 ```
 stackshack/
 ├── controllers/           # Business logic
-│   ├── auth_controller.py
+│   └── auth_controller.py
 │   └── menu_controller.py
+│   └── order_controller.py
 ├── database/             # Database configuration
 │   └── db.py
 ├── models/               # Database models
-│   ├── user.py
+│   └── user.py
 │   └── menu_item.py
+│   └── order.py
 ├── routes/               # URL routing
-│   ├── auth_routes.py
+│   └── auth_routes.py
 │   └── menu_routes.py
+│   └── order_routes.py
 ├── templates/            # HTML templates
-│   ├── menu/
-│   │   ├── items.html
-│   │   ├── create_item.html
+│   └── menu/
+│   │   └── items.html
+│   │   └── create_item.html
 │   │   └── edit_item.html
-│   ├── base.html
-│   ├── home.html
+│   │   └── browse_ingredients.html
+│   └── orders/
+│   │   └── create.html
+│   │   └── history.html
+│   └── base.html
+│   └── home.html
 │   └── dashboard.html
+│   └── login.html
+│   └── register.html
+│   └── menu.html
+│   └── admin_create.html
+│   └── admin_manage.html
+├── tests/
+│   └── menuManagementTests/
+│   │   └── conftest.py
+│   │   └── test_menu_model.py
+│   │   └── test_menu_controller.py
+│   │   └── test_menu_routes.py
+│   └── LoginManagementTests/
+│   │   └── conftest.py
+│   │   └── test_auth.py
+│   └── purchaseManagementTests/
+│   │   └── conftest.py
+│   │   └── test_create.py
+│   │   └── test_models.py
+│   │   └── test_controllers.py
+│   │   └── test_routes.py
 ├── venv/                 # Virtual environment (not in Git)
 ├── .env                  # Environment variables (not in Git)
 ├── .gitignore           # Git ignore rules
 ├── app.py               # Main application file
 ├── config.py            # Configuration settings
+├── test_conn.py
+├── create_admin.py
 ├── requirements.txt     # Python dependencies
-└── README.md           # This file
+├── README.md           # This file
 ```
 
 ---
@@ -366,9 +394,17 @@ app.run(debug=True, port=5001)  # Use different port
 
 - [x] User Management (Authentication & Authorization)
 - [x] Menu Management (Add/Edit/Delete Items)
-- [x] Order Management (Build a Burger)
-- [ ] Order Purchase (Payment Processing)
-- [ ] Extended Features (Inventory, Preferences, Surprise Box)
+- [x] Order Purchase (Build a Burger and place order)
+- [x] Order Status Management (Check order status)
+
+---
+
+## 🎯 Future Enhancements
+
+- Surprise box (randomised burger ingredients based on customer nutritional preferences and trending recommendations)
+- Nutritional calculator, dietary restriction filters and customer preferences
+- Payment integration
+- Inventory (ingredients availability) management
 
 ---
 
@@ -396,16 +432,4 @@ For issues or questions:
 
 ---
 
-## 🎯 Future Enhancements
-
-- Customer burger builder interface
-- Real-time order tracking
-- Nutritional calculator
-- Payment integration
-- Mobile responsive design
-- Order history
-- Dietary restriction filters
-
----
-
-**Happy Coding! 🍔**
+**Happy Stacking! 🍔**
