@@ -1,4 +1,4 @@
-# 🍔 StackShack - Build Your Own Burger! (Version 1.0)
+# 🍔 StackShack - Build Your Own Burger! (Version 1.2)
 
 <div align="center">
 
@@ -36,6 +36,23 @@ Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and
 - No waiting, no confusion — just stack and go.
 - Feeling adventurous? Get random burgers tailored.
 - Watch your order come to life from kitchen to tray.
+
+### Features
+#### User Management
+
+Unified login portal providing role-based access and functionality for customers, staff and admins.
+
+#### Order Purchase
+
+Interactive page that lets users custom-build their burger from scratch; With real-time visuals and dynamic pricing, customers can choose from a variety of buns, patties, sauces and toppings.
+
+#### Order Management
+
+Staff manages orders in real-time to prepare and fulfill them efficiently; Customers can track orders’ progress, ensuring transparency and reducing waiting time at the counter.
+
+#### Menu Management
+
+Admins have full control over menu items and daily ingredient availability; Mark healthy options and disable out-of-stock ingredients to promote balanced, nutritious meals.
 
 ### Who can use StackShack?
 
