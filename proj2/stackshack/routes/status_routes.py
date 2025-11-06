@@ -7,8 +7,11 @@ status_bp = Blueprint('status', __name__)
 @status_bp.route('/update', methods=['POST'])
 @login_required
 def update_status():
-    """Update the status of an order."""
+    """Update the status of an order (staff only)."""
     try:
+        if not StatusController.is_staff(current_user.id):
+            return jsonify({'success': False, 'message': 'Only staff can update order status.'}), 403
+        
         data = request.get_json()
         order_id = data.get('order_id')
         new_status = data.get('status')
@@ -18,17 +21,10 @@ def update_status():
         
         order_id = int(order_id)
         
-        is_staff = StatusController.is_staff(current_user.id)
-        
-        if is_staff:
-            from models.order import Order
-            order = Order.query.filter_by(id=order_id).first()
-            if not order:
-                return jsonify({'success': False, 'message': 'Order not found.'}), 404
-        else:
-            success, msg, order = StatusController.get_order_by_id(order_id, current_user.id)
-            if not success:
-                return jsonify({'success': False, 'message': msg}), 404
+        from models.order import Order
+        order = Order.query.filter_by(id=order_id).first()
+        if not order:
+            return jsonify({'success': False, 'message': 'Order not found.'}), 404
         
         success, msg, updated_order = StatusController.update_order_status(order_id, new_status)
         if not success:
