@@ -224,23 +224,9 @@ DB_NAME=stackshack
 
 **Important:** Replace `your_mysql_password` with your actual MySQL password!
 
-### 6. Initialize the Database
+### 6. Initialize the Database (if the tables haven't been automatically created)
 ```bash
-python
-```
-
-Then in the Python shell:
-```python
-from app import create_app
-from database.db import db
-from models.user import User
-from models.menu_item import MenuItem
-
-app = create_app()
-with app.app_context():
-    db.create_all()
-    print("Database tables created!")
-exit()
+python create_tables.py
 ```
 
 ### 7. Create Admin User
