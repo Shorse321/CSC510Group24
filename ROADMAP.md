@@ -1,4 +1,3 @@
-
 # ROADMAP
 ## CSC 510 FALL 2025 Group 24 Project Work Timeline
 ### Project 1
@@ -37,3 +36,4 @@
 - Nutritional calculator, dietary restriction filters and customer preferences
 - Payment integration
 - Inventory (ingredients availability) management
+

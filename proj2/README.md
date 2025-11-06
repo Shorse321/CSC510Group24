@@ -1,4 +1,3 @@
-
 # 🍔 StackShack - Build Your Own Burger! (Version 1.2)
 
 <div align="center">

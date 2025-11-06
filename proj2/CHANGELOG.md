@@ -1,4 +1,3 @@
-
 # STACKSHACK 1.2
 
 Version 1.2 - November 6, 2025
