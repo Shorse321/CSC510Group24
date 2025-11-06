@@ -1,4 +1,4 @@
-# 👥 Team
+# Team
 
 **Group 24**
 - Adam Myers
