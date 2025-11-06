@@ -1,3 +1,4 @@
+
 ## 🚀 Installation
 
 ### 1. Clone the Repository
@@ -101,7 +102,7 @@ This creates an admin account with:
 python seed_menu.py
 ```
 
-This adds sample burger ingredients to test the system.
+This adds sample burger menu ingredients to test the system.
 
 ---
 
@@ -111,9 +112,14 @@ This adds sample burger ingredients to test the system.
 ```bash
 python app.py
 ```
+or 
+```bash
+export FLASK_APP
+flask run
+```
 
 You should see:
-```
+```bash
 * Running on http://127.0.0.1:5000
 * Debug mode: on
 ```
@@ -121,9 +127,23 @@ You should see:
 ### Access the Application
 
 Open your browser and go to:
-```
+```bash
 http://localhost:5000
 ```
+or bash
+```
+http://127.0.0.1:5000
+```
+---
+
+## 🧪 Testing Database connection
+
+### Test Database Connection
+```bash
+python test_conn.py
+```
+
+Should output: `Connected to MySQL successfully!`
 
 ---
 
