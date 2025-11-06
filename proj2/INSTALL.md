@@ -1,5 +1,4 @@
-
-## 🚀 Installation
+## Installation
 
 ### 1. Clone the Repository
 ```bash
@@ -65,25 +64,11 @@ DB_PASSWORD=your_mysql_password
 DB_NAME=stackshack
 ```
 
-**⚠️ Important:** Replace `your_mysql_password` with your actual MySQL password!
+**Important:** Replace `your_mysql_password` with your actual MySQL password!
 
-### 6. Initialize the Database
+### 6. Initialize the Database (if the tables haven't been automatically created)
 ```bash
-python
-```
-
-Then in the Python shell:
-```python
-from app import create_app
-from database.db import db
-from models.user import User
-from models.menu_item import MenuItem
-
-app = create_app()
-with app.app_context():
-    db.create_all()
-    print("✅ Database tables created!")
-exit()
+python create_tables.py
 ```
 
 ### 7. Create Admin User
@@ -95,7 +80,7 @@ This creates an admin account with:
 - **Username:** `admin`
 - **Password:** `admin`
 
-⚠️ **Change this password after first login in production!**
+**Change this password after first login in production!**
 
 ### 8. Seed Sample Menu Data
 ```bash
@@ -106,7 +91,7 @@ This adds sample burger menu ingredients to test the system.
 
 ---
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Start the Server
 ```bash
@@ -135,8 +120,6 @@ or bash
 http://127.0.0.1:5000
 ```
 ---
-
-## 🧪 Testing Database connection
 
 ### Test Database Connection
 ```bash
