@@ -4,6 +4,7 @@ from database.db import init_db, login_manager, db
 from routes.auth_routes import auth_bp
 from routes.menu_routes import menu_bp
 from routes.order_routes import order_bp
+from routes.status_routes import status_bp
 from models.user import User
 
 from models.order import Order, OrderItem 
@@ -28,6 +29,7 @@ def create_app(config_name='development'):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(menu_bp, url_prefix='/menu')
     app.register_blueprint(order_bp, url_prefix='/orders')
+    app.register_blueprint(status_bp, url_prefix='/status')
 
     @app.route('/')
     def home():
