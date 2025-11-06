@@ -171,6 +171,8 @@ stackshack/
 - **Templates** (HTML files) are organized into folders per module (`auth/`, `menu/`, `orders/`).
 - **Tests** follow modular test folder structure with one subfolder per feature (`LoginManagementTests`, `menuManagementTests`, `purchaseManagementTests`).
 
+![Architecture](stackshack/static/images/modular_arch.png)
+
 ---
 
 ## Installation
@@ -611,7 +613,7 @@ If you use *StackShack* in your work, please cite it with DOI: [10.5281/zenodo.1
 ## Support
 
 For issues or questions:
-1. Check the [Troubleshooting](#Troubleshooting) section
+1. Check the [Troubleshooting](#troubleshooting) section
 2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
 3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
 
