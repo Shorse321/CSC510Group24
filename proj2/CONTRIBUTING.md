@@ -4,7 +4,7 @@
 [install-guide]: INSTALL.md
 [pep8]: https://peps.python.org/pep-0008/
 
-# 🍔 Contributing to Stack Shack
+# 🍔 Contributing to StackShack
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
 
