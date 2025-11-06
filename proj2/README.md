@@ -297,6 +297,75 @@ or bash
 http://127.0.0.1:5000
 ```
 ---
+## 🧭 Command Reference & Function Overview
+
+Below is a detailed guide to all the key commands
+
+### Application Commands
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `python app.py` | Runs the Flask development server locally. | `python app.py` |
+| `flask run` | Starts the app using Flask CLI with automatic reloading. | `flask run --debug` |
+| `python seed_menu.py` | Populates the `menu_items` table in the database with sample data from `menu_items.csv`. | `python seed_menu.py` |
+| `python create_admin.py` | Creates an admin user account with default credentials. | `python create_admin.py` |
+| `pytest` | Runs all automated test suites across controllers, routes, and models. | `pytest -v` |
+
+---
+
+### Core Functions
+
+| File | Function | Description |
+|------|-----------|-------------|
+| `controllers/menu_controller.py` | `create_menu_item(data)` | Adds a new menu item to the database. |
+| `controllers/menu_controller.py` | `get_all_menu_items()` | Retrieves all menu items for display. |
+| `controllers/order_controller.py` | `create_order(data, user_id)` | Handles the creation and validation of a new order. |
+| `controllers/order_controller.py` | `update_order_status(order_id, status)` | Updates the current order status (e.g., *pending*, *fulfilled*). |
+| `controllers/auth_controller.py` | `register_user(form_data)` | Registers a new user in the system. |
+| `controllers/auth_controller.py` | `login_user(email, password)` | Authenticates and logs in a user. |
+
+---
+
+### Configuration Options (`config.py`)
+
+| Option | Description | Example Value |
+|---------|--------------|---------------|
+| `SQLALCHEMY_DATABASE_URI` | MySQL connection string | `mysql+pymysql://root:password@localhost/stackshack_db` |
+| `SECRET_KEY` | Flask app secret key used for sessions and CSRF protection | `'my-secret-key'` |
+| `DEBUG` | Enables or disables Flask debug mode | `True` |
+| `TESTING` | Enables testing mode during CI/CD | `False` |
+
+---
+
+### Testing Commands
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `pytest tests/menuManagementTests/` | Runs all tests related to menu management. | `pytest tests/menuManagementTests/` |
+| `pytest tests/LoginManagementTests/` | Runs authentication-related tests. | `pytest tests/LoginManagementTests/` |
+| `pytest tests/purchaseManagementTests/` | Runs tests for order and purchase flows. | `pytest tests/purchaseManagementTests/` |
+| `pytest tests/statusManagementTests/` | Runs tests for order status flows. | `pytest tests/statusManagementTests/` |
+| `pytest --cov=controllers` | Checks test coverage for all controller functions. | `pytest --cov=controllers` |
+
+---
+
+### Dependency Management
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `pip install -r requirements.txt` | Installs all Python dependencies. | `pip install -r requirements.txt` |
+
+---
+
+### Database Setup
+
+| Step | Command | Description |
+|------|----------|-------------|
+| 1 | `flask db init` | Initialize the database migration directory. |
+| 2 | `flask db migrate -m "Initial migration"` | Create migration scripts based on models. |
+| 3 | `flask db upgrade` | Apply migrations and create all tables. |
+
+---
 
 ## Testing Database connection
 
