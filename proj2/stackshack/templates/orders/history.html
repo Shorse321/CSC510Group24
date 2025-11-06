@@ -1,7 +1,9 @@
-{% extends "base.html" %}
-{% block title %}Order History{% endblock %}
-{% block content %}
-<h2>Your Order History</h2>
+{% extends "base.html" %} {% block title %}{{ page_title if page_title is
+defined else 'Order History' }}{% endblock %} {% block content %} {% set
+header_title = page_title if page_title is defined else 'Your Order History' %}
+{% set manage_mode = manage_mode if manage_mode is defined else False %} {% set
+show_create_link = show_create_link if show_create_link is defined else False %}
+<h2>{{ header_title }}</h2>
 
 {% if orders %}
 <table>
@@ -12,38 +14,38 @@
       <th>Total</th>
       <th>Status</th>
       <th>Items Ordered</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for order in orders %}
-    
-    {% set base_style = "padding: 4px 10px; border-radius: 4px; font-size: 0.9em; font-weight: bold;" %}
-    {% set status_style = base_style %}
-
-    {% if order.status == 'Completed' %}
-        {% set status_style = base_style ~ " background: var(--success-bg); color: var(--success-text);" %}
-    {% elif order.status == 'Pending' %}
-        {% set status_style = base_style ~ " background: #fdf5e6; color: #cc8400;" %}
-    {% else %}
-        {% set status_style = base_style ~ " background: var(--error-bg); color: var(--error-text);" %}
-    {% endif %}
-
+    {% for order in orders %} {% set base_style = "padding: 4px 10px;
+    border-radius: 4px; font-size: 0.9em; font-weight: bold;" %} {% set
+    status_style = base_style %} {% if order.status == 'Delivered' %} {% set
+    status_style = base_style ~ " background: #d4edda; color: #155724;" %} {%
+    elif order.status == 'Cancelled' %} {% set status_style = base_style ~ "
+    background: #f8d7da; color: #721c24;" %} {% elif order.status == 'Pending'
+    %} {% set status_style = base_style ~ " background: #fdf5e6; color:
+    #cc8400;" %} {% elif order.status == 'Preparing' %} {% set status_style =
+    base_style ~ " background: #cfe2ff; color: #084298;" %} {% elif order.status
+    == 'Ready for Pickup' %} {% set status_style = base_style ~ " background:
+    #fff3cd; color: #997404;" %} {% endif %}
     <tr>
       <td><strong>{{ order.id }}</strong></td>
       <td>{{ order.ordered_at.strftime('%Y-%m-%d %H:%M') }}</td>
       <td><strong>${{ "%.2f"|format(order.total_price) }}</strong></td>
       <td>
-        <span class="status-span {{ status_class }}">
+        <span class="status-span" style="{{ status_style }}">
           {{ order.status }}
         </span>
       </td>
       <td>
         <ul>
-        {% for item in order.items.all() %}
-            <li style="font-size: 0.9em;">
-                {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price) }})
-            </li>
-        {% endfor %}
+          {% for item in order.items.all() %}
+          <li style="font-size: 0.9em">
+            {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price)
+            }})
+          </li>
+          {% endfor %}
         </ul>
       </td>
       {% if manage_mode %}
@@ -162,16 +164,105 @@
   </tbody>
 </table>
 {% else %}
-<p style="text-align: center; color: #999; margin-top: 40px; font-size: 1.1em;">
-  You have no past orders yet. Click "Create New Order" to get started!
+<p style="text-align: center; color: #999; margin-top: 40px; font-size: 1.1em">
+  {% if manage_mode %} No pending orders right now. {% else %} You have no
+  orders yet. {% endif %}
 </p>
+{% endif %} {% if show_create_link %}
+<div style="margin-top: 25px">
+  <a
+    href="{{ url_for('order.create_order_form') }}"
+    class="admin-links"
+    style="display: inline-block; text-decoration: none; color: white"
+  >
+    Create New Order
+  </a>
+</div>
 {% endif %}
-<div style="margin-top: 25px;">
-    <a href="{{ url_for('order.create_order_form') }}" 
-       class="admin-links" 
-       style="display: inline-block; text-decoration: none; color: white;">
-        Create New Order
-    </a>
+
+<!-- Status Flow Modal -->
+<div
+  id="statusFlowModal"
+  style="
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  "
+  onclick="if(event.target === this) closeStatusModal()"
+>
+  <div
+    style="
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px;
+      width: 85%;
+      max-width: 900px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    "
+  >
+    <div style="margin-bottom: 25px">
+      <h3 style="margin: 0">Order Status Journey</h3>
+    </div>
+
+    <!-- Status Flow Diagram with Arrows -->
+    <div class="flow-diagram-container">
+      <!-- Pending -->
+      <div id="flow-pending" class="flow-item">
+        <div class="flow-circle flow-circle--pending">📋</div>
+        <div class="flow-label">
+          <div class="flow-label-title">Pending</div>
+          <div class="flow-label-desc">Order Received</div>
+        </div>
+      </div>
+
+      <!-- Arrow 1 -->
+      <div class="flow-arrow">→</div>
+
+      <!-- Preparing -->
+      <div id="flow-preparing" class="flow-item">
+        <div class="flow-circle flow-circle--preparing">👨‍🍳</div>
+        <div class="flow-label">
+          <div class="flow-label-title">Preparing</div>
+          <div class="flow-label-desc">In Kitchen</div>
+        </div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div class="flow-arrow">→</div>
+
+      <!-- Ready for Pickup -->
+      <div id="flow-ready" class="flow-item">
+        <div class="flow-circle flow-circle--ready">📦</div>
+        <div class="flow-label">
+          <div class="flow-label-title">Ready for Pickup</div>
+          <div class="flow-label-desc">Waiting for You</div>
+        </div>
+      </div>
+
+      <!-- Arrow 3 -->
+      <div class="flow-arrow">→</div>
+
+      <!-- Delivered -->
+      <div id="flow-delivered" class="flow-item">
+        <div class="flow-circle flow-circle--delivered">✓</div>
+        <div class="flow-label">
+          <div class="flow-label-title">Delivered</div>
+          <div class="flow-label-desc">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="flow-legend-container">
+      <div id="flowLegend"></div>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -595,52 +686,52 @@
   });
 
   function updateOrderStatus(orderId, newStatus) {
-    fetch('/status/update', {
-      method: 'POST',
+    fetch("/status/update", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         order_id: orderId,
-        status: newStatus
+        status: newStatus,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Order status updated to " + newStatus);
+          location.reload();
+        } else {
+          alert("Error: " + data.message);
+        }
       })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Order status updated to ' + newStatus);
-        location.reload();
-      } else {
-        alert('Error: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred while updating the order status.');
-    });
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred while updating the order status.");
+      });
   }
 
   function cancelOrderRequest(orderId) {
-    if (confirm('Are you sure you want to cancel this order?')) {
-      fetch('/status/cancel/' + orderId, {
-        method: 'POST',
+    if (confirm("Are you sure you want to cancel this order?")) {
+      fetch("/status/cancel/" + orderId, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Order cancelled successfully');
-          location.reload();
-        } else {
-          alert('Error: ' + data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while cancelling the order.');
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Order cancelled successfully");
+            location.reload();
+          } else {
+            alert("Error: " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while cancelling the order.");
+        });
     }
   }
 </script>
