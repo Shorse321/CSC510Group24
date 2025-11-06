@@ -37,7 +37,7 @@ Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and
 - Feeling adventurous? Get random burgers tailored.
 - Watch your order come to life from kitchen to tray.
 
-###Who can use StackShack?
+### Who can use StackShack?
 
 What's stopping you from building your custom burgers? Wa have a fun, intuitive interface to design your healthy burger! University students, faculty, parents, guests, restaurant staff and admins, come visit us! 
 
@@ -281,12 +281,31 @@ http://127.0.0.1:5000
 
 ## Testing Database connection
 
-### Test Database Connection
 ```bash
 python test_conn.py
 ```
 
 Should output: `Connected to MySQL successfully!`
+
+---
+
+## Running the Test Suite
+
+To verify that all components are working correctly, you can run the project's built-in test suite.
+
+1.  Make sure you are in the `proj2/` directory.
+2.  Install `pytest` (if not already in `requirements.txt`):
+    ```bash
+    pip install pytest
+    ```
+3.  Run the tests using the following command (this sets the correct path for imports):
+    ```bash
+    PYTHONPATH=./stackshack python -m pytest stackshack/tests
+    ```
+    or run the below command to get the test case suite results in a html file:
+    ```
+    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
+    ```
 
 ---
 
@@ -472,26 +491,6 @@ response
   "message": "Order placed successfully!"
 }
 ```
----
-
-## Running the Test Suite
-
-To verify that all components are working correctly, you can run the project's built-in test suite.
-
-1.  Make sure you are in the `proj2/` directory.
-2.  Install `pytest` (if not already in `requirements.txt`):
-    ```bash
-    pip install pytest
-    ```
-3.  Run the tests using the following command (this sets the correct path for imports):
-    ```bash
-    PYTHONPATH=./stackshack python -m pytest stackshack/tests
-    ```
-    or run the below command to get the test case suite results in a html file:
-    ```
-    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
-    ```
-
 ---
 
 ## Troubleshooting
