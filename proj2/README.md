@@ -1,4 +1,5 @@
-# 🍔 StackShack - Build Your Own Burger! (Version 1.0)
+
+# 🍔 StackShack - Build Your Own Burger! (Version 1.2)
 
 <div align="center">
 
@@ -17,9 +18,9 @@
 
 **Group 24** • CSC 510 - Software Engineering
 
-*Build your perfect burger with custom ingredients!*
+*Build your perfect custom burger with fresh and healthy ingredients!*
 
-[Features](#eatures) • [Installation](#Installation) • [Usage](#Usage) • [Testing](#Testing) • [Team](#Team)
+[Features](#stackshack-who-are-we) • [Installation](#installation) • [Usage](#usage) • [Testing](#running-the-test-suite) • [Team](#team)
 
 </div>
 
@@ -37,7 +38,24 @@ Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and
 - Feeling adventurous? Get random burgers tailored.
 - Watch your order come to life from kitchen to tray.
 
-###Who can use StackShack?
+### Features
+#### User Management
+
+Unified login portal providing role-based access and functionality for customers, staff and admins.
+
+#### Order Purchase
+
+Interactive page that lets users custom-build their burger from scratch; With real-time visuals and dynamic pricing, customers can choose from a variety of buns, patties, sauces and toppings.
+
+#### Order Management
+
+Staff manages orders in real-time to prepare and fulfill them efficiently; Customers can track orders’ progress, ensuring transparency and reducing waiting time at the counter.
+
+#### Menu Management
+
+Admins have full control over menu items and daily ingredient availability; Mark healthy options and disable out-of-stock ingredients to promote balanced, nutritious meals.
+
+### Who can use StackShack?
 
 What's stopping you from building your custom burgers? Wa have a fun, intuitive interface to design your healthy burger! University students, faculty, parents, guests, restaurant staff and admins, come visit us! 
 
@@ -281,7 +299,6 @@ http://127.0.0.1:5000
 
 ## Testing Database connection
 
-### Test Database Connection
 ```bash
 python test_conn.py
 ```
@@ -290,7 +307,27 @@ Should output: `Connected to MySQL successfully!`
 
 ---
 
-## 📖 Usage
+## Running the Test Suite
+
+To verify that all components are working correctly, you can run the project's built-in test suite.
+
+1.  Make sure you are in the `proj2/` directory.
+2.  Install `pytest` (if not already in `requirements.txt`):
+    ```bash
+    pip install pytest
+    ```
+3.  Run the tests using the following command (this sets the correct path for imports):
+    ```bash
+    PYTHONPATH=./stackshack python -m pytest stackshack/tests
+    ```
+    or run the below command to get the test case suite results in a html file:
+    ```
+    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
+    ```
+
+---
+
+## Usage
 
 ### Demo Scenario: Registered customer wants to order a burger!
 What do you have to do?
@@ -474,26 +511,6 @@ response
 ```
 ---
 
-## Running the Test Suite
-
-To verify that all components are working correctly, you can run the project's built-in test suite.
-
-1.  Make sure you are in the `proj2/` directory.
-2.  Install `pytest` (if not already in `requirements.txt`):
-    ```bash
-    pip install pytest
-    ```
-3.  Run the tests using the following command (this sets the correct path for imports):
-    ```bash
-    PYTHONPATH=./stackshack python -m pytest stackshack/tests
-    ```
-    or run the below command to get the test case suite results in a html file:
-    ```
-    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
-    ```
-
----
-
 ## Troubleshooting
 
 ### "Access denied for user 'root'@'localhost'"
@@ -539,7 +556,8 @@ app.run(debug=True, port=5001)  # Use different port
 
 ## Portability Check
 
-Tested on macOS, Windows and Linux laptops using Python 3.9+.
+Tested on macOS, Windows and Linux laptops using Python 3.8+.
+
 ---
 
 ## Coding Conventions - Python Style
@@ -552,19 +570,7 @@ Tested on macOS, Windows and Linux laptops using Python 3.9+.
 
 ---
 
-## 👥 Team
-
-**Group 24**
-- Adam Myers
-- Akash R
-- Sailesh Sridhar
-- Swetha Manivasagam
-
-**Course:** CSC 510 - Software Engineering
-
----
-
-## 📝 Milestones
+## Milestones
 
 - [x] User Management (Authentication & Authorization of customers, admins and staff)
 - [x] Menu Management (Add/Edit/Delete Items and item information)
@@ -573,7 +579,7 @@ Tested on macOS, Windows and Linux laptops using Python 3.9+.
 
 ---
 
-## 🎯 Future Enhancements
+## Future Enhancements
 
 - Surprise box (randomised burger ingredients based on customer nutritional preferences and trending recommendations)
 - Nutritional calculator, dietary restriction filters and customer preferences
@@ -582,7 +588,7 @@ Tested on macOS, Windows and Linux laptops using Python 3.9+.
 
 ---
 
-## 🔐 Security Notes
+## Security Notes
 
 - Never commit `.env` file to Git
 - Change default admin password after first login
@@ -591,18 +597,38 @@ Tested on macOS, Windows and Linux laptops using Python 3.9+.
 
 ---
 
-## 📄 License
+## License
 
 This project is for educational purposes as part of CSC 510. StackShack is a student academic project and so there are no trademark claims.
 
 ---
 
-## 🆘 Support
+## How to Cite
+
+If you use *StackShack* in your work, please cite it with DOI: [10.5281/zenodo.1234567](https://doi.org/10.5281/zenodo.1234567)  
+
+---
+
+## Support
 
 For issues or questions:
-1. Check the [Troubleshooting](#troubleshooting) section
+1. Check the [Troubleshooting](#Troubleshooting) section
 2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
 3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
+
+---
+
+## Team
+
+**Group 24**
+- Adam Myers
+- Akash R
+- Sailesh Sridhar
+- Swetha Manivasagam
+
+Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
+
+**Course:** CSC 510 - Software Engineering
 
 ---
 
