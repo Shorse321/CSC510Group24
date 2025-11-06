@@ -12,7 +12,7 @@ Please note that this project is released with a [Contributor Code of Conduct][c
 
 ## Issues and PRs
 
-If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them.
+If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them @ https://discord.gg/R9bttnvf
 
 We'd also love PRs. If you're thinking of a large pull request (PR), we advise opening up an issue first to talk about it, though!
 
