@@ -10,17 +10,22 @@
 ### Project 2
 Release 1 - StackShack 1.0 November 2, 2025
 Release 2 - StackShack 1.1 November 6, 2025
+Release 3 - StackShack 1.2 November 6, 2025
 
 ## Stackshack 1.0
 - Menu management
 - Authentication management
-- Purchase management
 
 ## Stackshack 1.1
 - Menu management
 - Authentication management
 - Purchase management
-- Order status management
+
+## Stackshack 1.2
+- Menu management
+- Authentication management
+- Purchase management
+- Status management
 
 ## StackShack 2.0 (Expected by December 10, 2025)
 - Menu management
