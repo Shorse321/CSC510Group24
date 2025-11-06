@@ -1,10 +1,11 @@
+
 [fork]: https://github.com/Shorse321/CSC510Group24/fork
 [pr]: https://github.com/Shorse321/CSC510Group24/compare
 [code-of-conduct]: CODE_OF_CONDUCT.md
 [install-guide]: INSTALL.md
 [pep8]: https://peps.python.org/pep-0008/
 
-# 🍔 Contributing to Stack Shack
+# 🍔 Contributing to StackShack
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
 
@@ -12,7 +13,7 @@ Please note that this project is released with a [Contributor Code of Conduct][c
 
 ## Issues and PRs
 
-If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them.
+If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them @ https://discord.gg/R9bttnvf
 
 We'd also love PRs. If you're thinking of a large pull request (PR), we advise opening up an issue first to talk about it, though!
 
