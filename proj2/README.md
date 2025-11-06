@@ -1,4 +1,4 @@
-# 🍔 Stack Shack - Build Your Own Burger (Version 1.0)
+# 🍔 StackShack - Build Your Own Burger! (Version 1.0)
 
 <div align="center">
 
@@ -19,33 +19,45 @@
 
 *Build your perfect burger with custom ingredients!*
 
-[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Testing](#testing) • [Team](#team)
+[Features](#eatures) • [Installation](#Installation) • [Usage](#Usage) • [Testing](#Testing) • [Team](#Team)
 
 </div>
 
 ---
+## StackShack! Who are we?
+Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and easy. Customize every layer of your burger—from buns to sauces, toppings to patties — so every bite is exactly how you want it.  Eat Bold. Eat Fresh.
 
-## ✨ Features
+*Free and open source for educational use
+
+## Why You’ll Love Us: 
+
+- Build a burger as unique as you are.
+- Balance or treat yourself — it’s your choice.
+- No waiting, no confusion — just stack and go.
+- Feeling adventurous? Get random burgers tailored.
+- Watch your order come to life from kitchen to tray.
+
+###Who can use StackShack?
+
+What's stopping you from building your custom burgers? Wa have a fun, intuitive interface to design your healthy burger! University students, faculty, parents, guests, restaurant staff and admins, come visit us! 
 
 ### For Customers
 - Browse available menu items
 - View nutritional information (calories, protein)
-- See healthy choice options
-- Custom burger builder (coming soon)
-
-### For Staff
-- Manage menu items (add, edit, view)
-- Toggle item availability
-- Mark items as healthy choices
+- Custom burger builder
 
 ### For Admins
-- Full menu management (including delete)
+- Full menu management
 - User management
-- Create staff/admin accounts
+- Manage staff/admin accounts
+  
+### For Staff
+- Manage menu ingredients availabiliy and healthy choices
+- Manage order status (tracking)
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend:**
 - Python 3.8+
@@ -64,7 +76,7 @@
 
 ---
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -73,8 +85,78 @@ Before you begin, ensure you have the following installed:
 - **Git** - [Download Git](https://git-scm.com/downloads)
 
 ---
+## Project Structure
 
-## 🚀 Installation
+```bash
+stackshack/
+├── controllers/           # Business logic
+│   ├── auth_controller.py
+│   ├── menu_controller.py
+│   └── order_controller.py
+├── database/              # Database configuration
+│   └── db.py
+├── models/                # Database models
+│   ├── user.py
+│   ├── menu_item.py
+│   └── order.py
+├── routes/                # URL routing
+│   ├── auth_routes.py
+│   ├── menu_routes.py
+│   └── order_routes.py
+├── templates/             # HTML templates
+│   ├── menu/
+│   │   ├── items.html
+│   │   ├── create_item.html
+│   │   ├── edit_item.html
+│   │   └── browse_ingredients.html
+│   ├── orders/
+│   │   ├── create.html
+│   │   └── history.html
+│   ├── base.html
+│   ├── home.html
+│   ├── dashboard.html
+│   ├── login.html
+│   ├── register.html
+│   ├── menu.html
+│   ├── admin_create.html
+│   └── admin_manage.html
+├── tests/
+│   ├── menuManagementTests/
+│   │   ├── conftest.py
+│   │   ├── test_menu_model.py
+│   │   ├── test_menu_controller.py
+│   │   └── test_menu_routes.py
+│   ├── LoginManagementTests/
+│   │   ├── conftest.py
+│   │   └── test_auth.py
+│   └── purchaseManagementTests/
+│       ├── conftest.py
+│       ├── test_create.py
+│       ├── test_models.py
+│       ├── test_controllers.py
+│       └── test_routes.py
+├── venv/                  # Virtual environment (not in Git)
+├── .env                   # Environment variables (not in Git)
+├── .gitignore             # Git ignore rules
+├── app.py                 # Main application file
+├── config.py              # Configuration settings
+├── test_conn.py
+├── create_admin.py
+├── seed_menu.py
+├── requirements.txt       # Python dependencies
+└── README.md              # Documentation
+```
+---
+
+## Flask Project Structure (Modularity)
+- **Blueprints** separate app modules (`auth_bp`, `menu_bp`, `order_bp`) for clean routing.
+- **Controllers** handle business logic separately from routes.
+- **Templates** (HTML files) are organized into folders per module (`auth/`, `menu/`, `orders/`).
+- **Tests** follow modular test folder structure with one subfolder per feature (`LoginManagementTests`, `menuManagementTests`, `purchaseManagementTests`).
+
+---
+
+## Installation
 
 ### 1. Clone the Repository
 ```bash
@@ -140,25 +222,11 @@ DB_PASSWORD=your_mysql_password
 DB_NAME=stackshack
 ```
 
-**⚠️ Important:** Replace `your_mysql_password` with your actual MySQL password!
+**Important:** Replace `your_mysql_password` with your actual MySQL password!
 
-### 6. Initialize the Database
+### 6. Initialize the Database (if the tables haven't been automatically created)
 ```bash
-python
-```
-
-Then in the Python shell:
-```python
-from app import create_app
-from database.db import db
-from models.user import User
-from models.menu_item import MenuItem
-
-app = create_app()
-with app.app_context():
-    db.create_all()
-    print("✅ Database tables created!")
-exit()
+python create_tables.py
 ```
 
 ### 7. Create Admin User
@@ -170,26 +238,31 @@ This creates an admin account with:
 - **Username:** `admin`
 - **Password:** `admin`
 
-⚠️ **Change this password after first login in production!**
+**Change this password after first login in production!**
 
-### 8. (Optional) Seed Sample Menu Data
+### 8. Seed Sample Menu Data
 ```bash
 python seed_menu.py
 ```
 
-This adds sample burger ingredients to test the system.
+This adds sample burger menu ingredients to test the system.
 
 ---
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Start the Server
 ```bash
 python app.py
 ```
+or 
+```bash
+export FLASK_APP
+flask run
+```
 
 You should see:
-```
+```bash
 * Running on http://127.0.0.1:5000
 * Debug mode: on
 ```
@@ -197,13 +270,51 @@ You should see:
 ### Access the Application
 
 Open your browser and go to:
-```
+```bash
 http://localhost:5000
 ```
+or bash
+```
+http://127.0.0.1:5000
+```
+---
+
+## Testing Database connection
+
+### Test Database Connection
+```bash
+python test_conn.py
+```
+
+Should output: `Connected to MySQL successfully!`
 
 ---
 
 ## 📖 Usage
+
+### Demo Scenario: Registered customer wants to order a burger!
+What do you have to do?
+
+### Login
+
+1. Navigate to `http://localhost:5000/auth/login`
+2. Enter credentials:
+   - Username: `customer`
+   - Password: `pwstrong`
+3. Click **Login**
+
+### Check dashboard
+
+1. Create a new order (`http://127.0.0.1:5000/orders/new`).
+2. Choose bun, patty and optionally toppings, sauce and cheese in required quantities.
+3. Verify order summary and total pricing and Place order.
+4. Track order status in `http://127.0.0.1:5000/orders/history`.
+5. Logout
+
+![Burger Builder Demo](stackshack/static/images/purchase_burger_ss.png)
+
+### Demo Scenario: Admin wants to add available ingredients to the menu!
+What do you have to do?
 
 ### Login as Admin
 
@@ -234,79 +345,156 @@ http://localhost:5000
 
 ---
 
-## 📁 Project Structure
-```
-stackshack/
-├── controllers/           # Business logic
-│   ├── auth_controller.py
-│   └── menu_controller.py
-├── database/             # Database configuration
-│   └── db.py
-├── models/               # Database models
-│   ├── user.py
-│   └── menu_item.py
-├── routes/               # URL routing
-│   ├── auth_routes.py
-│   └── menu_routes.py
-├── templates/            # HTML templates
-│   ├── menu/
-│   │   ├── items.html
-│   │   ├── create_item.html
-│   │   └── edit_item.html
-│   ├── base.html
-│   ├── home.html
-│   └── dashboard.html
-├── venv/                 # Virtual environment (not in Git)
-├── .env                  # Environment variables (not in Git)
-├── .gitignore           # Git ignore rules
-├── app.py               # Main application file
-├── config.py            # Configuration settings
-├── requirements.txt     # Python dependencies
-└── README.md           # This file
-```
-
----
-
-## 🔧 Configuration
+## Configuration
 
 ### Database Configuration
 
 Edit `config.py` to change database settings. By default, it reads from `.env` file.
 
-### Adding New Menu Categories
+---
 
-To add new categories, update the ENUM in `models/menu_item.py`:
-```python
-category = db.Column(db.Enum('bun', 'patty', 'cheese', 'topping', 'sauce', 'drink'), nullable=False)
+## API References
+
+
+This section provides an overview of all major RESTful endpoints implemented in the **StackShack Burger Ordering System**.
+### Authentication & User Management (`auth_routes.py`)
+
+| Endpoint | Method | Description | Access |
+|-----------|---------|-------------|---------|
+| `/register` | `GET`, `POST` | Registers a new user account. Defaults to `customer` role unless an admin is logged in. | Public / Admin |
+| `/login` | `GET`, `POST` | Authenticates a user and starts a session. Redirects to dashboard upon success. | Public |
+| `/logout` | `GET` | Logs out the current user and clears session. | Authenticated |
+| `/dashboard` | `GET` | Displays a user dashboard with user-specific info and admin options. | Authenticated |
+| `/admin/create-user` | `GET`, `POST` | Admin-only route to create new staff or admin accounts. | Admin |
+| `/admin/manage-users` | `GET`, `POST` | Admin-only panel to view, update roles, or delete users. | Admin |
+
+#### Example JSON (POST `/register`)
+```json
+{
+  "username": "john_doe",
+  "password": "password123",
+  "role": "customer"
+}
 ```
+response
+```
+{
+  "success": true,
+  "message": "User registered successfully."
+}
+```
+### Menu Management Routes
 
-Then update the dropdown in templates.
+| HTTP Method | Route | Description | Access Level |
+|--------------|--------|-------------|---------------|
+| GET | `/menu/items` | View all menu items | Admin / Staff |
+| GET | `/menu/items/new` | Display form to create a new item | Admin / Staff |
+| POST | `/menu/items/create` | Create a new menu item | Admin / Staff |
+| GET | `/menu/items/<item_id>/edit` | Display edit form for an item | Admin / Staff |
+| POST | `/menu/items/<item_id>/update` | Update an existing menu item | Admin / Staff |
+| POST | `/menu/items/<item_id>/delete` | Delete a menu item | Admin only |
+| POST | `/menu/items/<item_id>/toggle-availability` | Toggle availability of a menu item | Admin / Staff |
+| POST | `/menu/items/<item_id>/toggle-healthy` | Toggle healthy choice flag | Admin / Staff |
+| GET | `/menu/browse` | Browse all available items (customer view) | Public |
+| GET | `/menu/healthy` | View healthy menu choices | Public |
+| GET | `/menu/browse-ingredients` | Browse available ingredients grouped by category | Public |
+#### Example JSON (POST /menu/items/create)
+```{
+  "name": "Sesame Bun",
+  "category": "bun",
+  "description": "Soft and fresh sesame seed bun",
+  "price": 2.50,
+  "calories": 180,
+  "protein": 6,
+  "image_url": "/static/images/sesame_bun.jpg"
+}
+```
+response
+```
+{
+  "success": true,
+  "message": "Menu item created successfully"
+}
+```
+### Order Management Routes
+
+| HTTP Method | Route | Description | Access Level |
+|--------------|--------|-------------|---------------|
+| GET | `/order/history` | View logged-in user’s past orders | Customer |
+| GET | `/order/ingredients/<category>` | Retrieve ingredients by category (JSON response) | Public |
+| GET | `/order/new` | Display burger creation/order form | Customer |
+| POST | `/order/place` | Submit and place a new order | Customer |
+#### Example JSON (GET /order/ingredients/bun)
+```
+[
+  {
+    "id": 1,
+    "name": "Sesame Bun",
+    "price": 2.50,
+    "description": "Soft sesame bun",
+    "is_healthy": false,
+    "image_url": "/static/images/sesame_bun.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Whole Wheat Bun",
+    "price": 3.00,
+    "description": "Rich in fiber and nutrients",
+    "is_healthy": true,
+    "image_url": "/static/images/whole_wheat_bun.jpg"
+  }
+]
+```
+#### Example JSON (POST /order/place)
+```
+{
+  "user_id": 5,
+  "items": [
+    {
+      "item_id": 1,
+      "name": "Sesame Bun",
+      "price": 2.5,
+      "quantity": 1
+    },
+    {
+      "item_id": 7,
+      "name": "Beef Patty",
+      "price": 5.0,
+      "quantity": 1
+    }
+  ]
+}
+```
+response
+```
+{
+  "success": true,
+  "message": "Order placed successfully!"
+}
+```
+---
+
+## Running the Test Suite
+
+To verify that all components are working correctly, you can run the project's built-in test suite.
+
+1.  Make sure you are in the `proj2/` directory.
+2.  Install `pytest` (if not already in `requirements.txt`):
+    ```bash
+    pip install pytest
+    ```
+3.  Run the tests using the following command (this sets the correct path for imports):
+    ```bash
+    PYTHONPATH=./stackshack python -m pytest stackshack/tests
+    ```
+    or run the below command to get the test case suite results in a html file:
+    ```
+    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
+    ```
 
 ---
 
-## 🧪 Testing
-
-### Test Database Connection
-```bash
-python test_conn.py
-```
-
-Should output: `✅ Connected to MySQL successfully!`
-
-### Manual Testing Checklist
-
-- [ ] Admin can login
-- [ ] Admin can create menu items
-- [ ] Admin can edit menu items
-- [ ] Admin can delete menu items
-- [ ] Admin can toggle availability
-- [ ] Admin can mark healthy choices
-- [ ] Staff can manage items (but not delete)
-- [ ] Customers can view available items
-
----
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "Access denied for user 'root'@'localhost'"
 
@@ -347,6 +535,20 @@ pip install -r requirements.txt
 ```python
 app.run(debug=True, port=5001)  # Use different port
 ```
+---
+
+## Portability Check
+
+Tested on macOS, Windows and Linux laptops using Python 3.9+.
+---
+
+## Coding Conventions - Python Style
+- Code follows **PEP 8** conventions.
+- Used **meaningful variable and function names** for readability.
+- Classes are written in **PascalCase** (e.g., `MenuItem`, `OrderController`).
+- Functions and variables use **snake_case** (e.g., `get_available_items`, `is_healthy_choice`).
+- Each route and controller function has **docstrings** explaining purpose.
+- All database models follow SQLAlchemy ORM conventions.
 
 ---
 
@@ -364,11 +566,19 @@ app.run(debug=True, port=5001)  # Use different port
 
 ## 📝 Milestones
 
-- [x] User Management (Authentication & Authorization)
-- [x] Menu Management (Add/Edit/Delete Items)
-- [x] Order Management (Build a Burger)
-- [ ] Order Purchase (Payment Processing)
-- [ ] Extended Features (Inventory, Preferences, Surprise Box)
+- [x] User Management (Authentication & Authorization of customers, admins and staff)
+- [x] Menu Management (Add/Edit/Delete Items and item information)
+- [x] Order Purchase (Build a Burger and place order)
+- [x] Order Status Management (Customer - check order status; Staff - update order status)
+
+---
+
+## 🎯 Future Enhancements
+
+- Surprise box (randomised burger ingredients based on customer nutritional preferences and trending recommendations)
+- Nutritional calculator, dietary restriction filters and customer preferences
+- Payment integration
+- Inventory (ingredients availability) management
 
 ---
 
@@ -383,7 +593,7 @@ app.run(debug=True, port=5001)  # Use different port
 
 ## 📄 License
 
-This project is for educational purposes as part of CSC 510.
+This project is for educational purposes as part of CSC 510. StackShack is a student academic project and so there are no trademark claims.
 
 ---
 
@@ -391,21 +601,9 @@ This project is for educational purposes as part of CSC 510.
 
 For issues or questions:
 1. Check the [Troubleshooting](#troubleshooting) section
-2. Contact team members
+2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
 3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
 
 ---
 
-## 🎯 Future Enhancements
-
-- Customer burger builder interface
-- Real-time order tracking
-- Nutritional calculator
-- Payment integration
-- Mobile responsive design
-- Order history
-- Dietary restriction filters
-
----
-
-**Happy Coding! 🍔**
+**Happy Stacking! 🍔**

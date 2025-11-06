@@ -43,4 +43,8 @@ def create_app(config_name='development'):
     
 if __name__ == '__main__':
     app = create_app('development')
+    with app.app_context():
+        # This creates all tables from your models if they don't exist
+        db.create_all()
+        print("Database tables checked/created.")
     app.run(debug=True, host='0.0.0.0', port=5000)
