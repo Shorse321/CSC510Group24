@@ -55,36 +55,33 @@ show_create_link = show_create_link if show_create_link is defined else False %}
         '#084298', 'Ready for Pickup': '#997404', 'Delivered': '#155724'} %} {%
         set status_icons = {'Preparing': '👨‍🍳', 'Ready for Pickup': '📦',
         'Delivered': '✓'} %}
-        <form method="post" style="display: inline">
-          <input type="hidden" name="order_id" value="{{ order.id }}" />
-          <input type="hidden" name="status" value="{{ next_status }}" />
-          <button
-            type="submit"
-            style="
-            border: none;
-            background: {{ button_colors.get(next_status, '#6c757d') }};
-            color: white;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.95em;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            white-space: nowrap;
-          "
-            onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)'; this.style.transform='translateY(-2px)';"
-            onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.15)'; this.style.transform='translateY(0)';"
+        <button
+          type="button"
+          onclick="updateOrderStatus({{ order.id }}, '{{ next_status }}')"
+          style="
+          border: none;
+          background: {{ button_colors.get(next_status, '#6c757d') }};
+          color: white;
+          padding: 10px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 0.95em;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          white-space: nowrap;
+        "
+          onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)'; this.style.transform='translateY(-2px)';"
+          onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.15)'; this.style.transform='translateY(0)';"
+        >
+          <span style="font-size: 1.1em"
+            >{{ status_icons.get(next_status, '→') }}</span
           >
-            <span style="font-size: 1.1em"
-              >{{ status_icons.get(next_status, '→') }}</span
-            >
-            {{ next_status }}
-          </button>
-        </form>
+          {{ next_status }}
+        </button>
         {% else %} {% if order.status == 'Delivered' %}
         <span
           style="
@@ -138,26 +135,21 @@ show_create_link = show_create_link if show_create_link is defined else False %}
             View Flow
           </button>
           {% if order.status not in ['Delivered', 'Cancelled'] %}
-          <form
-            method="post"
-            action="{{ url_for('order.cancel_order', order_id=order.id) }}"
-            style="display: inline"
+          <button
+            type="button"
+            class="admin-links"
+            onclick="cancelOrderRequest({{ order.id }})"
+            style="
+              border: none;
+              background: #dc3545;
+              color: white;
+              padding: 4px 10px;
+              border-radius: 4px;
+              cursor: pointer;
+            "
           >
-            <button
-              type="submit"
-              class="admin-links"
-              style="
-                border: none;
-                background: #dc3545;
-                color: white;
-                padding: 4px 10px;
-                border-radius: 4px;
-                cursor: pointer;
-              "
-            >
-              Cancel Order
-            </button>
-          </form>
+            Cancel Order
+          </button>
           {% else %}
           <span style="color: #999; font-size: 0.9em">
             {% if order.status == 'Delivered' %} Cannot cancel {% else %}
@@ -692,6 +684,56 @@ show_create_link = show_create_link if show_create_link is defined else False %}
       closeStatusModal();
     }
   });
+
+  function updateOrderStatus(orderId, newStatus) {
+    fetch('/status/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        status: newStatus
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Order status updated to ' + newStatus);
+        location.reload();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while updating the order status.');
+    });
+  }
+
+  function cancelOrderRequest(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+      fetch('/status/cancel/' + orderId, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Order cancelled successfully');
+          location.reload();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while cancelling the order.');
+      });
+    }
+  }
 </script>
 
 {% endblock %}
