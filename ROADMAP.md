@@ -8,9 +8,9 @@
 - Project 1 E1 September 29, 2025
   
 ### Project 2
-Release 1 - StackShack 1.0 November 2, 2025
-Release 2 - StackShack 1.1 November 6, 2025
-Release 3 - StackShack 1.2 November 6, 2025
+- Release 1 - StackShack 1.0 November 2, 2025
+- Release 2 - StackShack 1.1 November 6, 2025
+- Release 3 - StackShack 1.2 November 6, 2025
 
 ## Stackshack 1.0
 - Menu management
