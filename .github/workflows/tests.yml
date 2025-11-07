@@ -1,5 +1,5 @@
 # .github/workflows/tests.yml
-name: Tests & Coverage
+name: Tests, Linting, & Coverage
 
 on:
   push:
@@ -50,3 +50,34 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./proj2/stackshack/coverage.xml
         fail_ci_if_error: false
+
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./proj2/stackshack
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install black ruff
+
+    - name: Run Black (Formatter Check)
+      run: |
+        # --check flag verifies formatting without changing files
+        black --check .
+        
+    - name: Run Ruff (Style & Syntax Check)
+      run: |
+        ruff check .

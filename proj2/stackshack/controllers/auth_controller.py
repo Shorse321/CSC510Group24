@@ -2,16 +2,17 @@ from models.user import User
 from database.db import db
 from flask_login import login_user, logout_user, current_user
 
+
 class AuthController:
     """
-    Controller class for handling all user authentication and management logic, 
+    Controller class for handling all user authentication and management logic,
     including registration, login, logout, and CRUD operations for users and roles.
     """
 
     @staticmethod
-    def register_user(username, password, role='customer'):
+    def register_user(username, password, role="customer"):
         """
-        Registers a new user account. Enforces that only authenticated admins 
+        Registers a new user account. Enforces that only authenticated admins
         can assign 'admin' or 'staff' roles.
 
         Args:
@@ -29,9 +30,13 @@ class AuthController:
             return False, "Username and password required", None
 
         # Only admins can assign elevated roles
-        if role in ['admin', 'staff']:
-            if not current_user.is_authenticated or current_user.role != 'admin':
-                return False, "Unauthorized: Only admins can assign elevated roles.", None
+        if role in ["admin", "staff"]:
+            if not current_user.is_authenticated or current_user.role != "admin":
+                return (
+                    False,
+                    "Unauthorized: Only admins can assign elevated roles.",
+                    None,
+                )
 
         try:
             user = User(username=username, role=role)
@@ -58,9 +63,9 @@ class AuthController:
         user = User.get_by_username(username)
         if not user or not user.check_password(password):
             return False, "Incorrect username or password.", None
-        
+
         login_user(user)
-        
+
         return True, "Login successful", user
 
     @staticmethod
@@ -89,7 +94,7 @@ class AuthController:
         """
         Updates the role of a specified user.
         """
-        user = db.session.get(User, int(user_id)) 
+        user = db.session.get(User, int(user_id))
         if not user:
             return False, "User not found"
         user.role = new_role

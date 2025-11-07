@@ -1,46 +1,56 @@
 from models.order import Order
 from models.user import User
 from database.db import db
-from flask_login import current_user
+
 
 class StatusController:
     STATUS_FLOW = {
-        'Pending': 'Preparing',
-        'Preparing': 'Ready for Pickup',
-        'Ready for Pickup': 'Delivered',
-        'Delivered': None,
-        'Cancelled': None
+        "Pending": "Preparing",
+        "Preparing": "Ready for Pickup",
+        "Ready for Pickup": "Delivered",
+        "Delivered": None,
+        "Cancelled": None,
     }
 
     @staticmethod
     def get_status_flow():
         """Returns the status flow mapping for frontend consumption."""
         return {
-            'Pending': {
-                'display': 'Your order has been received and is waiting to be prepared',
-                'icon': '📋',
-                'nextStatuses': ['Preparing'] if StatusController.STATUS_FLOW['Pending'] else []
+            "Pending": {
+                "display": "Your order has been received and is waiting to be prepared",
+                "icon": "📋",
+                "nextStatuses": (
+                    ["Preparing"] if StatusController.STATUS_FLOW["Pending"] else []
+                ),
             },
-            'Preparing': {
-                'display': 'Your order is being prepared in our kitchen',
-                'icon': '👨‍🍳',
-                'nextStatuses': ['Ready for Pickup'] if StatusController.STATUS_FLOW['Preparing'] else []
+            "Preparing": {
+                "display": "Your order is being prepared in our kitchen",
+                "icon": "👨‍🍳",
+                "nextStatuses": (
+                    ["Ready for Pickup"]
+                    if StatusController.STATUS_FLOW["Preparing"]
+                    else []
+                ),
             },
-            'Ready for Pickup': {
-                'display': 'Your order is ready! Come pick it up',
-                'icon': '📦',
-                'nextStatuses': ['Delivered'] if StatusController.STATUS_FLOW['Ready for Pickup'] else []
+            "Ready for Pickup": {
+                "display": "Your order is ready! Come pick it up",
+                "icon": "📦",
+                "nextStatuses": (
+                    ["Delivered"]
+                    if StatusController.STATUS_FLOW["Ready for Pickup"]
+                    else []
+                ),
             },
-            'Delivered': {
-                'display': 'Your order has been delivered successfully',
-                'icon': '✓',
-                'nextStatuses': []
+            "Delivered": {
+                "display": "Your order has been delivered successfully",
+                "icon": "✓",
+                "nextStatuses": [],
             },
-            'Cancelled': {
-                'display': 'This order has been cancelled',
-                'icon': '✗',
-                'nextStatuses': []
-            }
+            "Cancelled": {
+                "display": "This order has been cancelled",
+                "icon": "✗",
+                "nextStatuses": [],
+            },
         }
 
     @staticmethod
@@ -52,17 +62,21 @@ class StatusController:
                 return False, "Order not found.", None
 
             current_status = order.status
-            
-            if current_status == 'Cancelled':
+
+            if current_status == "Cancelled":
                 return False, "Cannot update a cancelled order.", None
-            
-            if current_status == 'Delivered':
+
+            if current_status == "Delivered":
                 return False, "Cannot update a delivered order.", None
-            
+
             valid_next_status = StatusController.STATUS_FLOW.get(current_status)
             if new_status != valid_next_status:
-                return False, f"Invalid status transition from {current_status} to {new_status}.", None
-            
+                return (
+                    False,
+                    f"Invalid status transition from {current_status} to {new_status}.",
+                    None,
+                )
+
             order.status = new_status
             db.session.commit()
             return True, f"Order status updated to {new_status}.", order
@@ -77,11 +91,15 @@ class StatusController:
             order = Order.query.filter_by(id=order_id, user_id=user_id).first()
             if not order:
                 return False, "Order not found.", None
-            
-            if order.status in ['Delivered', 'Cancelled']:
-                return False, f"Cannot cancel an order that is {order.status.lower()}.", None
-            
-            order.status = 'Cancelled'
+
+            if order.status in ["Delivered", "Cancelled"]:
+                return (
+                    False,
+                    f"Cannot cancel an order that is {order.status.lower()}.",
+                    None,
+                )
+
+            order.status = "Cancelled"
             db.session.commit()
             return True, "Order cancelled successfully.", order
         except Exception as e:
@@ -115,6 +133,6 @@ class StatusController:
             user = User.query.filter_by(id=user_id).first()
             if not user:
                 return False
-            return user.role in ['staff', 'admin']
-        except Exception as e:
+            return user.role in ["staff", "admin"]
+        except Exception:
             return False
