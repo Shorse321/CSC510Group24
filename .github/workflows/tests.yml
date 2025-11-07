@@ -4,6 +4,10 @@ name: Tests, Linting, & Coverage
 on:
   push:
   pull_request:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   test:
