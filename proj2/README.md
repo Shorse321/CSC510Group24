@@ -656,6 +656,25 @@ response
   "message": "Order placed successfully!"
 }
 ```
+
+## Data Import and Export
+
+**StackShack**: All data formats follow **open standards** (CSV, JSON) ensuring easy integration with other databases or analytics tools.
+
+- 📂 **Data Import:**  
+  - Menu items, orders, and users can be imported from `.csv` or `.json` files.  
+
+- 📤 **Data Export:**  
+  - Application data (menu, order history, user records) can be exported to `.csv` or `.json` for interoperability with other systems. 
+
+## Open Communications Protocols
+
+**StackShack** communicates using **open and standard web protocols**:
+
+- The application runs on **HTTP/HTTPS** using REST-style Flask routes.
+- All client–server interactions use **JSON** as the data-interchange format.
+- The API endpoints can be accessed by any system that supports standard HTTP requests.
+
 ---
 
 ## Troubleshooting
