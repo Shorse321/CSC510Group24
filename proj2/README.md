@@ -433,8 +433,8 @@ To verify that all components are working correctly, you can run the project's b
    - **Password:** `pwstrong`
 3. Click **Login**
 
-![Customer Order Demo](stackshack/static/images/user_login.png)
-![Customer Order Demo](stackshack/static/images/user_register.png)
+![user login demo](stackshack/static/images/user_login.png)
+![user register demo](stackshack/static/images/user_register.png)
 #### Create and Place Order
 
 1. Go to:  
@@ -445,7 +445,7 @@ To verify that all components are working correctly, you can run the project's b
 5. Track the order status in:  
    `http://127.0.0.1:5000/orders/history`
 6. Logout once done.
-![Customer Order Demo](stackshack/static/images/view_ingredients.png)
+   view ingredients](stackshack/static/images/view_ingredients.png)
 ![Customer Order Demo](stackshack/static/images/purchase_burger_ss.png)
 
 ---
@@ -473,7 +473,7 @@ To verify that all components are working correctly, you can run the project's b
    - **Toggle Availability** – Enable/disable menu items
    - **Mark Healthy Choice** – Highlight healthy options
 
-![Customer Order Demo](stackshack/static/images/manage_menu.png)
+![admin manage menu demo](stackshack/static/images/manage_menu.png)
 
 #### Manage Users
 
@@ -481,7 +481,7 @@ To verify that all components are working correctly, you can run the project's b
 2. Update roles for existing users (promote to staff, demote to customer).
 3. Remove inactive users if required.
 
-![Customer Order Demo](stackshack/static/images/manage_user.png)
+![admin manage user demo](stackshack/static/images/manage_user.png)
 ---
 
 ### Demo Scenario: Staff updates order statuses
@@ -507,6 +507,12 @@ To verify that all components are working correctly, you can run the project's b
      - Preparing → Ready for Pickup  
      - Ready for Pickup → Delivered
 3. Once delivered, mark as **Completed**
+![ Staff manage order](stackshack/static/images/status_mgmt.png)
+
+#### Customer viewing order status
+
+![Customer manage order](stackshack/static/images/status_check.png)
+![Customer manage order](stackshack/static/images/status_map.png)
 
 ### Menu Item Categories
 
