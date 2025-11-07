@@ -300,7 +300,7 @@ or bash
 http://127.0.0.1:5000
 ```
 ---
-## 🧭 Command Reference & Function Overview
+## Command Reference & Function Overview
 
 Below is a detailed guide to all the key commands
 
@@ -316,16 +316,36 @@ Below is a detailed guide to all the key commands
 
 ---
 
-### Core Functions
+## Function Reference
 
-| File | Function | Description |
-|------|-----------|-------------|
-| `controllers/menu_controller.py` | `create_menu_item(data)` | Adds a new menu item to the database. |
-| `controllers/menu_controller.py` | `get_all_menu_items()` | Retrieves all menu items for display. |
-| `controllers/order_controller.py` | `create_order(data, user_id)` | Handles the creation and validation of a new order. |
-| `controllers/order_controller.py` | `update_order_status(order_id, status)` | Updates the current order status (e.g., *pending*, *fulfilled*). |
-| `controllers/auth_controller.py` | `register_user(form_data)` | Registers a new user in the system. |
-| `controllers/auth_controller.py` | `login_user(email, password)` | Authenticates and logs in a user. |
+Below is a detailed list of core controller functions in our backend architecture.
+
+| **Controller** | **Function** | **Description** |
+|----------------|--------------|-----------------|
+| **AuthController** | `register_user(username, password, role='customer')` | Registers a new user with role validation (only admins can assign elevated roles). |
+|  | `login_user_account(username, password)` | Authenticates users and logs them into the session. |
+|  | `logout_user_account()` | Logs the current user out. |
+|  | `get_all_users()` | Retrieves all users from the database. |
+|  | `update_user_role(user_id, new_role)` | Updates the role of an existing user. |
+|  | `delete_user(user_id)` | Deletes a user account from the system. |
+| **MenuController** | `get_all_items()` | Retrieves all menu items in sorted order. |
+|  | `get_item_by_id(item_id)` | Fetches a specific menu item by ID. |
+|  | `create_item(name, category, description, price, ...)` | Creates a new menu item (Admin/Staff only). |
+|  | `update_item(item_id, ...)` | Updates an existing menu item (Admin/Staff only). |
+|  | `delete_item(item_id)` | Deletes a menu item (Admin only). |
+|  | `toggle_availability(item_id)` | Toggles menu item availability (Admin/Staff only). |
+|  | `toggle_healthy_choice(item_id)` | Marks/unmarks a menu item as a healthy choice (Admin/Staff only). |
+|  | `get_items_by_category(category)` | Retrieves menu items filtered by category. |
+|  | `get_available_items()` | Retrieves only available menu items (for customers). |
+|  | `get_healthy_choices()` | Retrieves items marked as healthy choices. |
+| **OrderController** | `get_user_orders(user_id)` | Retrieves all past orders for a user. |
+|  | `create_new_order(user_id, item_data)` | Creates a new order and calculates total price. |
+| **StatusController** | `get_status_flow()` | Returns status flow mapping for frontend use. |
+|  | `update_order_status(order_id, new_status)` | Updates order status through valid transitions. |
+|  | `cancel_order(order_id, user_id)` | Cancels a pending or preparing order. |
+|  | `get_order_by_id(order_id, user_id)` | Retrieves an order by ID (with user access check). |
+|  | `get_all_orders_for_staff()` | Fetches all orders for staff/admin dashboards. |
+|  | `is_staff(user_id)` | Checks if a user is a staff or admin member. |
 
 ---
 
@@ -400,50 +420,102 @@ To verify that all components are working correctly, you can run the project's b
 
 ---
 
+
 ## Usage
 
-### Demo Scenario: Registered customer wants to order a burger!
-What do you have to do?
+### Demo Scenario: Customer places an order
 
-### Login
+**What do you have to do?**
 
-1. Navigate to `http://localhost:5000/auth/login`
-2. Enter credentials:
-   - Username: `customer`
-   - Password: `pwstrong`
+#### Login
+
+1. Navigate to:  
+   `http://localhost:5000/auth/login`
+2. Enter credentials:  
+   - **Username:** `customer`  
+   - **Password:** `pwstrong`
 3. Click **Login**
 
-### Check dashboard
+![user login demo](stackshack/static/images/user_login.png)
+![user register demo](stackshack/static/images/user_register.png)
+#### Create and Place Order
 
-1. Create a new order (`http://127.0.0.1:5000/orders/new`).
-2. Choose bun, patty and optionally toppings, sauce and cheese in required quantities.
-3. Verify order summary and total pricing and Place order.
-4. Track order status in `http://127.0.0.1:5000/orders/history`.
-5. Logout
+1. Go to:  
+   `http://127.0.0.1:5000/orders/new`
+2. Build your burger by selecting buns, patties, toppings, sauces, and cheese.
+3. Review the order summary and confirm total price.
+4. Click **Place Order**.
+5. Track the order status in:  
+   `http://127.0.0.1:5000/orders/history`
+6. Logout once done.
+ ![View ingredients](stackshack/static/images/view_ingredients.png)
+![Customer Order Demo](stackshack/static/images/purchase_burger_ss.png)
 
-![Burger Builder Demo](stackshack/static/images/purchase_burger_ss.png)
+---
 
-### Demo Scenario: Admin wants to add available ingredients to the menu!
-What do you have to do?
+### Demo Scenario: Admin manages menu and user roles
 
-### Login as Admin
+**What do you have to do?**
 
-1. Navigate to `http://localhost:5000/auth/login`
-2. Enter credentials:
-   - Username: `admin`
-   - Password: `admin`
+#### Login as Admin
+
+1. Navigate to:  
+   `http://localhost:5000/auth/login`
+2. Enter credentials:  
+   - **Username:** `admin`  
+   - **Password:** `admin`
 3. Click **Login**
 
-### Manage Menu Items
+#### Manage Menu
 
-1. After login, click **Dashboard**
-2. Click **Manage Menu** under Admin Tools
-3. You can now:
-   - **Add New Item** - Click "+ Add New Menu Item"
-   - **Edit Item** - Click "Edit" next to any item
-   - **Delete Item** - Click "Delete" (admin only)
-   - **Toggle Availability** - Mark items as available/unavailable
-   - **Mark Healthy Choice** - Tag healthy options
+1. Access **Dashboard → Manage Menu**
+2. Perform actions like:
+   - **Add New Item** – Click “+ Add New Menu Item”
+   - **Edit Item** – Modify existing items
+   - **Delete Item** – Remove items (admin only)
+   - **Toggle Availability** – Enable/disable menu items
+   - **Mark Healthy Choice** – Highlight healthy options
+
+![admin manage menu demo](stackshack/static/images/manage_menu.png)
+
+#### Manage Users
+
+1. Access **Dashboard → Manage Users**
+2. Update roles for existing users (promote to staff, demote to customer).
+3. Remove inactive users if required.
+
+![admin manage user demo](stackshack/static/images/manage_user2.png)
+---
+
+### Demo Scenario: Staff updates order statuses
+
+**What do you have to do?**
+
+#### Login as Staff
+
+1. Navigate to:  
+   `http://localhost:5000/auth/login`
+2. Enter credentials:  
+   - **Username:** `staff`  
+   - **Password:** `staffpw`
+3. Click **Login**
+
+#### Manage Orders
+
+1. Go to **Dashboard → Orders**
+2. You can:
+   - **View All Orders** with current status
+   - **Update Status** through transitions:
+     - Pending → Preparing  
+     - Preparing → Ready for Pickup  
+     - Ready for Pickup → Delivered
+3. Once delivered, mark as **Completed**
+![ Staff manage order](stackshack/static/images/status_mgmt.png)
+
+#### Customer Viewing Order Status
+
+![Customer manage order](stackshack/static/images/status_check.png)
+![Customer manage order](stackshack/static/images/status_map.png)
 
 ### Menu Item Categories
 
