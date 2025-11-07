@@ -1,4 +1,3 @@
-import os
 from database.db import db
 from app import create_app
 from models.menu_item import MenuItem

@@ -1,8 +1,5 @@
 from models.order import Order, OrderItem
-from models.menu_item import MenuItem
 from database.db import db
-from flask_login import current_user
-from datetime import datetime
 
 
 class OrderController:

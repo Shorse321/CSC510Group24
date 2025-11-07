@@ -1,4 +1,3 @@
-import pytest
 import json
 from models.order import Order
 from database.db import db

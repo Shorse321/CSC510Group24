@@ -1,4 +1,3 @@
-import pytest
 import json
 from models.order import Order
 from models.user import User
@@ -339,7 +338,7 @@ class TestStatusAccessControl:
                 db.session.add(oi)
 
             db.session.commit()
-            order1_id = order1.id
+            # order1_id = order1.id
             order2_id = order2.id
 
         self.login(client, "user1", "pass1")

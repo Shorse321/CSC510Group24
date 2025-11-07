@@ -3,7 +3,6 @@ import pytest
 from app import create_app
 from database.db import db
 from models.user import User
-from sqlalchemy.orm import Session
 
 
 @pytest.fixture(scope="session")

@@ -8,8 +8,6 @@ from routes.status_routes import status_bp
 from models.user import User
 from datetime import datetime
 
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
 
 
 def create_app(config_name="development"):

@@ -1,4 +1,3 @@
-import pytest
 from flask_login import login_user
 from controllers.menu_controller import MenuController
 from models.menu_item import MenuItem

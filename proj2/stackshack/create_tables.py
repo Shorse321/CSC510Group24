@@ -1,9 +1,6 @@
 # A script to create database tables for the StackShack application.
 from app import create_app
 from database.db import db
-from models.user import User
-from models.menu_item import MenuItem
-from models.order import Order, OrderItem
 
 
 def create_tables():

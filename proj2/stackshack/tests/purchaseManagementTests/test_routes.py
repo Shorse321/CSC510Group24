@@ -1,9 +1,7 @@
-import pytest
 import json
 from decimal import Decimal
-from models.order import Order, OrderItem
+from models.order import Order
 from models.menu_item import MenuItem
-from models.user import User
 from database.db import db
 
 
@@ -331,7 +329,7 @@ class TestOrderRoutes:
                 f"name_{patty.id}": patty.name,
             }
 
-        response = client.post("/orders/place", data=form_data, follow_redirects=True)
+        client.post("/orders/place", data=form_data, follow_redirects=True)
 
         with app.app_context():
             final_count = Order.query.filter_by(user_id=test_user).count()
@@ -364,7 +362,7 @@ class TestOrderRoutes:
                 + Decimal(str(cheese.price))
             )
 
-        response = client.post("/orders/place", data=form_data, follow_redirects=True)
+        client.post("/orders/place", data=form_data, follow_redirects=True)
 
         with app.app_context():
             order = (
@@ -473,7 +471,7 @@ class TestOrderRoutes:
 
             expected_total = Decimal(str(cheese.price)) * 50
 
-        response = client.post("/orders/place", data=form_data, follow_redirects=True)
+        client.post("/orders/place", data=form_data, follow_redirects=True)
 
         with app.app_context():
             order = (

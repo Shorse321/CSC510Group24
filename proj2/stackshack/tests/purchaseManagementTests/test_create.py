@@ -1,8 +1,3 @@
-import pytest
-import json
-from models.menu_item import MenuItem
-from models.user import User
-from database.db import db
 
 
 class TestCreateOrderPage:

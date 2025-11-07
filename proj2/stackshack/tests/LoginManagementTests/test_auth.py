@@ -1,5 +1,4 @@
 # stackshack/test_auth.py
-import pytest
 from urllib.parse import urlparse
 from models.user import User
 from controllers.auth_controller import AuthController

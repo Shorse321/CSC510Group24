@@ -1,4 +1,3 @@
-import pytest
 from models.menu_item import MenuItem
 from database.db import db
 

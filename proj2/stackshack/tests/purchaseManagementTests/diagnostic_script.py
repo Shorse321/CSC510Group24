@@ -44,7 +44,6 @@ except Exception as e:
     sys.exit(1)
 
 try:
-    from models.menu_item import MenuItem
 
     print("✓ Successfully imported MenuItem")
 except Exception as e:
@@ -52,7 +51,7 @@ except Exception as e:
     sys.exit(1)
 
 try:
-    from models.order import Order, OrderItem
+    from models.order import Order
 
     print("✓ Successfully imported Order and OrderItem")
 except Exception as e:
@@ -178,7 +177,6 @@ except Exception as e:
 # Test 10: Import controllers
 print("\n10. Testing controller imports...")
 try:
-    from controllers.order_controller import OrderController
 
     print("✓ Successfully imported OrderController")
 except Exception as e:

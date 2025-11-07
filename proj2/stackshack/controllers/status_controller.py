@@ -1,7 +1,6 @@
 from models.order import Order
 from models.user import User
 from database.db import db
-from flask_login import current_user
 
 
 class StatusController:
@@ -135,5 +134,5 @@ class StatusController:
             if not user:
                 return False
             return user.role in ["staff", "admin"]
-        except Exception as e:
+        except Exception:
             return False

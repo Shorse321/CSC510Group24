@@ -1,8 +1,5 @@
-import pytest
 from controllers.status_controller import StatusController
 from models.order import Order
-from models.user import User
-from database.db import db
 
 
 class TestStatusController:

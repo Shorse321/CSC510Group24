@@ -1,8 +1,6 @@
-import pytest
 from decimal import Decimal
 from controllers.order_controller import OrderController
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
+from models.order import Order
 from database.db import db
 
 

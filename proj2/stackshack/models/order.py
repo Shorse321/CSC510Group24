@@ -1,6 +1,5 @@
 from database.db import db
 from datetime import datetime
-import json
 
 
 class Order(db.Model):
