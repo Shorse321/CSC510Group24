@@ -14,6 +14,9 @@
 [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
 [![DOI](https://zenodo.org/badge/1044477954.svg)](https://doi.org/10.5281/zenodo.17509156)
+[![Run Tests and Linting](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml/badge.svg?branch=development&event=push)](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
 
 **Group 24** • CSC 510 - Software Engineering
 
