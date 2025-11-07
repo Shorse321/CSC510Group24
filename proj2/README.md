@@ -1,3 +1,4 @@
+
 # 🍔 StackShack - Build Your Own Burger! (Version 1.2)
 
 <div align="center">
@@ -17,10 +18,6 @@
 [![Run Tests and Linting](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml/badge.svg?branch=development&event=push)](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
-
-[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-[![vulnerabilities: pip-audit](https://img.shields.io/badge/vulnerabilities-pip--audit-blue.svg)](https://pypi.org/project/pip-audit/)
-
 
 **Group 24** • CSC 510 - Software Engineering
 
@@ -846,8 +843,19 @@ For issues or questions:
 
 Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
 No funding was received for driving this project to completion.
-**Course:** CSC 510 - Software Engineering
+**Course:** 
+
+CSC 510 - Software Engineering
+
+All team members have the following roles and responsibilities
+| **Role** | **Responsibility** |
+|-----------|--------------------|
+| **Project Maintainers** | Oversee code quality, merge pull requests and manage releases |
+| **Core Developers** | Implement new features, conduct testing and manage database schemas |
+| **Contributors** | Report issues, submit pull requests (PRs) and improve documentation |
+| **Reviewers** | Conduct peer reviews and ensure adherence to code conventions |
 
 ---
 
 **Happy Stacking! 🍔**
+
