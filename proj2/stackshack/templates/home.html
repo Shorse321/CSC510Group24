@@ -87,6 +87,41 @@
     color: black;
     font-family: "Roboto";
   }
+  .user-access {
+    margin-top: 40px;
+    padding: 40px 20px;
+    background-color: #fffaf3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 12px;
+    font-family: "Momo Signature";
+  }
+  .roles-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  .role-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 220px;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .role-card h4 {
+    font-family: 'Momo Signature', serif;
+    color: var(--primary-dark);
+    margin-top: 10px;
+  }
+  .role-card p {
+    font-family: 'Roboto', sans-serif;
+    color: #444;
+    font-size: 1em;
+  }
 </style>
 
 <div class="hero">
@@ -116,5 +151,36 @@
         <h3><img src="{{ url_for('static', filename='images/software_icon.png') }}" alt="Software Logo" class="logo1-icon">  Advance Software</h3>
         <p>Efficient role-based access ensures smooth operations for all our team members.</p>
     </div>
+</div>
+<!-- User Access Section -->
+<div class="user-access">
+  <h2 style="text-align:center; margin-top:60px; font-family:'Momo Signature', serif; color: var(--primary-dark);">
+    Who Can Use Stack Shack?
+  </h2>
+  <p style="text-align:center; font-size:1.2em; color:#333; max-width:800px; margin:20px auto; font-family: 'Roboto', sans-serif;">
+    Stack Shack is open to everyone in our university community! Whether you’re a 
+    <strong>student</strong> grabbing a quick bite, a <strong>professor</strong> looking for a gourmet lunch, 
+    a <strong>staff member</strong> or <strong></strong>admin</strong> ensuring smooth operations, or even a <strong>guest</strong> exploring our campus — 
+    you’re always welcome to craft your perfect burger.
+  </p>
+
+  <div class="roles-grid">
+    <div class="role-card">
+      <h4>Students</h4>
+      <p>Customize your burgers and track your orders right from your student dashboard.</p>
+    </div>
+    <div class="role-card">
+      <h4>Professors</h4>
+      <p>Enjoy curated menu options and place quick reorders between your lectures.</p>
+    </div>
+    <div class="role-card">
+      <h4>Staff</h4>
+      <p>Manage ingredients, oversee orders, and keep everything running smoothly.</p>
+    </div>
+    <div class="role-card">
+      <h4>Guests</h4>
+      <p>Even visitors can create their burgers and experience the Stack Shack difference!</p>
+    </div>
+  </div>
 </div>
 {% endblock %}
