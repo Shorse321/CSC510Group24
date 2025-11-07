@@ -45,6 +45,12 @@ Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and
 
 Are you a developer? Our FLASK + MySQL based application is easy to use, easy to maintain, lightweight, scalable, modular and clean!
 
+https://drive.google.com/file/d/1-IrpHWX4MqggE0iFxbUq6qsovvH0ND1D/view?usp=sharing
+
+### Demo Video Link
+
+https://drive.google.com/file/d/1BCaCU2kTzfwxNgA9VKMIwgs5zK-iUpMS/view?usp=sharing
+
 ### Features
 #### User Management
 
