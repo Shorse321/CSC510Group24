@@ -37,6 +37,8 @@ Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and
 - Feeling adventurous? Get random burgers tailored.
 - Watch your order come to life from kitchen to tray.
 
+Are you a developer? Our FLASK + MySQL based application is easy to use, easy to maintain, lightweight, scalable, modular and clean!
+
 ### Features
 #### User Management
 
