@@ -215,7 +215,8 @@ class TestOrderController:
             )
 
             assert success is True
-            # 1.50 + (3.50*2) + (1.00*2) + (0.50*3) + 0.25 = 1.50 + 7.00 + 2.00 + 1.50 + 0.25 = 12.25
+            # Calculation: 1.50 + (3.50*2) + (1.00*2) + (0.50*3) + 0.25
+            # Total: 1.50 + 7.00 + 2.00 + 1.50 + 0.25 = 12.25
             assert order.total_price == Decimal("12.25")
             assert len(order.items.all()) == 5
 

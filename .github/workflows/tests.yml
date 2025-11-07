@@ -4,6 +4,10 @@ name: Tests, Linting, & Coverage
 on:
   push:
   pull_request:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   test:
@@ -11,7 +15,6 @@ jobs:
     
     defaults:
       run:
-        # This working directory is correct
         working-directory: ./proj2/stackshack 
 
     steps:
@@ -21,7 +24,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: "3.8"
 
     - name: Install dependencies
       run: |
@@ -66,12 +69,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: "3.8"
 
-    - name: Install linting tools
+    - name: Install linting and security tools
       run: |
         python -m pip install --upgrade pip
-        pip install black ruff
+        pip install black ruff bandit pip-audit
+      working-directory: .
 
     - name: Run Black (Formatter Check)
       run: |
@@ -81,3 +85,12 @@ jobs:
     - name: Run Ruff (Style & Syntax Check)
       run: |
         ruff check .
+
+    - name: Run Bandit (Code Security Scan)
+      # Scans all files recursively, ignores venv, reports medium+ issues
+      run: |
+        bandit -r . -x venv -ll
+        
+    - name: Run pip-audit (Dependency Scan)
+      run: |
+        pip-audit -r requirements.txt
