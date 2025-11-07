@@ -481,7 +481,7 @@ To verify that all components are working correctly, you can run the project's b
 2. Update roles for existing users (promote to staff, demote to customer).
 3. Remove inactive users if required.
 
-![admin manage user demo](stackshack/static/images/manage_user.png)
+![admin manage user demo](stackshack/static/images/manage_user2.png)
 ---
 
 ### Demo Scenario: Staff updates order statuses
@@ -509,7 +509,7 @@ To verify that all components are working correctly, you can run the project's b
 3. Once delivered, mark as **Completed**
 ![ Staff manage order](stackshack/static/images/status_mgmt.png)
 
-#### Customer viewing order status
+#### Customer Viewing Order Status
 
 ![Customer manage order](stackshack/static/images/status_check.png)
 ![Customer manage order](stackshack/static/images/status_map.png)
