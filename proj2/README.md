@@ -841,7 +841,7 @@ For issues or questions:
 - Swetha Manivasagam
 
 Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
-
+No funding was received for driving this project to completion.
 **Course:** CSC 510 - Software Engineering
 
 ---
