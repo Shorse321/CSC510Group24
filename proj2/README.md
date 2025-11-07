@@ -720,7 +720,7 @@ app.run(debug=True, port=5001)  # Use different port
 ```
 ---
 
-## Portability Check
+## Cross-platform support Check
 
 Tested on macOS, Windows and Linux laptops using Python 3.8+.
 
@@ -733,6 +733,23 @@ Tested on macOS, Windows and Linux laptops using Python 3.8+.
 - Functions and variables use **snake_case** (e.g., `get_available_items`, `is_healthy_choice`).
 - Each route and controller function has **docstrings** explaining purpose.
 - All database models follow SQLAlchemy ORM conventions.
+
+## Accessibility Standards
+
+- The user interface is designed following **WCAG 2.1** and **ARIA8** best practices wherever possible.  
+- All buttons, input fields and navigation elements are keyboard-accessible.  
+- Color choices maintain strong contrast for readability.  
+- Semantic HTML tags (`<header>`, `<nav>`, `<main>`, `<footer>`) are used to improve screen-reader compatibility.  
+- Dynamic content (like modals and alerts) is handled with proper ARIA labels and roles.
+
+---
+
+## Documentation Accessibility
+
+- All documentation, including the `README.md` and `docs/` pages, follows **plain language** principles and is compatible with **Markdown renderers** that support screen readers.  
+- Headings (`#`, `##`, `###`) are structured hierarchically for screen-reader navigation.  
+- Text alternatives (`alt` attributes) are provided for all embedded images (e.g., logos, architecture diagrams).  
+- Hyperlinks use descriptive text rather than generic labels like “click here”.
 
 ---
 
