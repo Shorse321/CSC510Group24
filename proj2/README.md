@@ -18,7 +18,9 @@
 [![Run Tests and Linting](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml/badge.svg?branch=development&event=push)](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
+[![vulnerabilities: pip-audit](https://img.shields.io/badge/vulnerabilities-pip--audit-blue.svg)](https://pypi.org/project/pip-audit/)
 **Group 24** • CSC 510 - Software Engineering
 
 *Build your perfect custom burger with fresh and healthy ingredients!*
