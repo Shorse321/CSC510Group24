@@ -445,7 +445,7 @@ To verify that all components are working correctly, you can run the project's b
 5. Track the order status in:  
    `http://127.0.0.1:5000/orders/history`
 6. Logout once done.
-   view ingredients](stackshack/static/images/view_ingredients.png)
+ ![View ingredients](stackshack/static/images/view_ingredients.png)
 ![Customer Order Demo](stackshack/static/images/purchase_burger_ss.png)
 
 ---
