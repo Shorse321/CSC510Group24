@@ -2,6 +2,7 @@ from models.menu_item import MenuItem
 from database.db import db
 from flask_login import current_user
 
+
 class MenuController:
 
     @staticmethod
@@ -25,10 +26,15 @@ class MenuController:
             return False, f"Error: {str(e)}", None
 
     @staticmethod
-    def create_item(name, category, description, price, calories=None, protein=None, image_url=None):
+    def create_item(
+        name, category, description, price, calories=None, protein=None, image_url=None
+    ):
         """Create a new menu item - Admin/Staff only"""
         # Check authorization
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'staff']:
+        if not current_user.is_authenticated or current_user.role not in [
+            "admin",
+            "staff",
+        ]:
             return False, "Unauthorized: Only admins and staff can create items", None
 
         # Validation
@@ -43,7 +49,7 @@ class MenuController:
                 price=price,
                 calories=calories,
                 protein=protein,
-                image_url=image_url
+                image_url=image_url,
             )
             db.session.add(item)
             db.session.commit()
@@ -53,11 +59,22 @@ class MenuController:
             return False, f"Error: {str(e)}", None
 
     @staticmethod
-    def update_item(item_id, name=None, category=None, description=None, price=None, 
-                    calories=None, protein=None, image_url=None):
+    def update_item(
+        item_id,
+        name=None,
+        category=None,
+        description=None,
+        price=None,
+        calories=None,
+        protein=None,
+        image_url=None,
+    ):
         """Update an existing menu item - Admin/Staff only"""
         # Check authorization
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'staff']:
+        if not current_user.is_authenticated or current_user.role not in [
+            "admin",
+            "staff",
+        ]:
             return False, "Unauthorized: Only admins and staff can update items", None
 
         try:
@@ -91,7 +108,7 @@ class MenuController:
     def delete_item(item_id):
         """Delete a menu item - Admin only"""
         # Check authorization
-        if not current_user.is_authenticated or current_user.role != 'admin':
+        if not current_user.is_authenticated or current_user.role != "admin":
             return False, "Unauthorized: Only admins can delete items", None
 
         try:
@@ -110,8 +127,15 @@ class MenuController:
     def toggle_availability(item_id):
         """Toggle the availability status of a menu item - Admin/Staff only"""
         # Check authorization
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'staff']:
-            return False, "Unauthorized: Only admins and staff can toggle availability", None
+        if not current_user.is_authenticated or current_user.role not in [
+            "admin",
+            "staff",
+        ]:
+            return (
+                False,
+                "Unauthorized: Only admins and staff can toggle availability",
+                None,
+            )
 
         try:
             item = MenuItem.query.get(item_id)
@@ -130,8 +154,15 @@ class MenuController:
     def toggle_healthy_choice(item_id):
         """Toggle the healthy choice status of a menu item - Admin/Staff only"""
         # Check authorization
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'staff']:
-            return False, "Unauthorized: Only admins and staff can toggle healthy choice", None
+        if not current_user.is_authenticated or current_user.role not in [
+            "admin",
+            "staff",
+        ]:
+            return (
+                False,
+                "Unauthorized: Only admins and staff can toggle healthy choice",
+                None,
+            )
 
         try:
             item = MenuItem.query.get(item_id)
@@ -140,7 +171,9 @@ class MenuController:
 
             item.is_healthy_choice = not item.is_healthy_choice
             db.session.commit()
-            status = "healthy choice" if item.is_healthy_choice else "not a healthy choice"
+            status = (
+                "healthy choice" if item.is_healthy_choice else "not a healthy choice"
+            )
             return True, f"Item marked as {status}", item
         except Exception as e:
             db.session.rollback()
@@ -150,7 +183,11 @@ class MenuController:
     def get_items_by_category(category):
         """Get all items in a specific category"""
         try:
-            items = MenuItem.query.filter_by(category=category).order_by(MenuItem.name).all()
+            items = (
+                MenuItem.query.filter_by(category=category)
+                .order_by(MenuItem.name)
+                .all()
+            )
             return True, "Items retrieved successfully", items
         except Exception as e:
             return False, f"Error: {str(e)}", None
@@ -159,7 +196,11 @@ class MenuController:
     def get_available_items():
         """Get only available menu items (for customer view)"""
         try:
-            items = MenuItem.query.filter_by(is_available=True).order_by(MenuItem.category, MenuItem.name).all()
+            items = (
+                MenuItem.query.filter_by(is_available=True)
+                .order_by(MenuItem.category, MenuItem.name)
+                .all()
+            )
             return True, "Available items retrieved successfully", items
         except Exception as e:
             return False, f"Error: {str(e)}", None
@@ -168,7 +209,11 @@ class MenuController:
     def get_healthy_choices():
         """Get items marked as healthy choices"""
         try:
-            items = MenuItem.query.filter_by(is_healthy_choice=True, is_available=True).order_by(MenuItem.name).all()
+            items = (
+                MenuItem.query.filter_by(is_healthy_choice=True, is_available=True)
+                .order_by(MenuItem.name)
+                .all()
+            )
             return True, "Healthy choices retrieved successfully", items
         except Exception as e:
             return False, f"Error: {str(e)}", None
