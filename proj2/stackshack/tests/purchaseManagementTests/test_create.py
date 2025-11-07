@@ -1,5 +1,3 @@
-
-
 class TestCreateOrderPage:
     """Test cases for the create order page (create.html)."""
 

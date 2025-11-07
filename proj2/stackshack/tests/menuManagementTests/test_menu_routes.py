@@ -1,5 +1,3 @@
-
-
 class TestMenuRoutes:
     """Test menu routes and integration"""
 

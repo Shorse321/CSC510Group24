@@ -9,7 +9,6 @@ from models.user import User
 from datetime import datetime
 
 
-
 def create_app(config_name="development"):
     """
     Factory function for creating and configuring the Flask application instance.
