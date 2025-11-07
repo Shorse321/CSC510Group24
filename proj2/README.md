@@ -718,6 +718,37 @@ pip install -r requirements.txt
 ```python
 app.run(debug=True, port=5001)  # Use different port
 ```
+## Third-Party Dependencies and Build Verification
+
+### Dependency Overview
+
+The following third-party packages are required to run the StackShack web application:
+
+| Dependency | Version | License | Source / Website | Mandatory / Optional | Description |
+|-------------|----------|----------|------------------|----------------------|--------------|
+| Flask | 3.0.0 | BSD-3-Clause | [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/) | Mandatory | Core web framework for routing, templating, and request handling. |
+| Flask-SQLAlchemy | 3.1.1 | BSD | [https://flask-sqlalchemy.palletsprojects.com/](https://flask-sqlalchemy.palletsprojects.com/) | Mandatory | Simplifies ORM-based database management using SQLAlchemy. |
+| Flask-Login | 0.6.3 | MIT | [https://flask-login.readthedocs.io/](https://flask-login.readthedocs.io/) | Mandatory | Manages user authentication sessions and roles. |
+| PyMySQL | 1.1.0 | MIT | [https://pymysql.readthedocs.io/](https://pymysql.readthedocs.io/) | Mandatory | MySQL database connector for Python. |
+| Cryptography | 41.0.7 | Apache 2.0 | [https://cryptography.io/](https://cryptography.io/) | Mandatory | Provides secure encryption and hashing utilities. |
+| Werkzeug | 3.0.1 | BSD | [https://werkzeug.palletsprojects.com/](https://werkzeug.palletsprojects.com/) | Mandatory | WSGI utility library used internally by Flask. |
+| python-dotenv | 1.0.0 | BSD-3-Clause | [https://pypi.org/project/python-dotenv/](https://pypi.org/project/python-dotenv/) | Mandatory | Loads environment variables from a `.env` file into Flask. |
+| pytest | latest | MIT | [https://pytest.org/](https://pytest.org/) | Optional | Testing framework for Python unit and integration tests. |
+| pytest-cov | latest | MIT | [https://pypi.org/project/pytest-cov/](https://pypi.org/project/pytest-cov/) | Optional | Plugin to measure code coverage during testing. |
+| pytest-html | latest | MIT | [https://pypi.org/project/pytest-html/](https://pypi.org/project/pytest-html/) | Optional | Plugin to generate HTML test reports. |
+
+### Installation via Dependency Manager
+
+All dependencies are listed in [`requirements.txt`](./requirements.txt).  
+You can install them automatically using:
+
+```bash
+pip install -r requirements.txt
+```
+After deployment, you can verify that the system works correctly using automated tests:
+```bash
+pytest --html=report.html --self-contained-html
+```
 ---
 
 ## Cross-platform support Check
