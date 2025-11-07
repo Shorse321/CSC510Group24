@@ -9,7 +9,8 @@ with app.app_context():
     # IMPORTANT: Use a secure, password. (One time only to create an admin)
     admin.set_password(
         "admin"
-    )  # Put a strong password for creating an admin user (rolas=admin) with the required password
+    )  # Put a strong password for creating an admin user (rolas=admin)
+    # with the required password
     db.session.add(admin)
     db.session.commit()
     print("Admin user created")
