@@ -71,7 +71,7 @@ class TestOrderRoutes:
         assert response.status_code == 200
         assert b"order" in response.data.lower()
 
-    # ==================== INGREDIENTS ENDPOINT TESTS (NO AUTH NEEDED) ====================
+    # ================== INGREDIENTS ENDPOINT TESTS (NO AUTH NEEDED) ==================
 
     def test_get_ingredients_by_category_bun(self, client, app, sample_menu_items):
         """Test getting ingredients by category - bun."""

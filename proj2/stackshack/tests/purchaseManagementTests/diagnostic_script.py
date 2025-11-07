@@ -217,5 +217,10 @@ print("\nYou can now run your tests with:")
 print("  pytest tests/purchaseManagementTests/ -v")
 print("\nFor coverage report:")
 print(
-    "  pytest tests/purchaseManagementTests/ -v --cov=controllers.order_controller --cov=models.order --cov=routes.order_routes --cov-report=html --cov-report=term"
+    "pytest tests/purchaseManagementTests/"
+    " --cov=controllers.order_controller"
+    " --cov=models.order"
+    " --cov=routes.order_routes"
+    " --cov-report=html"
+    " --cov-report=term"
 )
