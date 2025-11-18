@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor Customer as C
+actor "Delivery Agent" as DA
+actor "Map/GPS Service" as GPS
+actor "Notification Service" as NS
+actor "SMS Gateway" as SMS
+
+rectangle "Food Delivery Platform" as FDP {
+  usecase "Track Order in Real Time" as U0
+  usecase "Fetch Live Location" as U1
+  usecase "Render Map & ETA" as U2
+  usecase "In-app Chat with Agent" as U3
+
+  ' Alternative flow
+  usecase "Fallback to SMS ETA" as A1
+}
+
+C --> U0
+U0 ..> U1 : <<include>>
+U0 ..> U2 : <<include>>
+U0 ..> U3 : <<include>>
+U0 <.. A1 : <<extend>>\n(GPS unavailable)
+
+GPS --> U1
+DA  --> U3
+NS  --> U2
+SMS --> A1
+
+note right of U0
+Pre: Order placed
+Main: Fetch location, show ETA, chat
+Alt: GPS fails → SMS ETA
+end note
+@enduml

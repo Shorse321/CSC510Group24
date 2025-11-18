@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor Customer as C
+actor "Payment Gateway" as PG
+actor "Notification Service" as NS
+
+rectangle "Food Delivery Platform" as FDP {
+  usecase "Apply Discounts & Promotions" as U0
+  usecase "Validate Promo Code" as U1
+  usecase "Auto-apply Loyalty Points" as U2
+  usecase "Recompute Cart Total" as U3
+
+  ' Alternative flows
+  usecase "Suggest Alternative Offers" as A1
+  usecase "Handle Promo Errors" as A2
+}
+
+C --> U0
+U0 ..> U1 : <<include>>
+U0 ..> U2 : <<include>>
+U0 ..> U3 : <<include>>
+U0 <.. A1 : <<extend>>\n(code invalid/expired)
+U1 <.. A2 : <<extend>>\n(promo abuse/error)
+
+PG --> U3
+NS --> A1
+
+note right of U0
+Pre: Coupons or points exist
+Main: Validate → Apply → Update cart
+Alt: Expired → suggest; Abuse → error
+end note
+@enduml
