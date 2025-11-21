@@ -1,0 +1,36 @@
+@startuml
+' Use the default top-to-bottom layout
+
+actor "Employee" as Employee
+actor "HR Manager" as HRManager
+
+rectangle "Employee Performance Tracking" {
+    usecase "Manage Performance Data" as UC_ManageData
+    usecase "Review Performance" as UC_Review
+}
+
+Employee -- UC_ManageData
+HRManager -- UC_Review
+UC_ManageData -- UC_Review
+
+note bottom of UC_ManageData
+**Preconditions:** Active employee profile, KPIs defined.
+**Main Flow:**
+1. Employee logs activity.
+2. System aggregates data.
+3. Performance score updated.
+**Includes:** Gamification/leaderboards.
+end note
+
+note right of UC_Review
+**Alternative Flow:**
+- If missing data, HR requests corrections.
+- If deadline missed, HR is notified.
+**Postconditions:**
+- Performance score updated.
+- Records stored for appraisals.
+end note
+@enduml
+
+
+
