@@ -15,7 +15,6 @@ const orderSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   address: { type: Object, required: true },
 
-  // Updated with enum for stricter validation
   status: {
     type: String,
     enum: STATUS_VALUES,
@@ -24,6 +23,30 @@ const orderSchema = new mongoose.Schema({
 
   date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
+
+  // Track who claimed this order (if redistributed)
+  claimedBy: { type: String, default: null },
+  claimedAt: { type: Date, default: null },
+  
+  // Track original user (before claiming)
+  originalUserId: { type: String, default: null },
+  
+  // Track if this order was cancelled by user
+  cancelledByUser: { type: Boolean, default: false },
+  
+  // Track redistribution attempts
+  redistributionCount: { type: Number, default: 0 },
+  lastRedistributedAt: { type: Date, default: null },
+
+  // Shelter assignment
+  shelter: {
+    id: String,
+    name: String,
+    contactEmail: String,
+    contactPhone: String,
+    address: Object,
+  },
+  donationNotified: { type: Boolean, default: false },
 });
 
 const orderModel =

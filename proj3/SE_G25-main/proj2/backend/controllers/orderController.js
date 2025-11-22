@@ -17,56 +17,54 @@ const STATUS = {
   DELIVERED: "Delivered",
   REDISTRIBUTE: "Redistribute",
   CANCELLED: "Cancelled",
-  DONATED: "Donated", // NEW STATE
+  DONATED: "Donated",
 };
 
 const STATUS_VALUES = new Set(Object.values(STATUS));
 
 /**
- * Allowed transitions:
- *  - Food Processing   -> Out for delivery, Redistribute
- *  - Out for delivery  -> Delivered, Redistribute
- *  - Redistribute      -> Food Processing, Cancelled, Donated to shelter
- *  - Cancelled         -> Donated to shelter (admin-only)
- *  - Donated to shelter -> (terminal)
- *  - Delivered         -> (terminal)
+ * Allowed transitions for ADMIN:
+ * - Food Processing -> Out for delivery, Delivered
+ * - Out for delivery -> Delivered
+ * - Redistribute -> Cancelled, Donated
+ * - Cancelled -> Redistribute, Donated
+ * - Delivered -> (terminal)
+ * - Donated -> (terminal)
  */
-const ALLOWED_TRANSITIONS = {
-  [STATUS.PROCESSING]: new Set([STATUS.OUT_FOR_DELIVERY, STATUS.REDISTRIBUTE]),
-  [STATUS.OUT_FOR_DELIVERY]: new Set([STATUS.DELIVERED, STATUS.REDISTRIBUTE]),
-  [STATUS.REDISTRIBUTE]: new Set([
-    STATUS.PROCESSING,
-    STATUS.CANCELLED,
-    STATUS.DONATED,
-  ]),
-  [STATUS.CANCELLED]: new Set([STATUS.DONATED]),
+const ADMIN_ALLOWED_TRANSITIONS = {
+  [STATUS.PROCESSING]: new Set([STATUS.OUT_FOR_DELIVERY, STATUS.DELIVERED]),
+  [STATUS.OUT_FOR_DELIVERY]: new Set([STATUS.DELIVERED]),
+  [STATUS.REDISTRIBUTE]: new Set([STATUS.CANCELLED, STATUS.DONATED]),
+  [STATUS.CANCELLED]: new Set([STATUS.REDISTRIBUTE, STATUS.DONATED]),
   [STATUS.DONATED]: new Set(),
   [STATUS.DELIVERED]: new Set(),
 };
 
 /**
- * Checks if a status transition is allowed according to the order state machine
+ * Checks if a status transition is allowed for admin
  * @param {string} from - Current order status
  * @param {string} to - Desired order status
- * @returns {boolean} True if transition is allowed, false otherwise
+ * @param {boolean} cancelledByUser - Whether order was cancelled by user
+ * @returns {boolean} True if transition is allowed
  */
-function canTransition(from, to) {
+function canAdminTransition(from, to, cancelledByUser = false) {
   if (from === to) return true;
-  const nexts = ALLOWED_TRANSITIONS[from] || new Set();
+  
+  // If user cancelled the order, admin can only set to Redistribute or Donated
+  if (cancelledByUser && from === STATUS.CANCELLED) {
+    return to === STATUS.REDISTRIBUTE || to === STATUS.DONATED;
+  }
+  
+  const nexts = ADMIN_ALLOWED_TRANSITIONS[from] || new Set();
   return nexts.has(to);
 }
 
 /**
- * Cancels an order and moves it to Redistribute status
- * Only allows cancellation if order is in "Food Processing" or "Out for delivery" status
- * Queues a notification for redistribution if notification system is available
+ * Cancels an order (USER ACTION)
+ * Marks order as cancelled by user and sets status to Cancelled
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.orderId - MongoDB _id of the order to cancel
- * @param {string} req.body.userId - MongoDB _id of the user cancelling the order
- * @param {Object} req.app - Express app object (for accessing notification queue)
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and message
+ * @returns {Promise<void>}
  */
 const cancelOrder = async (req, res) => {
   try {
@@ -82,25 +80,25 @@ const cancelOrder = async (req, res) => {
       STATUS.PROCESSING,
       STATUS.OUT_FOR_DELIVERY,
     ]);
+    
     if (!userCancelable.has(current))
       return res.json({
         success: false,
         message: `Cannot cancel when status is "${current}".`,
       });
 
-    // When user cancels, move to Redistribute
-    order.status = STATUS.REDISTRIBUTE;
+    // Mark as cancelled by user
+    order.status = STATUS.CANCELLED;
+    order.cancelledByUser = true;
+    
+    // Preserve original user ID for filtering notifications
+    if (!order.originalUserId) {
+      order.originalUserId = order.userId;
+    }
+    
     await order.save();
 
-    const queueNotification = req.app.get("queueNotification");
-    if (typeof queueNotification === "function") {
-      queueNotification({
-        orderId,
-        orderItems: order.items,
-        cancelledByUserId: userId,
-        message: "Order cancelled by user; available for redistribution",
-      });
-    }
+    console.log(`❌ Order ${orderId} cancelled by user ${userId}`);
 
     res.json({ success: true, message: "Order cancelled successfully" });
   } catch (error) {
@@ -111,14 +109,9 @@ const cancelOrder = async (req, res) => {
 
 /**
  * Allows a user to claim a redistributed order
- * Transfers ownership of the order to the claiming user and sets status to "Food Processing"
- * Preserves the original user ID for tracking purposes
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.orderId - MongoDB _id of the order to claim
- * @param {string} req.body.userId - MongoDB _id of the user claiming the order
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status, message, and order data
+ * @returns {Promise<void>}
  */
 const claimOrder = async (req, res) => {
   try {
@@ -134,16 +127,23 @@ const claimOrder = async (req, res) => {
         message: "Order not available for claim",
       });
 
-    // preserve who originally created it
+    // Preserve original user
     if (!order.originalUserId) order.originalUserId = order.userId;
 
-    // transfer ownership
+    // Transfer ownership
     order.userId = claimerId;
     order.claimedBy = claimerId;
     order.claimedAt = new Date();
     order.status = STATUS.PROCESSING;
+    order.cancelledByUser = false; // Reset since it's now claimed
 
     await order.save();
+
+    // Stop notifications for this order
+    const stopNotificationForOrder = req.app.get("stopNotificationForOrder");
+    if (typeof stopNotificationForOrder === "function") {
+      stopNotificationForOrder(orderId);
+    }
 
     res.json({
       success: true,
@@ -158,16 +158,9 @@ const claimOrder = async (req, res) => {
 
 /**
  * Places a new order with Stripe payment
- * Creates order record and clears user's cart
- * Returns Stripe checkout session URL for payment verification
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.userId - MongoDB _id of the user placing the order
- * @param {Array} req.body.items - Array of food items in the order
- * @param {number} req.body.amount - Total order amount
- * @param {Object} req.body.address - Delivery address object
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and Stripe session URL
+ * @returns {Promise<void>}
  */
 const placeOrder = async (req, res) => {
   try {
@@ -191,16 +184,10 @@ const placeOrder = async (req, res) => {
 };
 
 /**
- * Places a new order with Cash on Delivery (COD) payment
- * Creates order record with payment marked as true and clears user's cart
+ * Places a new order with Cash on Delivery
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.userId - MongoDB _id of the user placing the order
- * @param {Array} req.body.items - Array of food items in the order
- * @param {number} req.body.amount - Total order amount
- * @param {Object} req.body.address - Delivery address object
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and message
+ * @returns {Promise<void>}
  */
 const placeOrderCod = async (req, res) => {
   try {
@@ -222,10 +209,9 @@ const placeOrderCod = async (req, res) => {
 
 /**
  * Retrieves all orders from the database
- * Returns orders sorted by date in descending order (newest first)
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and array of all orders
+ * @returns {Promise<void>}
  */
 const listOrders = async (req, res) => {
   try {
@@ -239,38 +225,72 @@ const listOrders = async (req, res) => {
 
 /**
  * Retrieves all orders for a specific user
- * Includes both orders created by the user and orders claimed by the user
- * Returns orders sorted by date in descending order (newest first)
+ * Rules:
+ * - Shows orders created by the user
+ * - Shows orders claimed by the user
+ * - DOES NOT show orders that were cancelled by user and then claimed by someone else
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.userId - MongoDB _id of the user
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and array of user's orders
+ * @returns {Promise<void>}
+ */
+/**
+ * Retrieves all orders for a specific user
+ * Rules:
+ * - Shows orders created by the user (that haven't been claimed by others)
+ * - Shows orders claimed by the user
+ * - DOES NOT show orders that were cancelled by user and then claimed by someone else
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
+ */
+/**
+ * Retrieves all orders for a specific user
+ * Rules:
+ * - Shows orders originally created by the user (even if claimed by others)
+ * - Shows orders claimed by the user (that they didn't originally create)
+ * - Original user sees their cancelled orders as "Cancelled" even after someone claims them
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>}
  */
 const userOrders = async (req, res) => {
   try {
+    const userId = req.body.userId;
+    
+    if (!userId) {
+      return res.json({ success: false, message: "User not authenticated" });
+    }
+
     const orders = await orderModel
       .find({
-        $or: [{ userId: req.body.userId }, { claimedBy: req.body.userId }],
+        $or: [
+          // Orders I originally created (show even if claimed by others)
+          { originalUserId: userId },
+          // Orders where I'm the original user and no one claimed yet
+          { userId: userId, originalUserId: null },
+          // Orders I claimed from others (but didn't originally create)
+          { 
+            claimedBy: userId, 
+            originalUserId: { $ne: userId },
+            userId: userId 
+          }
+        ],
       })
       .sort({ date: -1 });
+      
     res.json({ success: true, data: orders });
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: "Error" });
+    console.error("userOrders error:", error);
+    res.json({ success: false, message: "Error fetching orders" });
   }
 };
 
 /**
- * Updates the status of an order
- * Validates the status transition according to the order state machine rules
- * Only allows transitions defined in ALLOWED_TRANSITIONS
+ * Updates the status of an order (ADMIN ACTION)
+ * Handles redistribution with socket notifications via queue system
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.orderId - MongoDB _id of the order to update
- * @param {string} req.body.status - New status value (must be valid and transitionable)
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status, message, and updated order data
+ * @returns {Promise<void>}
  */
 const updateStatus = async (req, res) => {
   try {
@@ -283,6 +303,7 @@ const updateStatus = async (req, res) => {
     if (!order) return res.json({ success: false, message: "Order not found" });
 
     const current = order.status || STATUS.PROCESSING;
+    
     if (current === next)
       return res.json({
         success: true,
@@ -290,8 +311,9 @@ const updateStatus = async (req, res) => {
         data: order,
       });
 
-    if (!canTransition(current, next)) {
-      const allowed = [...(ALLOWED_TRANSITIONS[current] || [])];
+    // Check if admin can make this transition
+    if (!canAdminTransition(current, next, order.cancelledByUser)) {
+      const allowed = [...(ADMIN_ALLOWED_TRANSITIONS[current] || [])];
       return res.json({
         success: false,
         message:
@@ -300,25 +322,56 @@ const updateStatus = async (req, res) => {
       });
     }
 
+    // Special handling for Redistribute status
+    if (next === STATUS.REDISTRIBUTE) {
+      // Update redistribution tracking
+      order.redistributionCount = (order.redistributionCount || 0) + 1;
+      order.lastRedistributedAt = new Date();
+      order.status = STATUS.REDISTRIBUTE;
+      await order.save();
+
+      // Queue notification using existing system
+      const queueNotification = req.app.get("queueNotification");
+      if (typeof queueNotification === "function") {
+        const originalUserId = order.originalUserId || order.userId;
+        queueNotification({
+          orderId: order._id.toString(),
+          orderItems: order.items,
+          cancelledByUserId: originalUserId,
+          message: "An order is available for claiming!",
+          amount: order.amount,
+          address: order.address,
+        });
+        console.log(`📢 Queued claiming notifications for order ${orderId}`);
+      }
+
+      // NO AUTO-TRANSITION - Order stays in Redistribute until:
+      // 1. Someone claims it (moves to Processing)
+      // 2. Admin manually changes it to Cancelled or Donated
+
+      return res.json({
+        success: true,
+        message: "Claiming notifications sent to users.",
+        data: order,
+      });
+    }
+
+    // Regular status update
     order.status = next;
     await order.save();
+    
     return res.json({ success: true, message: "Status Updated", data: order });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+    res.json({ success: false, message: "Error updating status" });
   }
 };
 
 /**
  * Verifies payment status after Stripe checkout
- * If payment successful, marks order as paid
- * If payment failed, deletes the order from database
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.orderId - MongoDB _id of the order to verify
- * @param {string} req.body.success - Payment status ("true" or "false")
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status and message
+ * @returns {Promise<void>}
  */
 const verifyOrder = async (req, res) => {
   const { orderId, success } = req.body;
@@ -337,14 +390,9 @@ const verifyOrder = async (req, res) => {
 
 /**
  * Assigns a cancelled or redistributed order to a shelter
- * Changes order status to "Donated" and creates a reroute record
- * Only allows assignment if order is in "Redistribute" or "Cancelled" status
  * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.orderId - MongoDB _id of the order to assign
- * @param {string} req.body.shelterId - MongoDB _id of the shelter
  * @param {Object} res - Express response object
- * @returns {Promise<void>} Sends JSON response with success status, message, and order data
+ * @returns {Promise<void>}
  */
 const assignShelter = async (req, res) => {
   try {
@@ -378,7 +426,7 @@ const assignShelter = async (req, res) => {
         data: order,
       });
 
-    // Move to DONATED state when assigning to shelter
+    // Move to DONATED state
     order.status = STATUS.DONATED;
     order.shelter = {
       id: shelter._id.toString(),
@@ -390,6 +438,12 @@ const assignShelter = async (req, res) => {
     order.donationNotified = false;
 
     await order.save();
+
+    // Stop notifications for this order if any
+    const stopNotificationForOrder = req.app.get("stopNotificationForOrder");
+    if (typeof stopNotificationForOrder === "function") {
+      stopNotificationForOrder(orderId);
+    }
 
     await rerouteModel.create({
       orderId: order._id,
