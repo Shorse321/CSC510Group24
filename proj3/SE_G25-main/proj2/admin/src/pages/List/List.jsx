@@ -37,7 +37,6 @@ const List = () => {
       <p>All Foods List</p>
       <div className="list-table">
         <div className="list-table-format title">
-          <b>Image</b>
           <b>Name</b>
           <b>Category</b>
           <b>Price</b>
@@ -46,7 +45,7 @@ const List = () => {
         {list.map((item, index) => {
           return (
             <div key={index} className="list-table-format">
-              <img src={item.image} alt="" />
+              
               <p>{item.name}</p>
               <p>{item.category}</p>
               <p>
@@ -54,7 +53,7 @@ const List = () => {
                 {item.price}
               </p>
               <p className="cursor" onClick={() => removeFood(item._id)}>
-                x
+                ❌
               </p>
             </div>
           );

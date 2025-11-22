@@ -125,7 +125,7 @@ const Shelters = () => {
 
   return (
     <div className="shelters-page">
-      <h3>Partner Shelters</h3>
+      <h3 style={{marginTop: "40px", color:"#ff6a00ff"}}>Partner Shelters</h3>
 
       {loading && <p>Loading…</p>}
       {!loading && err && <p style={{ color: "#d9534f" }}>Error: {err}</p>}

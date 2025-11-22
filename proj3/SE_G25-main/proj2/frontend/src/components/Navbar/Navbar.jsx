@@ -59,8 +59,15 @@ const Navbar = ({ setShowLogin }) => {
 
       {/* Right Section */}
       <div className="navbar-right">
-        <img src={assets.search_icon} alt="Search" />
-
+       <div className="navbar-search">
+  <input
+    type="text"
+    placeholder="Search dishes..."
+    onFocus={() =>
+      document.getElementById("explore-menu").scrollIntoView({ behavior: "smooth" })
+    }
+  />
+</div>
         {/* Cart */}
         <Link to="/cart" className="navbar-search-icon">
           <img src={assets.basket_icon} alt="Cart" />

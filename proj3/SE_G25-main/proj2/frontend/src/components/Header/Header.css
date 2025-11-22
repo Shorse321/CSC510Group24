@@ -1,59 +1,128 @@
-.header{
-    height: 34vw;
-    margin: 30px auto;
-    background: url("C:\Users\swast\Downloads\food_delivery_shreyas\food-del\frontend\src\assets\hero-bytebite.png") center/cover no-repeat;
-    background-size:contain;
-    height: 34vw;
-    background-size: 100%;
-    position: relative;
-    background-color: var(--surface);
-    color: var(--text);
+
+.header {
+  height: 34vw;
+  margin: 30px auto;
+  position: relative;
+
+  /* USE RELATIVE PATH - NOT WINDOWS PATH */
+  background: url("../../assets/hero-bytebite.png") center/cover no-repeat;
+
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: var(--surface);
+  color: var(--text);
+
+  display: flex;
+  align-items: flex-end;
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
-.header-contents{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    gap: 1.5vw;
-    max-width: 50%;
-    bottom: 10%;
-    left: 6vw;
-    animation: fadeIn 3s;
+
+/* 🌫 Dark overlay gradient */
+.header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+ 
+  z-index: 1;
 }
-.header-contents h2{
-    font-weight:500;
-    color: black;
-    font-size: max(4.5vw,22px);
+
+/* Content Card */
+.header-contents {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+
+  max-width: 520px;
+  padding: 30px;
+  margin: 40px;
+
+  background: rgba(135, 110, 110, 0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  color: white;
+
+  animation: fadeIn 1.2s ease;
 }
-.header-contents p{
-    color: black;
-    font-size: 1vw;
+
+/* Typography */
+.header-contents h2 {
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
-.header-contents button{
-    border: none;
-    color: #747474;
-    font-weight: 500;
-    padding: 1vw 2.3vw;
-    background: white;
-    font-size: max(1vw,13px);
-    border-radius: 50px;
+
+.header-contents p {
+  font-size: 15px;
+  opacity: 0.95;
+  line-height: 1.6;
 }
-@media (max-width:1050px) {
-    .header{
-        height: 38vw;
-    }
-    .header-contents{
-        max-width: 45%;
-    }
+
+/* CTA Button */
+.header-contents button {
+  margin-top: 10px;
+
+  background: linear-gradient(
+    135deg,
+    var(--brand),
+    #ff7a3c
+  );
+  color: white;
+
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255, 100, 60, 0.45);
+
+  transition: all 0.3s ease;
 }
-@media(max-width:750px){
-    .header-contents{
-        max-width: 55%;
-    }
-    .header-contents p{
-       display: none;
-    }
-    .header-contents button{
-        padding: 2vw 4vw;
-    }
+
+.header-contents button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(255, 100, 60, 0.6);
+}
+
+/* 📱 Responsive Tweaks */
+@media (max-width: 1050px) {
+  .header {
+    height: 40vw;
+  }
+
+  .header-contents {
+    max-width: 440px;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 750px) {
+  .header {
+    height: 60vw;
+  }
+
+  .header-contents {
+    margin: 20px;
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .header-contents p {
+    display: none;
+  }
+
+  .header-contents button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
 }
