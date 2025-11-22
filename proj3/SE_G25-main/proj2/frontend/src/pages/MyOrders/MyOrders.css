@@ -165,3 +165,44 @@
     padding: 8px 12px;
   }
 }
+.claimable-order {
+  border: 2px solid #28a745 !important;
+  background: #f0fff4;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+}
+
+.claim-button {
+  background-color: #28a745 !important;
+  color: white !important;
+  font-weight: bold !important;
+  animation: glow 1.5s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px #28a745;
+  }
+  50% {
+    box-shadow: 0 0 20px #28a745;
+  }
+}
+
+.cancelled-button {
+  background-color: #6c757d !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+.track-button {
+  cursor: default !important;
+  opacity: 0.8;
+}

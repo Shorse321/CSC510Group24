@@ -16,19 +16,7 @@
   z-index: 999;
   transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
-.navbar-search input {
-  padding: 10px 12px;
-  border-radius: 50px;
-  border: 1px solid var(--muted);
-  outline: none;
-  width: 200px;
-  transition: all 0.3s ease;
-}
 
-.navbar-search input:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 8px rgba(255,76,36,0.3);
-}
 .navbar .logo {
   width: 100px;
   cursor: pointer;
@@ -49,17 +37,36 @@
   align-items: center;
 }
 
-.navbar-menu a {
-  text-decoration: none;
+.navbar-menu a{text-decoration: none;
   color: var(--text);
   text-transform: capitalize;
   font-weight: 500;
   padding: 5px 0;
   position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color 0.3s ease;
+  font-family: inherit;
+}
+.navbar-menu button {
+  text-decoration: none;
+  color: var(--text);
+  text-transform: capitalize;
+  font-size: large;
+  font-weight: 500;
+  padding: 5px 0;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-family: inherit;
 }
 
-.navbar-menu a:hover {
+.navbar-menu a:hover{ color: var(--brand);}
+
+.navbar-menu button:hover {
   color: var(--brand);
 }
 
@@ -83,6 +90,24 @@
   display: flex;
   align-items: center;
   gap: 25px;
+}
+
+.navbar-search {
+  position: relative;
+}
+
+.navbar-search input {
+  padding: 10px 12px;
+  border-radius: 50px;
+  border: 1px solid var(--muted);
+  outline: none;
+  width: 200px;
+  transition: all 0.3s ease;
+}
+
+.navbar-search input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 8px rgba(255,76,36,0.3);
 }
 
 .navbar-search-icon {

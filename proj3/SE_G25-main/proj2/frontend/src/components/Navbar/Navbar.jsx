@@ -1,21 +1,34 @@
 import React, { useContext, useState } from "react";
 import "./Navbar.css";
 import { assets } from "../../assets/assets";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { StoreContext } from "../../Context/StoreContext";
 import { ThemeContext } from "../../Context/ThemeContext";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
-  const { getTotalCartAmount, token, setToken, cartItems } =
-    useContext(StoreContext);
+  const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
     navigate("/");
+  };
+
+  // New function to handle section navigation
+  const handleSectionClick = (sectionId, menuKey) => {
+    setMenu(menuKey);
+    if (location.pathname !== "/") {
+      // Navigate to home with state
+      navigate("/", { state: { scrollTo: sectionId } });
+    } else {
+      // Already on home, scroll directly
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -34,47 +47,46 @@ const Navbar = ({ setShowLogin }) => {
         >
           Home
         </Link>
-        <a
-          href="#explore-menu"
-          onClick={() => setMenu("menu")}
+        <button
+          onClick={() => handleSectionClick("explore-menu", "menu")}
           className={menu === "menu" ? "active" : ""}
         >
           Menu
-        </a>
-        <a
-          href="#app-download"
-          onClick={() => setMenu("mob-app")}
+        </button>
+        <button
+          onClick={() => handleSectionClick("app-download", "mob-app")}
           className={menu === "mob-app" ? "active" : ""}
         >
           Mobile App
-        </a>
-        <a
-          href="#footer"
-          onClick={() => setMenu("contact")}
+        </button>
+        <button
+          onClick={() => handleSectionClick("footer", "contact")}
           className={menu === "contact" ? "active" : ""}
         >
           Contact Us
-        </a>
+        </button>
       </ul>
 
       {/* Right Section */}
       <div className="navbar-right">
-       <div className="navbar-search">
-  <input
-    type="text"
-    placeholder="Search dishes..."
-    onFocus={() =>
-      document.getElementById("explore-menu").scrollIntoView({ behavior: "smooth" })
-    }
-  />
-</div>
+        {/* Search */}
+        <div className="navbar-search">
+          <input
+            type="text"
+            placeholder="Search dishes..."
+            onFocus={() =>
+              handleSectionClick("explore-menu", "menu")
+            }
+          />
+        </div>
+
         {/* Cart */}
         <Link to="/cart" className="navbar-search-icon">
           <img src={assets.basket_icon} alt="Cart" />
           <div className={getTotalCartAmount() > 0 ? "dot" : ""}></div>
         </Link>
 
-        {/* Theme Toggle Button */}
+        {/* Theme Toggle */}
         <button
           className="theme-toggle"
           onClick={toggleTheme}
