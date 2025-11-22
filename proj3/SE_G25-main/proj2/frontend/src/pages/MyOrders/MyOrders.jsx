@@ -99,87 +99,49 @@ const MyOrders = () => {
 
   return (
     <div className="my-orders">
-      <h2>My Orders</h2>
-      <div className="container">
-        {data.map((order, index) => {
-          const progress = calculateProgress(order.date);
-          let isCancelled = false;
-          if (order.claimedBy?.toString() === currentUserId) {
-            isCancelled = false;
-          } else if (
-            order.userId.toString() === currentUserId &&
-            order.status === "Claimed"
-          ) {
-            isCancelled = true;
-          } else if (order.status === "Redistribute") {
-            isCancelled = true;
-          }
+  <h2>My Orders</h2>
+  <div className="container">
+    {data.map((order, index) => {
+      let status = "Preparing"; // default status
+      const currentUserId = getUserId();
+      const isClaimedByMe = order.claimedBy?.toString() === currentUserId;
+      const isCancelled = order.status === "Cancelled" || order.status === "Redistribute";
 
-          return (
-            <div
-              key={index}
-              className={`my-orders-order ${isCancelled ? "cancelled-order" : ""}`}
-            >
-              <img src={assets.parcel_icon} alt="" />
-              <p>
-                {order.items.map((item, index) => {
-                  if (index === order.items.length - 1) {
-                    return item.name + " x " + item.quantity;
-                  } else {
-                    return item.name + " x " + item.quantity + ", ";
-                  }
-                })}
-              </p>
-              <p>
-                {currency}
-                {order.amount}.00
-              </p>
-              <p>Items: {order.items.length}</p>
+      if (isCancelled) status = "Cancelled";
+      else if (order.status === "Claimed") status = isClaimedByMe ? "Out for Delivery" : "Preparing";
+      else if (order.status === "Delivered") status = "Delivered";
 
-              {isCancelled ? (
-                <>
-                  <div className="progress-container cancelled">
-                    <div
-                      className="progress-bar cancelled"
-                      style={{ width: "100%" }}
-                    ></div>
-                  </div>
-                  <p className="progress-text cancelled">Order Cancelled</p>
-                </>
-              ) : (
-                <>
-                  <div className="progress-container">
-                    <div
-                      className="progress-bar"
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
-                  <p className="progress-text">
-                    {progress >= 100
-                      ? "Delivered"
-                      : progress >= 60
-                        ? "Out for Delivery"
-                        : "Preparing Food"}
-                  </p>
-                </>
-              )}
+      return (
+        <div key={index} className={`my-orders-order ${isCancelled ? "cancelled-order" : ""}`}>
+          <img src={assets.parcel_icon} alt="" />
+          <p>
+            {order.items.map((item, idx) =>
+              idx === order.items.length - 1
+                ? `${item.name} x ${item.quantity}`
+                : `${item.name} x ${item.quantity}, `
+            )}
+          </p>
+          <p>{currency}{order.amount}.00</p>
+          <p>Items: {order.items.length}</p>
 
-              <button
-                onClick={() => cancelOrder(order._id)}
-                disabled={progress >= 100 || isCancelled}
-                style={{
-                  opacity: progress >= 100 || isCancelled ? 0.5 : 1,
-                  cursor:
-                    progress >= 100 || isCancelled ? "not-allowed" : "pointer",
-                }}
-              >
-                {isCancelled ? "Cancelled" : "Cancel Order"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+          {/* Order Status */}
+          <p className={`order-status ${status.toLowerCase().replace(/\s/g, "-")}`}>
+            {status}
+          </p>
+
+          {/* Cancel button */}
+          <button
+            onClick={() => cancelOrder(order._id)}
+            disabled={isCancelled || status === "Delivered"}
+            className={isCancelled ? "cancel" : ""}
+          >
+            {isCancelled ? "Cancelled" : "Cancel Order"}
+          </button>
+        </div>
+      );
+    })}
+  </div>
+</div>
   );
 };
 

@@ -74,15 +74,15 @@ const ShelterHistory = () => {
   return (
     <div className="shelter-history-page">
       <div className="sh-header">
-        <h3>Shelter Redistribution History</h3>
+        <h3 style={{marginTop: "40px"}}>Shelter Redistribution History</h3>
         <div className="sh-tools">
-          <input
+          <input style={{marginTop: "40px"}}
             className="sh-search"
             placeholder="Filter by order / shelter / restaurant"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <a className="sh-link" href="/shelters">
+          <a className="sh-link" href="/shelters" style={{marginTop: "40px"}}>
             Back to Shelters
           </a>
         </div>
@@ -93,7 +93,7 @@ const ShelterHistory = () => {
 
       {!loading && !err && (
         <>
-          <div className="sh-card">
+          <div className="sh-card" style={{marginTop: "40px"}}>
             <div className="sh-table-wrap">
               <table className="sh-table">
                 <thead>

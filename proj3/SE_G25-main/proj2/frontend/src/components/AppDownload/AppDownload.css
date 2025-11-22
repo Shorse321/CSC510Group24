@@ -1,21 +1,88 @@
 .app-download {
-    margin: 100px auto;
-    font-size: max(3vw, 20px);
-    text-align: center;
-    font-weight: 500;
+  margin: 50px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 16px;
 }
-.app-download-platforms{
-    display: flex;
-    justify-content: center;
-    gap: max(2vw,10px);
-    margin-top: 40px;
+
+/* Card container */
+.app-card {
+  max-width: 920px;
+  width: 100%;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+
+  border-radius: 28px;
+  padding: 40px 60px;
+
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+
+  animation: fadeIn 1s ease;
 }
-.app-download-platforms img{
-   width:max(30vw,120px);
-   max-width: 180px;
-   transition: 0.5s;
-   cursor: pointer;
+
+/* Headline */
+.app-card h2 {
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
-.app-download-platforms img:hover{
-    transform: scale(1.05);
- }
+
+/* Text */
+.subtext {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+.desc {
+  font-size: 15px;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+/* Divider line */
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--brand),
+    transparent
+  );
+  margin: 30px 0;
+}
+
+/* Contact */
+.contact {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.contact span {
+  color: var(--brand);
+}
+
+/* Footer note */
+.note {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-card {
+    padding: 30px 22px;
+    border-radius: 22px;
+  }
+}

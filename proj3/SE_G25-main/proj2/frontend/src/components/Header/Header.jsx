@@ -1,4 +1,4 @@
-import React from "react";
+
 import "./Header.css";
 
 const Header = () => {
@@ -11,7 +11,14 @@ const Header = () => {
           meals from top local chefs, delivered seamlessly. Taste the blend of
           quality, speed, and innovation.
         </p>
-        <button>View Menu</button>
+        <button
+  onClick={() => {
+    const section = document.getElementById("explore-menu");
+    section?.scrollIntoView({ behavior: "smooth" });
+  }}
+>
+  View Menu
+</button>
       </div>
     </div>
   );

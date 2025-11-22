@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
+import Footer from "./components/Footer/Footer";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Add from "./pages/Add/Add";
 import List from "./pages/List/List";
@@ -14,7 +15,6 @@ const App = () => {
     <div className="app">
       <ToastContainer />
       <Navbar />
-      <hr />
       <div className="app-content">
         <Sidebar />
         <Routes>
@@ -26,7 +26,9 @@ const App = () => {
           <Route path="/shelters" element={<Shelters />} /> {/* ⬅️ NEW */}
           <Route path="/shelter-history" element={<ShelterHistory />} />
         </Routes>
+       
       </div>
+       <Footer/>
     </div>
   );
 };
