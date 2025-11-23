@@ -20,8 +20,7 @@ const TERMINAL = new Set([STATUS.DELIVERED, STATUS.DONATED]);
 /**
  * Orders - Admin page for managing all orders
  * Displays orders in tabs (current vs cancelled) with status update functionality
- * Filters out donated orders from current tab
- * Implements proper status transition rules based on user cancellation
+ * Shows current owner's information (not original user if order was claimed)
  * @returns {JSX.Element} Orders management interface with tabs and status controls
  */
 const Order = () => {
@@ -81,12 +80,6 @@ const Order = () => {
 
   /**
    * Get available status options based on current order status and cancellation state
-   * Rules:
-   * - If user cancelled: admin can only Redistribute or Donate
-   * - If active order: admin can only progress (Out for delivery, Delivered)
-   * - Admin cannot cancel active orders (only users can)
-   * @param {Object} order - Order object
-   * @returns {Array<string>} Array of valid status options
    */
   const getAvailableStatuses = (order) => {
     const currentStatus = order.status || STATUS.PROCESSING;
@@ -97,7 +90,6 @@ const Order = () => {
     }
     
     // For active orders, admin can only progress the order
-    // They CANNOT cancel or redistribute (only users can cancel)
     if (currentStatus === STATUS.PROCESSING) {
       return [STATUS.PROCESSING, STATUS.OUT_FOR_DELIVERY, STATUS.DELIVERED];
     }
@@ -120,11 +112,6 @@ const Order = () => {
 
   /**
    * Handles order status updates
-   * Validates status transitions and updates order via API
-   * Shows special notification for Redistribute status
-   * @param {Object} event - React change event from select element
-   * @param {string} orderId - MongoDB _id of the order to update
-   * @returns {Promise<void>}
    */
   const statusHandler = async (event, orderId) => {
     const nextStatus = event.target.value;
@@ -193,6 +180,10 @@ const Order = () => {
           const availableStatuses = getAvailableStatuses(order);
           const isTerminal = TERMINAL.has(order.status);
           
+          // Determine who currently owns this order
+          const isClaimedOrder = order.claimedBy && order.claimedBy !== order.originalUserId;
+          const currentOwnerId = order.userId; // This is always the current owner
+          
           return (
             <div key={order._id} className="order-item">
               <img src={assets.parcel_icon} alt="" />
@@ -204,9 +195,22 @@ const Order = () => {
                       : `${item.name} x ${item.quantity}, `
                   )}
                 </p>
+                
+                {/* Show current owner info */}
                 <p className="order-item-name">
                   {order.address.firstName + " " + order.address.lastName}
+                  {isClaimedOrder && (
+                    <span style={{ 
+                      fontSize: "11px", 
+                      color: "#28a745", 
+                      marginLeft: "8px",
+                      fontWeight: "bold" 
+                    }}>
+                      (Claimed Order)
+                    </span>
+                  )}
                 </p>
+                
                 <div className="order-item-address">
                   <p>{order.address.street + ","}</p>
                   <p>
@@ -221,8 +225,22 @@ const Order = () => {
                 </div>
                 <p className="order-item-phone">{order.address.phone}</p>
 
-                {/* Show special badge for user-cancelled orders */}
-                {order.cancelledByUser && order.status === STATUS.CANCELLED && (
+                {/* Show ownership info */}
+                {order.originalUserId && order.originalUserId !== currentOwnerId && (
+                  <div style={{ 
+                    fontSize: "12px", 
+                    color: "#666", 
+                    marginTop: "5px",
+                    fontStyle: "italic"
+                  }}>
+                    📋 Original User ID: {order.originalUserId}
+                    <br />
+                    👤 Current Owner ID: {currentOwnerId}
+                  </div>
+                )}
+
+                {/* Show cancellation info */}
+                {order.cancelledByUser && (order.status === STATUS.CANCELLED || order.status === STATUS.REDISTRIBUTE) && (
                   <div className="shelter-assigned" style={{ 
                     background: "#fff3cd", 
                     color: "#856404", 
@@ -230,7 +248,15 @@ const Order = () => {
                     borderRadius: "4px",
                     marginTop: "5px"
                   }}>
-                    ⚠️ <b>Cancelled by User</b> - Can redistribute or donate
+                    ⚠️ <b>Cancelled by User</b>
+                    <br />
+                    <small>Last canceller ID: {order.lastCancelledByUserId || order.originalUserId || order.userId}</small>
+                    {order.status === STATUS.CANCELLED && (
+                      <>
+                        <br />
+                        <small>Can redistribute or donate</small>
+                      </>
+                    )}
                   </div>
                 )}
                 
@@ -245,7 +271,7 @@ const Order = () => {
                   </div>
                 )}
               </div>
-<p>Items : {order.items.reduce((total, item) => total + item.quantity, 0)}</p>
+              <p>Items : {order.items.reduce((total, item) => total + item.quantity, 0)}</p>
               <p>
                 {currency}
                 {order.amount}

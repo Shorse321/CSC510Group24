@@ -28,11 +28,18 @@ const orderSchema = new mongoose.Schema({
   claimedBy: { type: String, default: null },
   claimedAt: { type: Date, default: null },
   
-  // Track original user (before claiming)
+  // Track original user (the very first person who placed the order)
   originalUserId: { type: String, default: null },
+  
+  // Store original address (before any claims)
+  originalAddress: { type: Object, default: null },
   
   // Track if this order was cancelled by user
   cancelledByUser: { type: Boolean, default: false },
+  
+  // NEW: Track the MOST RECENT user who cancelled this order
+  // This is the user who should be EXCLUDED from claim notifications
+  lastCancelledByUserId: { type: String, default: null },
   
   // Track redistribution attempts
   redistributionCount: { type: Number, default: 0 },

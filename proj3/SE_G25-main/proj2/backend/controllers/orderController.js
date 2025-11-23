@@ -90,7 +90,10 @@ const cancelOrder = async (req, res) => {
     // Mark as cancelled by user
     order.status = STATUS.CANCELLED;
     order.cancelledByUser = true;
-    
+    // IMPORTANT: Track the MOST RECENT canceller (not the original user)
+// This user will be excluded from claim notifications
+order.lastCancelledByUserId = userId;
+
     // Preserve original user ID for filtering notifications
     if (!order.originalUserId) {
       order.originalUserId = order.userId;
@@ -106,9 +109,9 @@ const cancelOrder = async (req, res) => {
     res.json({ success: false, message: "Error cancelling order" });
   }
 };
-
 /**
  * Allows a user to claim a redistributed order
+ * Updates ownership and claimer's address information
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @returns {Promise<void>}
@@ -127,8 +130,17 @@ const claimOrder = async (req, res) => {
         message: "Order not available for claim",
       });
 
-    // Preserve original user
+    // Get the claimer's user info to update address
+    const claimerUser = await userModel.findById(claimerId);
+    if (!claimerUser) {
+      return res.json({ success: false, message: "Claimer user not found" });
+    }
+
+    // Preserve original user (very first person who placed order)
     if (!order.originalUserId) order.originalUserId = order.userId;
+
+    // Store original address if not already stored
+    if (!order.originalAddress) order.originalAddress = order.address;
 
     // Transfer ownership
     order.userId = claimerId;
@@ -136,6 +148,14 @@ const claimOrder = async (req, res) => {
     order.claimedAt = new Date();
     order.status = STATUS.PROCESSING;
     order.cancelledByUser = false; // Reset since it's now claimed
+    
+    // Update address to claimer's address (if they have one saved)
+    if (claimerUser.address) {
+      order.address = claimerUser.address;
+    }
+    
+    // IMPORTANT: Don't reset lastCancelledByUserId here
+    // Keep it so we know who cancelled it previously
 
     await order.save();
 
@@ -155,7 +175,6 @@ const claimOrder = async (req, res) => {
     res.json({ success: false, message: "Error claiming order" });
   }
 };
-
 /**
  * Places a new order with Stripe payment
  * @param {Object} req - Express request object
@@ -233,26 +252,7 @@ const listOrders = async (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Promise<void>}
  */
-/**
- * Retrieves all orders for a specific user
- * Rules:
- * - Shows orders created by the user (that haven't been claimed by others)
- * - Shows orders claimed by the user
- * - DOES NOT show orders that were cancelled by user and then claimed by someone else
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
- */
-/**
- * Retrieves all orders for a specific user
- * Rules:
- * - Shows orders originally created by the user (even if claimed by others)
- * - Shows orders claimed by the user (that they didn't originally create)
- * - Original user sees their cancelled orders as "Cancelled" even after someone claims them
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
- */
+
 const userOrders = async (req, res) => {
   try {
     const userId = req.body.userId;
@@ -261,24 +261,48 @@ const userOrders = async (req, res) => {
       return res.json({ success: false, message: "User not authenticated" });
     }
 
-    const orders = await orderModel
+    // Get all orders related to this user
+    const allOrders = await orderModel
       .find({
         $or: [
-          // Orders I originally created (show even if claimed by others)
+          { userId: userId },
           { originalUserId: userId },
-          // Orders where I'm the original user and no one claimed yet
-          { userId: userId, originalUserId: null },
-          // Orders I claimed from others (but didn't originally create)
-          { 
-            claimedBy: userId, 
-            originalUserId: { $ne: userId },
-            userId: userId 
-          }
+          { claimedBy: userId }
         ],
       })
       .sort({ date: -1 });
+    
+    // Filter orders based on business logic
+    const filteredOrders = allOrders.filter(order => {
+      // If I claimed an order from someone else, show it
+      if (order.claimedBy === userId && (order.originalUserId !== userId && order.userId !== userId)) {
+        return true;
+      }
       
-    res.json({ success: true, data: orders });
+      // If this is my order that I cancelled and someone else claimed it, DON'T show it
+      if ((order.originalUserId === userId || order.userId === userId) && 
+          order.cancelledByUser && 
+          order.claimedBy && 
+          order.claimedBy !== userId) {
+        return false;
+      }
+      
+      // If this is my current order (not claimed by others), show it
+      if (order.userId === userId && (!order.claimedBy || order.claimedBy === userId)) {
+        return true;
+      }
+      
+      // If this is my original order that I cancelled (not yet claimed), show it
+      if ((order.originalUserId === userId || order.userId === userId) && 
+          order.cancelledByUser && 
+          !order.claimedBy) {
+        return true;
+      }
+      
+      return false;
+    });
+      
+    res.json({ success: true, data: filteredOrders });
   } catch (error) {
     console.error("userOrders error:", error);
     res.json({ success: false, message: "Error fetching orders" });
@@ -322,39 +346,42 @@ const updateStatus = async (req, res) => {
       });
     }
 
-    // Special handling for Redistribute status
-    if (next === STATUS.REDISTRIBUTE) {
-      // Update redistribution tracking
-      order.redistributionCount = (order.redistributionCount || 0) + 1;
-      order.lastRedistributedAt = new Date();
-      order.status = STATUS.REDISTRIBUTE;
-      await order.save();
+// Special handling for Redistribute status
+if (next === STATUS.REDISTRIBUTE) {
+  // Update redistribution tracking
+  order.redistributionCount = (order.redistributionCount || 0) + 1;
+  order.lastRedistributedAt = new Date();
+  order.status = STATUS.REDISTRIBUTE;
+  await order.save();
 
-      // Queue notification using existing system
-      const queueNotification = req.app.get("queueNotification");
-      if (typeof queueNotification === "function") {
-        const originalUserId = order.originalUserId || order.userId;
-        queueNotification({
-          orderId: order._id.toString(),
-          orderItems: order.items,
-          cancelledByUserId: originalUserId,
-          message: "An order is available for claiming!",
-          amount: order.amount,
-          address: order.address,
-        });
-        console.log(`📢 Queued claiming notifications for order ${orderId}`);
-      }
+  // Queue notification using existing system
+  const queueNotification = req.app.get("queueNotification");
+  if (typeof queueNotification === "function") {
+    // CHANGE THIS LINE - use lastCancelledByUserId instead of originalUserId
+    const cancelledByUserId = order.lastCancelledByUserId || order.originalUserId || order.userId;
+    
+    queueNotification({
+      orderId: order._id.toString(),
+      orderItems: order.items,
+      cancelledByUserId: cancelledByUserId, // Use the most recent canceller
+      message: order.redistributionCount > 1 
+        ? `Order available again (Redistribution #${order.redistributionCount})!`
+        : "An order is available for claiming!",
+      amount: order.amount,
+      address: order.address,
+      redistributionCount: order.redistributionCount,
+    });
+    
+    console.log(`📢 Queued claiming notifications for order ${orderId} (Redistribution #${order.redistributionCount})`);
+    console.log(`   Excluding user: ${cancelledByUserId} (most recent canceller)`);
+  }
 
-      // NO AUTO-TRANSITION - Order stays in Redistribute until:
-      // 1. Someone claims it (moves to Processing)
-      // 2. Admin manually changes it to Cancelled or Donated
-
-      return res.json({
-        success: true,
-        message: "Claiming notifications sent to users.",
-        data: order,
-      });
-    }
+  return res.json({
+    success: true,
+    message: `Claiming notifications sent to users (Redistribution #${order.redistributionCount}).`,
+    data: order,
+  });
+}
 
     // Regular status update
     order.status = next;
