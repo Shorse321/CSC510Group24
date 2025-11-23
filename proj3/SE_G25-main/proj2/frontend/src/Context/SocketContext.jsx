@@ -1,35 +1,28 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { StoreContext } from "./StoreContext";
 
 const SocketContext = createContext();
 
-/**
- * Custom hook to access the Socket.IO socket instance from context
- * @returns {Object|null} Socket.IO client instance or null if not connected
- */
 export const useSocket = () => useContext(SocketContext);
 
-/**
- * SocketProvider - Context provider for Socket.IO connection management
- * Establishes and manages WebSocket connection to the backend server
- * @param {Object} props - React component props
- * @param {React.ReactNode} props.children - Child components to render
- * @param {string} props.url - Backend server URL for Socket.IO connection
- * @returns {JSX.Element} SocketContext provider with socket instance
- */
-export const SocketProvider = ({ children, url }) => {
+export const SocketProvider = ({ children, url, userId }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const newSocket = io(url);
 
     newSocket.on("connect", () => {
-      console.log("Connected to Socket.IO server:", newSocket.id);
+      console.log("✅ Connected to Socket.IO server:", newSocket.id);
+      
+      // Register user with socket server if userId is available
+      if (userId) {
+        newSocket.emit("register", userId);
+        console.log(`🔐 Registered userId ${userId} with socket ${newSocket.id}`);
+      }
     });
 
     newSocket.on("disconnect", () => {
-      console.log("Disconnected from Socket.IO server");
+      console.log("❌ Disconnected from Socket.IO server");
     });
 
     setSocket(newSocket);
@@ -37,7 +30,15 @@ export const SocketProvider = ({ children, url }) => {
     return () => {
       newSocket.close();
     };
-  }, [url]);
+  }, [url, userId]);
+
+  // Re-register if userId changes while socket is already connected
+  useEffect(() => {
+    if (socket && socket.connected && userId) {
+      socket.emit("register", userId);
+      console.log(`🔐 Re-registered userId ${userId} with socket ${socket.id}`);
+    }
+  }, [socket, userId]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

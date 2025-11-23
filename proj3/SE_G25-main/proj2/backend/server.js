@@ -122,7 +122,7 @@ const showNotificationToNextUser = (notification) => {
     // Wait 5 seconds before showing to next user
     currentNotificationTimeout = setTimeout(() => {
       showNotificationToNextUser(notification);
-    }, 5000);
+    }, 7000);
   } else {
     // All users have been notified
     console.log(`✅ All ${eligibleUsers.length} users notified for order ${notification.orderId}`);
@@ -151,9 +151,17 @@ const stopNotificationForOrder = (orderId) => {
   }
 };
 
-// Add notification to queue
 const queueNotification = (notification) => {
   console.log(`➕ Queuing notification for order ${notification.orderId}`);
+  console.log(`   Redistribution #${notification.redistributionCount || 1}`);
+  
+  // Remove order from claimed set if it's being redistributed again
+  // This allows the same order to be claimed again after redistribution
+  if (claimedOrders.has(notification.orderId)) {
+    console.log(`🔄 Removing order ${notification.orderId} from claimed set (redistribution)`);
+    claimedOrders.delete(notification.orderId);
+  }
+  
   notificationQueue.push(notification);
   processNotificationQueue();
 };
