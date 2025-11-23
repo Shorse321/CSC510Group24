@@ -160,4 +160,23 @@ const createBulkItem = async (req, res) => {
   }
 };
 
-export {listFood, addFood, removeFood, toggleSurplus, createBulkItem};
+/**
+ * Updates the Price and Inventory of an existing Bulk Item
+ */
+const updateBulkItem = async (req, res) => {
+  try {
+    const { id, price, inventoryCount } = req.body;
+    
+    await foodModel.findByIdAndUpdate(id, {
+      price: Number(price),
+      surplusQuantity: Number(inventoryCount)
+    });
+
+    res.json({ success: true, message: "Bulk Pack Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error updating bulk pack" });
+  }
+};
+
+export {listFood, addFood, removeFood, toggleSurplus, createBulkItem, updateBulkItem};

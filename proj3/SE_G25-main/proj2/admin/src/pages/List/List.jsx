@@ -74,6 +74,38 @@ const List = () => {
   };
   // ---------------------
 
+  // --- NEW UPDATE FUNCTION ---
+  const updateBulk = async (id) => {
+    try {
+      const response = await axios.post(`${url}/api/food/update-bulk`, {
+        id: id,
+        price: Number(bulkData.price),
+        inventoryCount: Number(bulkData.qty)
+      });
+      
+      if (response.data.success) {
+        toast.success("Bulk Pack Updated!");
+        setBulkFormId(null);
+        setBulkData({ packSize: "", price: "", qty: "" });
+        await fetchList();
+      } else {
+        toast.error("Update failed");
+      }
+    } catch (error) {
+      toast.error("Server Error");
+    }
+  };
+
+  const startEditingBulk = (item) => {
+      setBulkFormId(item._id);
+      // Pre-fill with existing values
+      setBulkData({
+          packSize: "", // Not editable for existing packs (changes identity)
+          price: item.price,
+          qty: item.surplusQuantity
+      });
+  }
+
   useEffect(() => {
     fetchList();
   }, []);
@@ -100,19 +132,56 @@ const List = () => {
                 {item.price}
               </p>
 
-              {/* --- INSERT THIS WHOLE BLOCK --- */}
               <div className="surplus-control">
                 
-                {/* CASE A: This is already a Bulk Item (show badge) */}
+                {/* CASE A: Bulk Item Logic */}
                 {item.category === "Bulk Deals" ? (
-                     <div style={{display: 'flex', flexDirection: 'column'}}>
-                        <span style={{color: '#8e44ad', fontWeight: 'bold', fontSize: '13px'}}>
-                            📦 Bulk Pack
-                        </span>
-                        <span style={{fontSize: '12px', color: '#555', marginTop: '2px'}}>
-                            Remaining Stock: <b>{item.surplusQuantity}</b>
-                        </span>
-                     </div>
+                     // Check if we are currently editing THIS item
+                     bulkFormId === item._id ? (
+                        /* --- 1. EDIT MODE --- */
+                        <div className="edit-inputs" style={{display:'flex', gap:'5px', alignItems:'center'}}>
+                            <input 
+                                name="price" type="number" placeholder="$" 
+                                value={bulkData.price} onChange={handleBulkChange} 
+                                className="surplus-input" style={{width:'80px'}}
+                            />
+                            <input 
+                                name="qty" type="number" placeholder="Qty" 
+                                value={bulkData.qty} onChange={handleBulkChange} 
+                                className="surplus-input" style={{width:'70px'}}
+                            />
+                            <div className="edit-actions">
+                                <button onClick={() => updateBulk(item._id)} className="save-btn" style={{backgroundColor: '#27ae60'}}>Save</button>
+                                <button onClick={() => setBulkFormId(null)} className="cancel-btn">X</button>
+                            </div>
+                        </div>
+                     ) : (
+                        /* --- 2. VIEW MODE (Now with Edit Button) --- */
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '3px'}}>
+                            <span style={{color: '#8e44ad', fontWeight: 'bold', fontSize: '13px'}}>
+                                📦 Bulk Pack
+                            </span>
+                            <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                                <span style={{fontSize: '12px', color: '#555'}}>
+                                    Remaining Stock: <b>{item.surplusQuantity}</b>
+                                </span>
+                                <button 
+                                    onClick={() => startEditingBulk(item)}
+                                    style={{
+                                        border: '1px solid #ccc', 
+                                        background: '#fff', 
+                                        cursor: 'pointer', 
+                                        borderRadius: '4px', 
+                                        fontSize: '11px', 
+                                        padding: '2px 6px',
+                                        color: '#333'
+                                    }}
+                                >
+                                    ✏️ Edit
+                                </button>
+                            </div>
+                        </div>
+                     )
                 ) : (
                     // CASE B: Standard Item - Check if Form is open
                     bulkFormId === item._id ? (
@@ -128,6 +197,11 @@ const List = () => {
                               value={bulkData.price} onChange={handleBulkChange} 
                               className="surplus-input" style={{width:'90px'}}
                             />
+                            {bulkData.packSize && bulkData.price && (
+                                    <span style={{fontSize: '12px', color: '#666', marginLeft: '2px', marginTop: '2px'}}>
+                                       Running at: <b>${(Number(bulkData.price) / Number(bulkData.packSize)).toFixed(2)}</b> / unit
+                                    </span>
+                            )}
                             <input 
                               name="qty" type="number" placeholder="Stock" 
                               value={bulkData.qty} onChange={handleBulkChange} 
