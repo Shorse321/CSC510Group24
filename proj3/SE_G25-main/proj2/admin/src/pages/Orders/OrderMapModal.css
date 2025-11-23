@@ -1,0 +1,252 @@
+/* Modal Overlay */
+.map-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+/* Modal Content */
+.map-modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modal Header */
+.map-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 2px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.map-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.map-modal-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.map-modal-close:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+/* Map Info */
+.map-info {
+  display: flex;
+  gap: 20px;
+  padding: 15px 25px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  flex-wrap: wrap;
+}
+
+.map-info-item {
+  font-size: 14px;
+  color: #495057;
+}
+
+.map-info-item strong {
+  color: #212529;
+  margin-right: 5px;
+}
+
+/* Map Container */
+.map-container {
+  width: 100%;
+  height: 500px;
+  flex: 1;
+  min-height: 400px;
+}
+
+/* Leaflet fixes */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content {
+  margin: 10px;
+  line-height: 1.5;
+}
+
+/* Map Legend */
+.map-legend {
+  display: flex;
+  gap: 20px;
+  padding: 15px 25px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #495057;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.legend-line {
+  width: 30px;
+  height: 3px;
+  background: repeating-linear-gradient(
+    to right,
+    #6c757d 0,
+    #6c757d 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+/* Close Button */
+.map-close-btn {
+  margin: 20px 25px;
+  padding: 12px 30px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.map-close-btn:hover {
+  background: #0056b3;
+}
+
+/* Show on Map Button (for Orders.jsx) */
+.show-map-btn {
+  padding: 8px 16px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.show-map-btn:hover {
+  background: #138496;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.show-map-btn:active {
+  transform: translateY(0);
+}
+
+.show-map-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Map Button for Shelter History */
+.sh-map-btn {
+  padding: 6px 12px;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.sh-map-btn:hover:not(:disabled) {
+  background: #ea580c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.sh-map-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.sh-map-btn:disabled {
+  background: #e5d7c4;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .map-modal-content {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .map-container {
+    height: 400px;
+    min-height: 300px;
+  }
+
+  .map-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .map-legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

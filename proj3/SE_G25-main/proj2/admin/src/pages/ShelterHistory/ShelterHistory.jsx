@@ -3,11 +3,13 @@ import "./ShelterHistory.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { url, currency } from "../../assets/assets";
+import ShelterHistoryMapModal from "./ShelterHistoryMapModal";
 
 const ShelterHistory = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [selectedRerouteForMap, setSelectedRerouteForMap] = useState(null); // NEW: For map modal
 
   // pagination
   const [page, setPage] = useState(1);
@@ -56,20 +58,54 @@ const ShelterHistory = () => {
         .toString()
         .toLowerCase();
       const shelterTxt = (r.shelter?.name || r.shelterName || "").toLowerCase();
-      const restTxt = (
-        r.restaurant?.name ||
-        r.restaurantName ||
-        ""
-      ).toLowerCase();
       return (
         orderTxt.includes(needle) ||
-        shelterTxt.includes(needle) ||
-        restTxt.includes(needle)
+        shelterTxt.includes(needle)
       );
     });
   }, [rows, q]);
 
   const fmt = (d) => (d ? new Date(d).toLocaleString() : "—");
+const canShowMap = (reroute) => {
+  const lat =
+    reroute?.shelterAddress?.lat;
+
+  const lng =
+    reroute?.shelterAddress?.lng;
+
+  return typeof lat === "number" && typeof lng === "number";
+};
+
+  /**
+   * Handle show map button click
+   */
+  const handleShowMap = async (reroute) => {
+    if (!canShowMap(reroute)) {
+      toast.warning("This record doesn't have complete location data.");
+      return;
+    }
+
+    // Fetch the full order details to get the original address
+    try {
+      const response = await axios.get(`${url}/api/order/list`);
+      if (response.data.success) {
+       const order = response.data.data.find(
+  (o) => o._id?.toString() === reroute.orderId?.toString()
+);
+        if (order) {
+          setSelectedRerouteForMap({
+            ...reroute,
+            orderDetails: order // Include full order details
+          });
+        } else {
+          toast.warning("Order details not found.");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      toast.error("Failed to load order details for map.");
+    }
+  };
 
   return (
     <div className="shelter-history-page">
@@ -78,7 +114,7 @@ const ShelterHistory = () => {
         <div className="sh-tools">
           <input style={{marginTop: "40px"}}
             className="sh-search"
-            placeholder="Filter by order / shelter / restaurant"
+            placeholder="Filter by order / shelter"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -99,18 +135,17 @@ const ShelterHistory = () => {
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Order</th>
-                    <th>Restaurant</th>
+                    <th>Order ID</th>
                     <th>Shelter</th>
                     <th>Items</th>
                     <th>Total</th>
-                    <th>Reason</th>
+                    <th>Map</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="sh-status">
+                      <td colSpan={6} className="sh-status">
                         No redistribution records yet.
                       </td>
                     </tr>
@@ -124,21 +159,30 @@ const ShelterHistory = () => {
                           className="mono ellipsis"
                           title={r.order?.orderNumber || r.orderId}
                         >
-                          {r.order?.orderNumber || r.orderId}
+                          {r.orderId?.slice(-8) || r.order?.orderNumber}
                         </td>
 
-                        {/* truncated names with tooltip */}
-                        <td
-                          className="ellipsis"
-                          title={r.restaurant?.name || r.restaurantName || "—"}
-                        >
-                          {r.restaurant?.name || r.restaurantName || "—"}
-                        </td>
-                        <td
-                          className="ellipsis"
-                          title={r.shelter?.name || r.shelterName || "—"}
-                        >
-                          {r.shelter?.name || r.shelterName || "—"}
+                        {/* Shelter name and contact */}
+                        <td>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                            <strong 
+                              className="ellipsis" 
+                              title={r.shelter?.name || r.shelterName || "—"}
+                              style={{ color: "var(--sh-accent-strong)" }}
+                            >
+                              {r.shelter?.name || r.shelterName || "—"}
+                            </strong>
+                            {r.shelterContactEmail && (
+                              <small className="muted" style={{ fontSize: "11px" }}>
+                                📧 {r.shelterContactEmail}
+                              </small>
+                            )}
+                            {r.shelterContactPhone && (
+                              <small className="muted" style={{ fontSize: "11px" }}>
+                                📞 {r.shelterContactPhone}
+                              </small>
+                            )}
+                          </div>
                         </td>
 
                         {/* items as chips */}
@@ -159,8 +203,16 @@ const ShelterHistory = () => {
                         <td>
                           {r.total != null ? `${currency}${r.total}` : "—"}
                         </td>
-                        <td className="ellipsis" title={r.reason || "—"}>
-                          {r.reason || "—"}
+                        {/* Map button */}
+                        <td>
+                          <button
+                            className="sh-map-btn"
+                            onClick={() => handleShowMap(r)}
+                            disabled={!canShowMap(r)}
+                            title={canShowMap(r) ? "View donation journey on map" : "Location data not available"}
+                          >
+                            🗺️ Map
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -192,6 +244,14 @@ const ShelterHistory = () => {
             </div>
           )}
         </>
+      )}
+
+      {/* Map Modal */}
+      {selectedRerouteForMap && (
+        <ShelterHistoryMapModal
+          reroute={selectedRerouteForMap}
+          onClose={() => setSelectedRerouteForMap(null)}
+        />
       )}
     </div>
   );
