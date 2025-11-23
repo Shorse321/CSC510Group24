@@ -3,6 +3,7 @@ import "./Orders.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { assets, url, currency } from "../../assets/assets";
+import OrderMapModal from "./OrderMapModal"; // Import the map modal
 
 // All possible statuses
 const STATUS = {
@@ -27,6 +28,7 @@ const Order = () => {
   const [allOrders, setAllOrders] = useState([]);
   const [orders, setOrders] = useState([]);
   const [activeTab, setActiveTab] = useState("current");
+  const [selectedOrderForMap, setSelectedOrderForMap] = useState(null); // NEW: For map modal
 
   /**
    * Fetches all orders from the backend API
@@ -139,6 +141,36 @@ const Order = () => {
     } catch (err) {
       toast.error("Network error while updating status");
     }
+  };
+
+  /**
+   * Check if order can be shown on map
+   * Disabled for: Cancelled, Redistribute statuses
+   * Enabled for: Processing, Out for delivery, Delivered, Donated
+   */
+  const canShowOnMap = (order) => {
+    // Don't show map for cancelled or redistribute status
+    if (order.status === STATUS.CANCELLED || order.status === STATUS.REDISTRIBUTE) {
+      return false;
+    }
+    
+    // Check if order has valid location data
+    return order.address && order.address.lat && order.address.lng;
+  };
+
+  /**
+   * Open map modal for an order
+   */
+  const handleShowMap = (order) => {
+    if (!canShowOnMap(order)) {
+      if (order.status === STATUS.CANCELLED || order.status === STATUS.REDISTRIBUTE) {
+        toast.info("Map is not available for cancelled or redistribute orders.");
+      } else {
+        toast.warning("This order doesn't have location coordinates.");
+      }
+      return;
+    }
+    setSelectedOrderForMap(order);
   };
 
   useEffect(() => {
@@ -270,6 +302,22 @@ const Order = () => {
                     🔄 Redistributed {order.redistributionCount} time(s)
                   </div>
                 )}
+
+                {/* NEW: Show on Map Button */}
+                <button
+                  className="show-map-btn"
+                  onClick={() => handleShowMap(order)}
+                  disabled={!canShowOnMap(order)}
+                  title={
+                    order.status === STATUS.CANCELLED || order.status === STATUS.REDISTRIBUTE
+                      ? "Map not available for cancelled/redistribute orders"
+                      : canShowOnMap(order)
+                      ? "View order location on map"
+                      : "No location data available"
+                  }
+                >
+                  🗺️ Show on Map
+                </button>
               </div>
               <p>Items : {order.items.reduce((total, item) => total + item.quantity, 0)}</p>
               <p>
@@ -298,6 +346,14 @@ const Order = () => {
           );
         })}
       </div>
+
+      {/* NEW: Map Modal */}
+      {selectedOrderForMap && (
+        <OrderMapModal
+          order={selectedOrderForMap}
+          onClose={() => setSelectedOrderForMap(null)}
+        />
+      )}
     </div>
   );
 };
