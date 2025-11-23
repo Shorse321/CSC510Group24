@@ -69,12 +69,6 @@ const PlaceOrder = () => {
         delete itemInfo.image;
         delete itemInfo.model3D;
 
-        // 3. CRITICAL: If on sale, overwrite 'price' with 'surplusPrice'
-        // This ensures the order history shows $20, not $30
-        if (item.isSurplus) {
-            itemInfo.price = item.surplusPrice;
-        }
-
         itemInfo["quantity"] = cartItems[item._id];
         orderItems.push(itemInfo);
       }

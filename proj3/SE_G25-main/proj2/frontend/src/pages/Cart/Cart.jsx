@@ -27,37 +27,23 @@ const Cart = () => {
         <hr />
         {food_list.map((item, index) => {
           if (cartItems[item._id] > 0) {
-            // --- NEW LOGIC START ---
-            // 1. Check if it's a surplus item
-            const isSurplus = item.isSurplus;
-            
-            // 2. Use surplusPrice if true, otherwise use regular price
-            const price = isSurplus ? item.surplusPrice : item.price;
-            
-            // 3. Fix Image URL (Handle Base64 data vs URLs)
-            const imageUrl =
-              item.image && item.image.data
+            const imageUrl = item.image && item.image.data
                 ? `data:${item.image.contentType};base64,${item.image.data}`
                 : assets.default_food_image;
-            // --- NEW LOGIC END ---
             return (
               <div key={index}>
                 <div className="cart-items-title cart-items-item">
                   <img src={imageUrl} alt="" /> {/* <--- UPDATED SRC */}
                   <p>{item.name}</p>
-                  
-                  {/* --- UPDATED PRICE DISPLAY --- */}
                   <p>
-                    {currency}{price} {/* Uses the new 'price' variable */}
-                    {isSurplus && <span style={{color: "green", fontSize: "12px", display: "block"}}>(On Sale)</span>}
+                    {currency}{item.price}
                   </p>
                   
                   <div>{cartItems[item._id]}</div>
-                  
-                  {/* --- UPDATED TOTAL CALCULATION --- */}
+                
                   <p>
                     {currency}
-                    {price * cartItems[item._id]} {/* Uses 'price' instead of item.price */}
+                    {item.price * cartItems[item._id]}
                   </p>
                   
                   <p

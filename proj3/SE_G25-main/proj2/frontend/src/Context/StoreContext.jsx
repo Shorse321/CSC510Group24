@@ -73,24 +73,23 @@ const StoreContextProvider = (props) => {
    * Calculates the total amount of all items in the cart
    * @returns {number} Total cart amount in dollars
    */
-  const getTotalCartAmount = () => {
+ const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
       try {
         if (cartItems[item] > 0) {
           let itemInfo = food_list.find((product) => product._id === item);
-          /// --- NEW LOGIC START ---
-          // Check if the item is on surplus sale
-          if (itemInfo.isSurplus) {
-             // Use the discounted price
-             totalAmount += itemInfo.surplusPrice * cartItems[item];
-          } else {
-             // Use the regular price
-             totalAmount += itemInfo.price * cartItems[item];
+          
+          // --- CRITICAL FIX START ---
+          // Only calculate price if the item actually exists in the database
+          if (itemInfo) {
+            totalAmount += itemInfo.price * cartItems[item];
           }
-          // --- NEW LOGIC END ---
+          // --- CRITICAL FIX END ---
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error calculating total:", error);
+      }
     }
     return totalAmount;
   };

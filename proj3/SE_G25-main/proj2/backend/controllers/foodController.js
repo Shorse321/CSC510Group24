@@ -131,5 +131,33 @@ const toggleSurplus = async (req, res) => {
   }
 };
 
+/**
+ * Creates a NEW bulk item (e.g. "5x Sandwich") based on an existing one.
+ */
+const createBulkItem = async (req, res) => {
+  try {
+    const { id, bulkPrice, packSize, inventoryCount } = req.body;
 
-export { listFood, addFood, removeFood, toggleSurplus };
+    const original = await foodModel.findById(id);
+    if (!original) return res.json({ success: false, message: "Item not found" });
+
+    const bulkItem = new foodModel({
+      name: `${packSize}x ${original.name} (Bulk)`, // New Name
+      description: `Value Pack: ${packSize} units of ${original.name}`,
+      price: Number(bulkPrice), // The Bulk Price
+      image: original.image,    // Same Image
+      model3D: original.model3D, // Same 3D Model
+      category: "Bulk Deals",   // New Category
+      isSurplus: true,          // Keeps "Surplus" flag so inventory logic works
+      surplusQuantity: Number(inventoryCount) // Separate Stock
+    });
+
+    await bulkItem.save();
+    res.json({ success: true, message: "Bulk Pack Created!" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};
+
+export {listFood, addFood, removeFood, toggleSurplus, createBulkItem};

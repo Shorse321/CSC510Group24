@@ -5,7 +5,7 @@ import { StoreContext } from "../../Context/StoreContext";
 import Food3DViewer from "../Food3DViewer/Food3DViewer";
 
 // Added isSurplus, surplusPrice, surplusQuantity
-const FoodItem = ({ image, name, price, desc, id, model3D, isSurplus, surplusPrice, surplusQuantity }) => {
+const FoodItem = ({ image, name, price, desc, id, model3D, isSurplus, surplusPrice,  surplusQuantity }) => {
   const [itemCount, setItemCount] = useState(0);
   const [show3D, setShow3D] = useState(false);
   const { cartItems, addToCart, removeFromCart, url, currency } =
@@ -24,12 +24,6 @@ const FoodItem = ({ image, name, price, desc, id, model3D, isSurplus, surplusPri
       <div className="food-item">
         <div className="food-item-img-container">
           <img className="food-item-image" src={imageUrl} alt="" />
-          {/* Surplus Badge Calculation */}
-          {isSurplus && (
-            <div className="surplus-badge">
-              {Math.round(((price - surplusPrice) / price) * 100)}% OFF
-            </div>
-          )}
 
           {/* 3D View Button */}
           {model3D && model3D.data && (
@@ -70,22 +64,9 @@ const FoodItem = ({ image, name, price, desc, id, model3D, isSurplus, surplusPri
             <p>{name}</p> <img src={assets.rating_starts} alt="" />
           </div>
           <p className="food-item-desc">{desc}</p>
-          <div className="food-item-price">
-            {isSurplus ? (
-              <>
-                 {/* Old Price (Crossed Out) */}
-                <span style={{ textDecoration: "line-through", color: "#9ca3af", marginRight: "8px", fontSize: "14px" }}>
-                  {currency}{price}
-                </span>
-                {/* New Surplus Price (Green) */}
-                <span style={{ color: "#27ae60", fontWeight: "bold" }}>
-                  {currency}{surplusPrice}
-                </span>
-              </>
-            ) : (
-              <span>{currency}{price}</span>
-            )}
-          </div>
+          <p className="food-item-price">
+            {currency}{price}
+          </p>
         </div>
       </div>
 

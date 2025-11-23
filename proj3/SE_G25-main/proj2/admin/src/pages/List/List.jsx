@@ -8,10 +8,11 @@ const List = () => {
   const [list, setList] = useState([]);
 
   // --- NEW STATE ---
-  const [editingId, setEditingId] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    surplusPrice: "",
-    surplusQuantity: ""
+  const [bulkFormId, setBulkFormId] = useState(null);
+  const [bulkData, setBulkData] = useState({ 
+    packSize: "", 
+    price: "", 
+    qty: "" 
   });
   // -----------------
 
@@ -36,59 +37,39 @@ const List = () => {
     }
   };
 
-  // --- NEW FUNCTIONS ---
-  const startEditing = (item) => {
-    setEditingId(item._id);
-    setEditFormData({
-      surplusPrice: item.surplusPrice || "",
-      surplusQuantity: item.surplusQuantity || ""
-    });
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditFormData({ surplusPrice: "", surplusQuantity: "" });
-  };
-
-  const handleEditChange = (e) => {
+// --- 2. NEW BULK FUNCTIONS (Replaces old Surplus functions) ---
+  const handleBulkChange = (e) => {
     const { name, value } = e.target;
-    setEditFormData((prev) => ({ ...prev, [name]: value }));
+    setBulkData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveSurplus = async (id) => {
-    try {
-      const response = await axios.post(`${url}/api/food/surplus`, {
-        id: id,
-        isSurplus: true,
-        surplusPrice: Number(editFormData.surplusPrice),
-        surplusQuantity: Number(editFormData.surplusQuantity)
-      });
-      if (response.data.success) {
-        toast.success("Surplus Updated!");
-        setEditingId(null);
-        await fetchList();
-      } else {
-        toast.error("Update Failed");
-      }
-    } catch (error) {
-      toast.error("Server Error");
+  const submitBulk = async (originalId) => {
+    // Basic validation
+    if(!bulkData.packSize || !bulkData.price || !bulkData.qty) {
+        toast.error("Please fill all fields");
+        return;
     }
-  };
 
-  const disableSurplus = async (id) => {
     try {
-      const response = await axios.post(`${url}/api/food/surplus`, {
-        id: id,
-        isSurplus: false,
-        surplusPrice: 0,
-        surplusQuantity: 0
+      // Call the new Bulk API endpoint
+      const response = await axios.post(`${url}/api/food/create-bulk`, {
+        id: originalId,
+        packSize: Number(bulkData.packSize),
+        bulkPrice: Number(bulkData.price),
+        inventoryCount: Number(bulkData.qty)
       });
+      
       if (response.data.success) {
-        toast.success("Removed from Surplus");
-        await fetchList();
+        toast.success("Bulk Pack Created!");
+        setBulkFormId(null); // Close form
+        setBulkData({ packSize: "", price: "", qty: "" }); // Reset data
+        await fetchList(); // Refresh list to see the new item
+      } else {
+        toast.error("Failed to create bulk pack");
       }
     } catch (error) {
-      toast.error("Error");
+      console.error(error);
+      toast.error("Server Error");
     }
   };
   // ---------------------
@@ -105,7 +86,7 @@ const List = () => {
           <b>Name</b>
           <b>Category</b>
           <b>Price</b>
-          <b>Surplus Management</b> {/* <--- INSERT THIS LINE */}
+          <b>Bulk Options</b> {/* <--- INSERT THIS LINE */}
           <b>Action</b>
         </div>
         {list.map((item, index) => {
@@ -121,41 +102,55 @@ const List = () => {
 
               {/* --- INSERT THIS WHOLE BLOCK --- */}
               <div className="surplus-control">
-                {editingId === item._id ? (
-                  <div className="edit-inputs">
-                    <input 
-                      type="number" name="surplusPrice" placeholder="Price" 
-                      value={editFormData.surplusPrice} onChange={handleEditChange}
-                      className="surplus-input"
-                    />
-                    <input 
-                      type="number" name="surplusQuantity" placeholder="Qty" 
-                      value={editFormData.surplusQuantity} onChange={handleEditChange}
-                      className="surplus-input"
-                    />
-                    <div className="edit-actions">
-                      <button onClick={() => saveSurplus(item._id)} className="save-btn">💾</button>
-                      <button onClick={cancelEditing} className="cancel-btn">❌</button>
-                    </div>
-                  </div>
+                
+                {/* CASE A: This is already a Bulk Item (show badge) */}
+                {item.category === "Bulk Deals" ? (
+                     <div style={{display: 'flex', flexDirection: 'column'}}>
+                        <span style={{color: '#8e44ad', fontWeight: 'bold', fontSize: '13px'}}>
+                            📦 Bulk Pack
+                        </span>
+                        <span style={{fontSize: '12px', color: '#555', marginTop: '2px'}}>
+                            Remaining Stock: <b>{item.surplusQuantity}</b>
+                        </span>
+                     </div>
                 ) : (
-                  <div className="view-mode">
-                    {item.isSurplus ? (
-                      <span className="surplus-active">
-                        🟢 {currency}{item.surplusPrice} ({item.surplusQuantity} left)
-                      </span>
+                    // CASE B: Standard Item - Check if Form is open
+                    bulkFormId === item._id ? (
+                        <div className="edit-inputs" style={{display:'flex', gap:'5px', flexWrap:'wrap'}}>
+                            {/* Inputs for creating the pack */}
+                            <input 
+                              name="packSize" type="number" placeholder="Count (e.g. 5)" 
+                              value={bulkData.packSize} onChange={handleBulkChange} 
+                              className="surplus-input" style={{width:'120px'}}
+                            />
+                            <input 
+                              name="price" type="number" placeholder="Price ($)" 
+                              value={bulkData.price} onChange={handleBulkChange} 
+                              className="surplus-input" style={{width:'90px'}}
+                            />
+                            <input 
+                              name="qty" type="number" placeholder="Stock" 
+                              value={bulkData.qty} onChange={handleBulkChange} 
+                              className="surplus-input" style={{width:'80px'}}
+                            />
+                            <div className="edit-actions">
+                              <button onClick={() => submitBulk(item._id)} className="save-btn" style={{backgroundColor: '#8e44ad'}}>Create</button>
+                              <button onClick={() => setBulkFormId(null)} className="cancel-btn">X</button>
+                            </div>
+                        </div>
                     ) : (
-                      <span className="surplus-inactive">⚪ Standard</span>
-                    )}
-                    <div className="btn-group">
-                      <button onClick={() => startEditing(item)} className="edit-btn">
-                        {item.isSurplus ? "Edit" : "Add"}
-                      </button>
-                      {item.isSurplus && (
-                        <button onClick={() => disableSurplus(item._id)} className="remove-btn">Stop</button>
-                      )}
-                    </div>
-                  </div>
+                        // CASE C: Standard Item - Show "Create" Button
+                        <button 
+                            onClick={() => {
+                              setBulkFormId(item._id);
+                              setBulkData({ packSize: "", price: "", qty: "" });
+                            }} 
+                            className="edit-btn" 
+                            style={{backgroundColor: '#8e44ad', width: '100%'}}
+                        >
+                            📦 Create Bundle
+                        </button>
+                    )
                 )}
               </div>
               {/* ------------------------------- */}
