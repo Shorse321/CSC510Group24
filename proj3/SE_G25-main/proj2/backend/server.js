@@ -10,12 +10,14 @@ import shelterRouter from "./routes/shelterRoute.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import rerouteRouter from "./routes/rerouteRoute.js";
+import userModel from "./models/userModel.js";
+import { calculateDistance } from "./utils/haversine.js";
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  "http://localhost:5173", // Vite dev
-  "http://localhost:4173", // Vite preview (build)
-  "http://localhost:3000", // if you ever use `serve dist`
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "http://localhost:3000",
 ].filter(Boolean);
 
 const app = express();
@@ -32,20 +34,25 @@ const io = new Server(httpServer, {
 });
 
 // Track connected users
-let connectedUsers = new Map();
+let connectedUsers = new Map(); // socketId -> userId
 
 // Notification queue system
 let notificationQueue = [];
 let isProcessingNotification = false;
 let currentNotificationIndex = 0;
 let eligibleUsers = [];
+let currentProximityData = []; // NEW: Store proximity data for current notification
 let currentNotificationTimeout = null;
 let claimedOrders = new Set();
 
-// Replace your entire notification queue system in server.js with this:
+// Configuration: Maximum distance for notifications (in kilometers)
+const MAX_NOTIFICATION_DISTANCE_KM = 10;
 
-
-const processNotificationQueue = () => {
+/**
+ * Process notification queue with proximity-based filtering
+ * Only notifies users within a certain distance of the order location
+ */
+const processNotificationQueue = async () => {
   if (notificationQueue.length > 0 && !isProcessingNotification) {
     isProcessingNotification = true;
     currentNotificationIndex = 0;
@@ -61,33 +68,105 @@ const processNotificationQueue = () => {
       return;
     }
 
-    // Get eligible users - all connected users EXCEPT the one who cancelled
-    eligibleUsers = Array.from(connectedUsers.entries())
-      .filter(([socketId, userId]) => {
-        // Compare userId (the VALUE) with cancelledByUserId
-        const isEligible = userId !== notification.cancelledByUserId;
-        if (!isEligible) {
-          console.log(`   🚫 Excluding user ${userId} (order canceller)`);
+    // Get order location coordinates
+    const orderLat = notification.orderLocation?.lat;
+    const orderLng = notification.orderLocation?.lng;
+
+    if (!orderLat || !orderLng) {
+      console.log(`⚠️ No valid location for order ${notification.orderId}, skipping proximity filter`);
+      notificationQueue.shift();
+      isProcessingNotification = false;
+      processNotificationQueue();
+      return;
+    }
+
+    // Get all connected user IDs
+    const connectedUserIds = Array.from(connectedUsers.values());
+    
+    // Fetch user data with addresses from database
+    const usersWithAddresses = await userModel
+      .find({ _id: { $in: connectedUserIds } })
+      .select('_id address')
+      .lean();
+
+    // Filter users by proximity and exclude canceller
+    const proximityFilteredUsers = usersWithAddresses
+      .filter(user => {
+        // Exclude the user who cancelled the order
+        if (user._id.toString() === notification.cancelledByUserId) {
+          console.log(`   🚫 Excluding user ${user._id} (order canceller)`);
+          return false;
         }
-        return isEligible;
+
+        // Check if user has valid coordinates
+        if (!user.address || !user.address.lat || !user.address.lng) {
+          console.log(`   ⚠️ User ${user._id} has no valid address coordinates`);
+          return false;
+        }
+
+        // Calculate distance
+        const distance = calculateDistance(
+          orderLat,
+          orderLng,
+          user.address.lat,
+          user.address.lng
+        );
+
+        const isWithinRange = distance <= MAX_NOTIFICATION_DISTANCE_KM;
+        
+        if (isWithinRange) {
+          console.log(`   ✅ User ${user._id} is ${distance.toFixed(2)} km away (within range)`);
+        } else {
+          console.log(`   ❌ User ${user._id} is ${distance.toFixed(2)} km away (too far)`);
+        }
+
+        return isWithinRange;
       })
-      .map(([socketId]) => socketId);
+      .map(user => ({
+        userId: user._id.toString(),
+        distance: calculateDistance(
+          orderLat,
+          orderLng,
+          user.address.lat,
+          user.address.lng
+        )
+      }))
+      .sort((a, b) => a.distance - b.distance); // Sort by closest first
+
+    // Store proximity data at module level for use in showNotificationToNextUser
+    currentProximityData = proximityFilteredUsers;
+
+    // Map user IDs to socket IDs
+    eligibleUsers = proximityFilteredUsers
+      .map(({ userId }) => {
+        // Find socket ID for this user
+        for (const [socketId, uid] of connectedUsers.entries()) {
+          if (uid === userId) {
+            return socketId;
+          }
+        }
+        return null;
+      })
+      .filter(socketId => socketId !== null);
 
     console.log(`\n🔔 Processing notification for order ${notification.orderId}`);
+    console.log(`📍 Order location: ${orderLat}, ${orderLng}`);
     console.log(`📊 Total connected users: ${connectedUsers.size}`);
     console.log(`📊 Order cancelled by userId: ${notification.cancelledByUserId}`);
-    console.log(`✅ Eligible users to notify: ${eligibleUsers.length}`);
+    console.log(`📏 Maximum notification distance: ${MAX_NOTIFICATION_DISTANCE_KM} km`);
+    console.log(`✅ Eligible users (within range): ${eligibleUsers.length}`);
     
     if (eligibleUsers.length > 0) {
-      console.log(`📤 Notifying users (socketIds):`);
+      console.log(`📤 Notifying users (sorted by proximity):`);
       eligibleUsers.forEach((socketId, idx) => {
         const userId = connectedUsers.get(socketId);
-        console.log(`   ${idx + 1}. Socket ${socketId} → User ${userId}`);
+        const userInfo = proximityFilteredUsers.find(u => u.userId === userId);
+        console.log(`   ${idx + 1}. Socket ${socketId} → User ${userId} (${userInfo?.distance.toFixed(2)} km away)`);
       });
     }
 
     if (eligibleUsers.length === 0) {
-      console.log(`⚠️ No eligible users to notify - removing from queue`);
+      console.log(`⚠️ No eligible users within ${MAX_NOTIFICATION_DISTANCE_KM} km - removing from queue`);
       notificationQueue.shift();
       isProcessingNotification = false;
       processNotificationQueue();
@@ -98,6 +177,10 @@ const processNotificationQueue = () => {
   }
 };
 
+/**
+ * Show notification to next user in sequence
+ * Each user gets 7 seconds before moving to next user
+ */
 const showNotificationToNextUser = (notification) => {
   // Check if order was claimed before showing to next user
   if (claimedOrders.has(notification.orderId)) {
@@ -112,27 +195,43 @@ const showNotificationToNextUser = (notification) => {
     const socketId = eligibleUsers[currentNotificationIndex];
     const userId = connectedUsers.get(socketId);
 
-    console.log(`📨 Sending notification ${currentNotificationIndex + 1}/${eligibleUsers.length} to user ${userId} (socket ${socketId})`);
+    // Get distance for this user from stored proximity data
+    const userProximityInfo = currentProximityData.find(u => u.userId === userId);
+    const distanceKm = userProximityInfo?.distance;
 
-    // Send to specific user only
-    io.to(socketId).emit("orderCancelled", notification);
+    console.log(`📨 Sending notification ${currentNotificationIndex + 1}/${eligibleUsers.length} to user ${userId} (socket ${socketId})`);
+    if (distanceKm !== undefined) {
+      console.log(`   📏 Distance: ${distanceKm.toFixed(2)} km`);
+    }
+
+    // Send to specific user only, including distance
+    io.to(socketId).emit("orderCancelled", {
+      ...notification,
+      distanceKm: distanceKm // Include distance in notification
+    });
 
     currentNotificationIndex++;
 
-    // Wait 5 seconds before showing to next user
+    // Wait 7 seconds before showing to next user
     currentNotificationTimeout = setTimeout(() => {
       showNotificationToNextUser(notification);
     }, 7000);
   } else {
     // All users have been notified
-    console.log(`✅ All ${eligibleUsers.length} users notified for order ${notification.orderId}`);
+    console.log(`✅ All ${eligibleUsers.length} eligible users notified for order ${notification.orderId}`);
     notificationQueue.shift();
     isProcessingNotification = false;
+    
+    // Clear proximity data
+    currentProximityData = [];
+    
     processNotificationQueue();
   }
 };
 
-// Stop notification queue for a specific order
+/**
+ * Stop notification queue for a specific order (when someone claims it)
+ */
 const stopNotificationForOrder = (orderId) => {
   console.log(`🛑 Stopping notifications for order ${orderId}`);
   claimedOrders.add(orderId);
@@ -143,20 +242,31 @@ const stopNotificationForOrder = (orderId) => {
     currentNotificationTimeout = null;
   }
 
-  // Move to next in queue
-  if (isProcessingNotification) {
-    notificationQueue.shift();
-    isProcessingNotification = false;
-    processNotificationQueue();
+  // Remove from queue if it's the current notification
+  if (isProcessingNotification && notificationQueue.length > 0) {
+    const currentNotification = notificationQueue[0];
+    if (currentNotification.orderId === orderId) {
+      notificationQueue.shift();
+      isProcessingNotification = false;
+      
+      // Clear proximity data
+      currentProximityData = [];
+      
+      processNotificationQueue();
+    }
   }
 };
 
+/**
+ * Add notification to queue
+ * IMPORTANT: This can be called multiple times for the same order (redistribution)
+ * Each call will send fresh notifications to all eligible users within proximity
+ */
 const queueNotification = (notification) => {
   console.log(`➕ Queuing notification for order ${notification.orderId}`);
   console.log(`   Redistribution #${notification.redistributionCount || 1}`);
   
   // Remove order from claimed set if it's being redistributed again
-  // This allows the same order to be claimed again after redistribution
   if (claimedOrders.has(notification.orderId)) {
     console.log(`🔄 Removing order ${notification.orderId} from claimed set (redistribution)`);
     claimedOrders.delete(notification.orderId);
@@ -179,12 +289,6 @@ io.on("connection", (socket) => {
     connectedUsers.set(socket.id, userId);
     console.log(`✅ User ${userId} registered with socket ${socket.id}`);
     console.log(`📊 Total connected users: ${connectedUsers.size}`);
-    
-    // Log all connected users
-    console.log(`👥 Currently connected:`);
-    connectedUsers.forEach((uid, sid) => {
-      console.log(`   - Socket ${sid} → User ${uid}`);
-    });
   });
 
   // Handle order claim
@@ -206,6 +310,7 @@ io.on("connection", (socket) => {
     console.log(`📊 Total connected users: ${connectedUsers.size}`);
   });
 });
+
 app.use(express.json());
 app.use(cors());
 
