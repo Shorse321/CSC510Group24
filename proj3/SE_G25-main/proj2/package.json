@@ -25,5 +25,8 @@
     "vitest"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  }
 }

@@ -41,6 +41,38 @@ const ADMIN_ALLOWED_TRANSITIONS = {
 };
 
 /**
+ * Ensures address has lat/lng coordinates
+ * If missing, tries to get them from the user's saved address
+ * @param {Object} orderAddress - Address from order
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} Address with lat/lng
+ */
+const ensureAddressCoordinates = async (orderAddress, userId) => {
+  // If address already has coordinates, return as-is
+  if (orderAddress?.lat && orderAddress?.lng) {
+    return orderAddress;
+  }
+
+  console.log(`⚠️ Order address missing coordinates, fetching from user ${userId}`);
+  
+  // Try to get coordinates from user's saved address
+  const user = await userModel.findById(userId).select('address');
+  
+  if (user?.address?.lat && user?.address?.lng) {
+    console.log(`✅ Found coordinates from user's saved address`);
+    return {
+      ...orderAddress,
+      lat: user.address.lat,
+      lng: user.address.lng
+    };
+  }
+  
+  console.error(`❌ No coordinates available for user ${userId}`);
+  return orderAddress; // Return original even if incomplete
+};
+
+
+/**
  * Checks if a status transition is allowed for admin
  * @param {string} from - Current order status
  * @param {string} to - Desired order status
@@ -110,11 +142,7 @@ order.lastCancelledByUserId = userId;
   }
 };
 /**
- * Allows a user to claim a redistributed order
- * Updates ownership and claimer's address information
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
+ * CRITICAL FIX: When claiming an order, ensure the claimer's address has coordinates
  */
 const claimOrder = async (req, res) => {
   try {
@@ -136,6 +164,14 @@ const claimOrder = async (req, res) => {
       return res.json({ success: false, message: "Claimer user not found" });
     }
 
+    // CRITICAL: Verify claimer has valid coordinates
+    if (!claimerUser.address || !claimerUser.address.lat || !claimerUser.address.lng) {
+      return res.json({ 
+        success: false, 
+        message: "Your address is missing location coordinates. Please update your profile with a complete address." 
+      });
+    }
+
     // Preserve original user (very first person who placed order)
     if (!order.originalUserId) order.originalUserId = order.userId;
 
@@ -149,14 +185,9 @@ const claimOrder = async (req, res) => {
     order.status = STATUS.PROCESSING;
     order.cancelledByUser = false; // Reset since it's now claimed
     
-    // Update address to claimer's address (if they have one saved)
-    if (claimerUser.address) {
-      order.address = claimerUser.address;
-    }
+    // Update address to claimer's address (MUST have coordinates)
+    order.address = claimerUser.address;
     
-    // IMPORTANT: Don't reset lastCancelledByUserId here
-    // Keep it so we know who cancelled it previously
-
     await order.save();
 
     // Stop notifications for this order
@@ -175,20 +206,26 @@ const claimOrder = async (req, res) => {
     res.json({ success: false, message: "Error claiming order" });
   }
 };
+
 /**
  * Places a new order with Stripe payment
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
+ * NOW WITH COORDINATE VALIDATION
  */
 const placeOrder = async (req, res) => {
   try {
+    // Ensure address has coordinates
+    const addressWithCoords = await ensureAddressCoordinates(
+      req.body.address,
+      req.body.userId
+    );
+
     const newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
       amount: req.body.amount,
-      address: req.body.address,
+      address: addressWithCoords, // Use address with coordinates
     });
+    
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
@@ -204,19 +241,24 @@ const placeOrder = async (req, res) => {
 
 /**
  * Places a new order with Cash on Delivery
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
+ * NOW WITH COORDINATE VALIDATION
  */
 const placeOrderCod = async (req, res) => {
   try {
+    // Ensure address has coordinates
+    const addressWithCoords = await ensureAddressCoordinates(
+      req.body.address,
+      req.body.userId
+    );
+
     const newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
       amount: req.body.amount,
-      address: req.body.address,
+      address: addressWithCoords, // Use address with coordinates
       payment: true,
     });
+    
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed" });
@@ -225,6 +267,8 @@ const placeOrderCod = async (req, res) => {
     res.json({ success: false, message: "Error" });
   }
 };
+
+
 
 /**
  * Retrieves all orders from the database
@@ -308,7 +352,6 @@ const userOrders = async (req, res) => {
     res.json({ success: false, message: "Error fetching orders" });
   }
 };
-
 /**
  * Updates the status of an order (ADMIN ACTION)
  * Handles redistribution with proximity-based socket notifications
@@ -360,11 +403,22 @@ const updateStatus = async (req, res) => {
         // Use lastCancelledByUserId instead of originalUserId
         const cancelledByUserId = order.lastCancelledByUserId || order.originalUserId || order.userId;
         
-        // IMPORTANT: Include order location for proximity filtering
+        // CRITICAL FIX: Use CURRENT order address (whoever cancelled it last)
+        // The order.address is always the current owner's address after claiming
+        // This is the person who cancelled, so we calculate distance from THEIR location
         const orderLocation = {
           lat: order.address?.lat,
           lng: order.address?.lng
         };
+
+        // Validate location
+        if (!orderLocation.lat || !orderLocation.lng) {
+          console.error(`⚠️ Order ${orderId} missing lat/lng in address. Cannot send proximity notifications.`);
+          return res.json({
+            success: false,
+            message: "Order location is missing. Cannot redistribute.",
+          });
+        }
         
         queueNotification({
           orderId: order._id.toString(),
@@ -375,14 +429,14 @@ const updateStatus = async (req, res) => {
             : "An order is available for claiming!",
           amount: order.amount,
           address: order.address,
-          orderLocation: orderLocation, // NEW: Pass location for proximity filtering
+          orderLocation: orderLocation, // Location of the person who cancelled
           redistributionCount: order.redistributionCount,
         });
         
         console.log(`📢 Queued proximity-based notifications for order ${orderId}`);
         console.log(`   Redistribution #${order.redistributionCount}`);
         console.log(`   Excluding user: ${cancelledByUserId} (most recent canceller)`);
-        console.log(`   Order location: ${orderLocation.lat}, ${orderLocation.lng}`);
+        console.log(`   📍 Distance calculated FROM: ${orderLocation.lat}, ${orderLocation.lng} (current order owner's location)`);
       }
 
       return res.json({
@@ -402,7 +456,6 @@ const updateStatus = async (req, res) => {
     res.json({ success: false, message: "Error updating status" });
   }
 };
-
 /**
  * Verifies payment status after Stripe checkout
  * @param {Object} req - Express request object
