@@ -9,7 +9,6 @@ const LoginPopup = ({ setShowLogin }) => {
   const { setToken, url, loadCartData } = useContext(StoreContext);
   const [currState, setCurrState] = useState("Sign Up");
 
-  // ✅ existing form data + address fields
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -19,8 +18,8 @@ const LoginPopup = ({ setShowLogin }) => {
     addressLng: "",
   });
 
-  // ✅ for address suggestions
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -28,42 +27,77 @@ const LoginPopup = ({ setShowLogin }) => {
     setData((data) => ({ ...data, [name]: value }));
   };
 
-  // ✅ handle address typing (free OpenStreetMap autocomplete)
+  /**
+   * Handle address typing with improved geocoding
+   * Uses Nominatim with better parameters for US-focused results
+   */
   const handleAddressChange = async (e) => {
     const query = e.target.value;
     setData({ ...data, addressFormatted: query });
 
-    // only query API if user typed at least 3 chars
     if (query.length < 3) {
       setSuggestions([]);
       return;
     }
 
+    setIsLoadingSuggestions(true);
+
     try {
+      // Use Nominatim with country bias and better parameters
       const res = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          query
-        )}&format=json&addressdetails=1&limit=5`
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            q: query,
+            format: "json",
+            addressdetails: 1,
+            limit: 10, // Get more results
+            countrycodes: "us", // Prioritize US addresses (change to your country)
+            // You can also add: viewbox and bounded params for geographic bounds
+          },
+          headers: {
+            "User-Agent": "FoodDeliveryApp/1.0", // Required by Nominatim
+          },
+        }
       );
-      setSuggestions(res.data);
+
+      // Filter and deduplicate results
+      const uniqueResults = res.data.filter((place, index, self) =>
+        index === self.findIndex((p) => p.display_name === place.display_name)
+      );
+
+      setSuggestions(uniqueResults);
     } catch (err) {
       console.error("Error fetching address suggestions:", err);
+      toast.error("Could not fetch address suggestions");
+    } finally {
+      setIsLoadingSuggestions(false);
     }
   };
 
-  // ✅ when a user selects a suggestion
+  /**
+   * When user selects a suggestion from dropdown
+   */
   const handleSelectSuggestion = (place) => {
     setData({
       ...data,
       addressFormatted: place.display_name,
-      addressLat: place.lat,
-      addressLng: place.lon,
+      addressLat: parseFloat(place.lat),
+      addressLng: parseFloat(place.lon),
     });
-    setSuggestions([]); // hide dropdown
+    setSuggestions([]);
   };
 
   const onLogin = async (e) => {
     e.preventDefault();
+
+    // Validate address for Sign Up
+    if (currState === "Sign Up") {
+      if (!data.addressLat || !data.addressLng) {
+        toast.error("Please select a valid address from the suggestions");
+        return;
+      }
+    }
 
     let new_url = url;
     if (currState === "Login") {
@@ -72,7 +106,6 @@ const LoginPopup = ({ setShowLogin }) => {
       new_url += "/api/user/register";
     }
 
-    // ✅ only add address if we're signing up
     let payload = { ...data };
     if (currState === "Sign Up") {
       payload = {
@@ -81,8 +114,8 @@ const LoginPopup = ({ setShowLogin }) => {
         password: data.password,
         address: {
           formatted: data.addressFormatted,
-          lat: data.addressLat,
-          lng: data.addressLng,
+          lat: parseFloat(data.addressLat),
+          lng: parseFloat(data.addressLng),
         },
       };
     }
@@ -94,6 +127,7 @@ const LoginPopup = ({ setShowLogin }) => {
         localStorage.setItem("token", response.data.token);
         loadCartData({ token: response.data.token });
         setShowLogin(false);
+        toast.success(currState === "Login" ? "Logged in successfully!" : "Account created successfully!");
       } else {
         toast.error(response.data.message);
       }
@@ -127,16 +161,32 @@ const LoginPopup = ({ setShowLogin }) => {
                 required
               />
 
-              {/* ✅ Free OpenStreetMap autocomplete input */}
+              {/* Address autocomplete input */}
               <div style={{ position: "relative" }}>
                 <input
                   type="text"
-                  placeholder="Enter your address"
+                  placeholder="Enter your address (e.g., 123 Main St, Raleigh, NC)"
                   value={data.addressFormatted}
                   onChange={handleAddressChange}
                   required
                   autoComplete="off"
+                  style={{ width: "100%" }}
                 />
+                
+                {/* Loading indicator */}
+                {isLoadingSuggestions && (
+                  <div style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    fontSize: "12px",
+                    color: "#666"
+                  }}>
+                    Loading...
+                  </div>
+                )}
+
                 {/* Suggestions dropdown */}
                 {suggestions.length > 0 && (
                   <ul
@@ -149,26 +199,55 @@ const LoginPopup = ({ setShowLogin }) => {
                       position: "absolute",
                       width: "100%",
                       zIndex: 1000,
-                      maxHeight: "150px",
+                      maxHeight: "200px",
                       overflowY: "auto",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                      borderRadius: "4px",
                     }}
                   >
                     {suggestions.map((s) => (
                       <li
                         key={s.place_id}
                         style={{
-                          padding: "8px",
+                          padding: "10px",
                           cursor: "pointer",
                           borderBottom: "1px solid #eee",
+                          fontSize: "14px",
+                          transition: "background 0.2s",
                         }}
                         onClick={() => handleSelectSuggestion(s)}
+                        onMouseEnter={(e) => e.target.style.background = "#f5f5f5"}
+                        onMouseLeave={(e) => e.target.style.background = "#fff"}
                       >
-                        {s.display_name}
+                        <div style={{ fontWeight: "500", marginBottom: "2px" }}>
+                          {s.address?.road || s.address?.neighbourhood || "Address"}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#666" }}>
+                          {s.display_name}
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
+                
+                {/* No results message */}
+                {!isLoadingSuggestions && data.addressFormatted.length >= 3 && suggestions.length === 0 && (
+                  <div style={{
+                    fontSize: "12px",
+                    color: "#999",
+                    marginTop: "5px"
+                  }}>
+                    No results found. Try a more specific address (include street, city, state).
+                  </div>
+                )}
               </div>
+
+              {/* Show selected coordinates (optional, for debugging) */}
+              {data.addressLat && data.addressLng && (
+                <div style={{ fontSize: "11px", color: "#28a745", marginTop: "5px" }}>
+                  ✓ Address validated ({data.addressLat}, {data.addressLng})
+                </div>
+              )}
             </>
           ) : null}
 
@@ -190,10 +269,12 @@ const LoginPopup = ({ setShowLogin }) => {
           />
         </div>
 
-        <button>{currState === "Login" ? "Login" : "Create account"}</button>
+        <button type="submit">
+          {currState === "Login" ? "Login" : "Create account"}
+        </button>
 
         <div className="login-popup-condition">
-          <input type="checkbox" name="" id="" required />
+          <input type="checkbox" required />
           <p>By continuing, I agree to the terms of use & privacy policy.</p>
         </div>
 
