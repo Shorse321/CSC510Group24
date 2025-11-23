@@ -79,10 +79,16 @@ const StoreContextProvider = (props) => {
       try {
         if (cartItems[item] > 0) {
           let itemInfo = food_list.find((product) => product._id === item);
-          // --- NEW PRICING LOGIC ---
-          // If surplus, use surplusPrice. Otherwise, use regular price.
-          const price = itemInfo.isSurplus ? itemInfo.surplusPrice : itemInfo.price;
-          totalAmount += itemInfo.price * cartItems[item];
+          /// --- NEW LOGIC START ---
+          // Check if the item is on surplus sale
+          if (itemInfo.isSurplus) {
+             // Use the discounted price
+             totalAmount += itemInfo.surplusPrice * cartItems[item];
+          } else {
+             // Use the regular price
+             totalAmount += itemInfo.price * cartItems[item];
+          }
+          // --- NEW LOGIC END ---
         }
       } catch (error) {}
     }

@@ -62,7 +62,19 @@ const PlaceOrder = () => {
     let orderItems = [];
     food_list.map((item) => {
       if (cartItems[item._id] > 0) {
-        const { image, model3D, ...itemInfo } = item; // Destructure to exclude image
+        // 1. Create a shallow copy so we don't mutate the original list
+        let itemInfo = { ...item }; 
+
+        // 2. Remove heavy data we don't save in Orders
+        delete itemInfo.image;
+        delete itemInfo.model3D;
+
+        // 3. CRITICAL: If on sale, overwrite 'price' with 'surplusPrice'
+        // This ensures the order history shows $20, not $30
+        if (item.isSurplus) {
+            itemInfo.price = item.surplusPrice;
+        }
+
         itemInfo["quantity"] = cartItems[item._id];
         orderItems.push(itemInfo);
       }
