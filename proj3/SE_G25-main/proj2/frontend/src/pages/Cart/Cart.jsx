@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../Context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { assets } from "../../assets/assets";
 
 const Cart = () => {
   const {
@@ -26,20 +27,39 @@ const Cart = () => {
         <hr />
         {food_list.map((item, index) => {
           if (cartItems[item._id] > 0) {
+            // --- NEW LOGIC START ---
+            // 1. Check if it's a surplus item
+            const isSurplus = item.isSurplus;
+            
+            // 2. Use surplusPrice if true, otherwise use regular price
+            const price = isSurplus ? item.surplusPrice : item.price;
+            
+            // 3. Fix Image URL (Handle Base64 data vs URLs)
+            const imageUrl =
+              item.image && item.image.data
+                ? `data:${item.image.contentType};base64,${item.image.data}`
+                : assets.default_food_image;
+            // --- NEW LOGIC END ---
             return (
               <div key={index}>
                 <div className="cart-items-title cart-items-item">
-                  <img src={url + "/images/" + item.image} alt="" />
+                  <img src={imageUrl} alt="" /> {/* <--- UPDATED SRC */}
                   <p>{item.name}</p>
+                  
+                  {/* --- UPDATED PRICE DISPLAY --- */}
                   <p>
-                    {currency}
-                    {item.price}
+                    {currency}{price} {/* Uses the new 'price' variable */}
+                    {isSurplus && <span style={{color: "green", fontSize: "12px", display: "block"}}>(On Sale)</span>}
                   </p>
+                  
                   <div>{cartItems[item._id]}</div>
+                  
+                  {/* --- UPDATED TOTAL CALCULATION --- */}
                   <p>
                     {currency}
-                    {item.price * cartItems[item._id]}
+                    {price * cartItems[item._id]} {/* Uses 'price' instead of item.price */}
                   </p>
+                  
                   <p
                     className="cart-items-remove-icon"
                     onClick={() => removeFromCart(item._id)}

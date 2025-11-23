@@ -28,6 +28,11 @@ const FoodDisplay = ({ category }) => {
                 price={item.price}
                 id={item._id}
                 model3D={item.model3D}
+                // --- ADD THESE 3 LINES ---
+                isSurplus={item.isSurplus}
+                surplusPrice={item.surplusPrice}
+                surplusQuantity={item.surplusQuantity}
+                // -------------------------
               />
             );
           })}

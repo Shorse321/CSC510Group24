@@ -88,7 +88,8 @@ const PlaceOrder = () => {
         headers: { token },
       });
       if (response.data.success) {
-        navigate("/myorders");
+        // navigate("/myorders");
+        window.location.replace("/myorders");
         toast.success(response.data.message);
         setCartItems({});
       } else {

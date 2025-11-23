@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { food_list, menu_list } from "../assets/assets";
 import axios from "axios";
 export const StoreContext = createContext(null);
-
+import { toast } from "react-toastify";
 /**
  * StoreContextProvider - Main context provider for application state
  * Manages food list, cart items, authentication token, and cart operations
@@ -25,6 +25,19 @@ const StoreContextProvider = (props) => {
    * @returns {Promise<void>}
    */
   const addToCart = async (itemId) => {
+    // 1. Find the item details to check limits
+    const itemInfo = food_list.find((product) => product._id === itemId);
+
+    // 2. Check Surplus Limit
+    if (itemInfo && itemInfo.isSurplus) {
+        const currentQty = cartItems[itemId] || 0;
+        if (currentQty >= itemInfo.surplusQuantity) {
+            toast.error(`Only ${itemInfo.surplusQuantity} available at this price!`);
+            return; // STOP here. Do not add to cart.
+        }
+    }
+
+    // 3. Normal Add Logic
     if (!cartItems[itemId]) {
       setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
     } else {
@@ -66,6 +79,9 @@ const StoreContextProvider = (props) => {
       try {
         if (cartItems[item] > 0) {
           let itemInfo = food_list.find((product) => product._id === item);
+          // --- NEW PRICING LOGIC ---
+          // If surplus, use surplusPrice. Otherwise, use regular price.
+          const price = itemInfo.isSurplus ? itemInfo.surplusPrice : itemInfo.price;
           totalAmount += itemInfo.price * cartItems[item];
         }
       } catch (error) {}

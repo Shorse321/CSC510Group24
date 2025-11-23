@@ -108,4 +108,28 @@ const removeFood = async (req, res) => {
   }
 };
 
-export { listFood, addFood, removeFood };
+// --- NEW FUNCTION ADDED BELOW ---
+
+/**
+ * Toggles a food item's surplus status
+ * Allows restaurants to list items as surplus with a discount
+ */
+const toggleSurplus = async (req, res) => {
+  try {
+    const { id, isSurplus, surplusPrice, surplusQuantity } = req.body;
+
+    await foodModel.findByIdAndUpdate(id, {
+      isSurplus: isSurplus,
+      surplusPrice: surplusPrice,
+      surplusQuantity: surplusQuantity
+    });
+
+    res.json({ success: true, message: "Surplus Status Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error Updating Surplus" });
+  }
+};
+
+
+export { listFood, addFood, removeFood, toggleSurplus };

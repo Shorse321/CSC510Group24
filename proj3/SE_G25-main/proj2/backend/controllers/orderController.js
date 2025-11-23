@@ -4,7 +4,7 @@ import shelterModel from "../models/shelterModel.js";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 import rerouteModel from "../models/rerouteModel.js";
-
+import foodModel from "../models/foodModel.js";
 // config variables
 const currency = "usd";
 const deliveryCharge = 5;
@@ -211,9 +211,36 @@ const claimOrder = async (req, res) => {
  * Places a new order with Stripe payment
  * NOW WITH COORDINATE VALIDATION
  */
+// const placeOrder = async (req, res) => {
+//   try {
+//     // Ensure address has coordinates
+//     const addressWithCoords = await ensureAddressCoordinates(
+//       req.body.address,
+//       req.body.userId
+//     );
+
+//     const newOrder = new orderModel({
+//       userId: req.body.userId,
+//       items: req.body.items,
+//       amount: req.body.amount,
+//       address: addressWithCoords, // Use address with coordinates
+//     });
+    
+//     await newOrder.save();
+//     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+
+//     res.json({
+//       success: true,
+//       session_url: `${frontend_URL}/verify?success=true&orderId=${newOrder._id}`,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.json({ success: false, message: error });
+//   }
+// };
+
 const placeOrder = async (req, res) => {
   try {
-    // Ensure address has coordinates
     const addressWithCoords = await ensureAddressCoordinates(
       req.body.address,
       req.body.userId
@@ -223,11 +250,33 @@ const placeOrder = async (req, res) => {
       userId: req.body.userId,
       items: req.body.items,
       amount: req.body.amount,
-      address: addressWithCoords, // Use address with coordinates
+      address: addressWithCoords,
     });
     
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+
+    // --- NEW INVENTORY LOGIC START ---
+    // Iterate through every item in the order
+    for (const item of req.body.items) {
+      // Find the specific food item in the database
+      const food = await foodModel.findById(item._id);
+      
+      // If it exists and is currently on surplus sale
+      if (food && food.isSurplus) {
+        // Subtract the bought quantity from the surplus stock
+        food.surplusQuantity -= item.quantity;
+
+        // If stock drops to 0 (or below), turn off the surplus flag
+        if (food.surplusQuantity <= 0) {
+          food.surplusQuantity = 0;
+          food.isSurplus = false; 
+        }
+        
+        await food.save();
+      }
+    }
+    // --- NEW INVENTORY LOGIC END ---
 
     res.json({
       success: true,
@@ -243,9 +292,33 @@ const placeOrder = async (req, res) => {
  * Places a new order with Cash on Delivery
  * NOW WITH COORDINATE VALIDATION
  */
+// const placeOrderCod = async (req, res) => {
+//   try {
+//     // Ensure address has coordinates
+//     const addressWithCoords = await ensureAddressCoordinates(
+//       req.body.address,
+//       req.body.userId
+//     );
+
+//     const newOrder = new orderModel({
+//       userId: req.body.userId,
+//       items: req.body.items,
+//       amount: req.body.amount,
+//       address: addressWithCoords, // Use address with coordinates
+//       payment: true,
+//     });
+    
+//     await newOrder.save();
+//     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+//     res.json({ success: true, message: "Order Placed" });
+//   } catch (error) {
+//     console.error(error);
+//     res.json({ success: false, message: "Error" });
+//   }
+// };
+
 const placeOrderCod = async (req, res) => {
   try {
-    // Ensure address has coordinates
     const addressWithCoords = await ensureAddressCoordinates(
       req.body.address,
       req.body.userId
@@ -255,20 +328,33 @@ const placeOrderCod = async (req, res) => {
       userId: req.body.userId,
       items: req.body.items,
       amount: req.body.amount,
-      address: addressWithCoords, // Use address with coordinates
+      address: addressWithCoords,
       payment: true,
     });
     
     await newOrder.save();
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+
+    // --- NEW INVENTORY LOGIC START ---
+    for (const item of req.body.items) {
+      const food = await foodModel.findById(item._id);
+      if (food && food.isSurplus) {
+        food.surplusQuantity -= item.quantity;
+        if (food.surplusQuantity <= 0) {
+          food.surplusQuantity = 0;
+          food.isSurplus = false;
+        }
+        await food.save();
+      }
+    }
+    // --- NEW INVENTORY LOGIC END ---
+
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: "Error" });
   }
 };
-
-
 
 /**
  * Retrieves all orders from the database

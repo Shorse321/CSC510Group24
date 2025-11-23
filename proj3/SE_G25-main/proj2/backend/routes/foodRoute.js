@@ -3,6 +3,7 @@ import {
   addFood,
   listFood,
   removeFood,
+  toggleSurplus,
 } from "../controllers/foodController.js";
 import multer from "multer";
 const foodRouter = express.Router();
@@ -30,5 +31,8 @@ foodRouter.post(
   addFood
 );
 foodRouter.post("/remove", removeFood);
+
+// --- NEW ROUTE ADDED HERE ---
+foodRouter.post("/surplus", toggleSurplus);
 
 export default foodRouter;
