@@ -108,4 +108,75 @@ const removeFood = async (req, res) => {
   }
 };
 
-export { listFood, addFood, removeFood };
+// --- NEW FUNCTION ADDED BELOW ---
+
+/**
+ * Toggles a food item's surplus status
+ * Allows restaurants to list items as surplus with a discount
+ */
+const toggleSurplus = async (req, res) => {
+  try {
+    const { id, isSurplus, surplusPrice, surplusQuantity } = req.body;
+
+    await foodModel.findByIdAndUpdate(id, {
+      isSurplus: isSurplus,
+      surplusPrice: surplusPrice,
+      surplusQuantity: surplusQuantity
+    });
+
+    res.json({ success: true, message: "Surplus Status Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error Updating Surplus" });
+  }
+};
+
+/**
+ * Creates a NEW bulk item (e.g. "5x Sandwich") based on an existing one.
+ */
+const createBulkItem = async (req, res) => {
+  try {
+    const { id, bulkPrice, packSize, inventoryCount } = req.body;
+
+    const original = await foodModel.findById(id);
+    if (!original) return res.json({ success: false, message: "Item not found" });
+
+    const bulkItem = new foodModel({
+      name: `${packSize}x ${original.name} (Bulk)`, // New Name
+      description: `Value Pack: ${packSize} units of ${original.name}`,
+      price: Number(bulkPrice), // The Bulk Price
+      image: original.image,    // Same Image
+      model3D: original.model3D, // Same 3D Model
+      category: "Bulk Deals",   // New Category
+      isSurplus: true,          // Keeps "Surplus" flag so inventory logic works
+      surplusQuantity: Number(inventoryCount) // Separate Stock
+    });
+
+    await bulkItem.save();
+    res.json({ success: true, message: "Bulk Pack Created!" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};
+
+/**
+ * Updates the Price and Inventory of an existing Bulk Item
+ */
+const updateBulkItem = async (req, res) => {
+  try {
+    const { id, price, inventoryCount } = req.body;
+    
+    await foodModel.findByIdAndUpdate(id, {
+      price: Number(price),
+      surplusQuantity: Number(inventoryCount)
+    });
+
+    res.json({ success: true, message: "Bulk Pack Updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error updating bulk pack" });
+  }
+};
+
+export {listFood, addFood, removeFood, toggleSurplus, createBulkItem, updateBulkItem};
