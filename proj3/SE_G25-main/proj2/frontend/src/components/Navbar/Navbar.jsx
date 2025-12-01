@@ -113,6 +113,10 @@ const Navbar = ({ setShowLogin }) => {
                 <img src={assets.bag_icon} alt="Orders" /> <p>Orders</p>
               </li>
               <hr />
+              <li onClick={() => navigate("/preferences")}>
+                <img src={assets.profile_icon} alt="Preferences" /> <p>Preferences</p>
+              </li>
+              <hr />
               <li onClick={logout}>
                 <img src={assets.logout_icon} alt="Logout" /> <p>Logout</p>
               </li>

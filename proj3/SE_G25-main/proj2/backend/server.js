@@ -49,8 +49,8 @@ let claimedOrders = new Set();
 const MAX_NOTIFICATION_DISTANCE_KM = 10;
 
 /**
- * Process notification queue with proximity-based filtering
- * Only notifies users within a certain distance of the order location
+ * Process notification queue with proximity-based filtering AND user preferences
+ * Only notifies users within a certain distance of the order location who match preference criteria
  */
 const processNotificationQueue = async () => {
   if (notificationQueue.length > 0 && !isProcessingNotification) {
@@ -83,18 +83,24 @@ const processNotificationQueue = async () => {
     // Get all connected user IDs
     const connectedUserIds = Array.from(connectedUsers.values());
     
-    // Fetch user data with addresses from database
+    // Fetch user data with addresses AND preferences from database
     const usersWithAddresses = await userModel
       .find({ _id: { $in: connectedUserIds } })
-      .select('_id address')
+      .select('_id address preferences')
       .lean();
 
-    // Filter users by proximity and exclude canceller
+    // Filter users by proximity AND preferences
     const proximityFilteredUsers = usersWithAddresses
       .filter(user => {
         // Exclude the user who cancelled the order
         if (user._id.toString() === notification.cancelledByUserId) {
           console.log(`   🚫 Excluding user ${user._id} (order canceller)`);
+          return false;
+        }
+
+        // Check if notifications are enabled
+        if (user.preferences?.notificationsEnabled === false) {
+          console.log(`   🔕 User ${user._id} has notifications disabled`);
           return false;
         }
 
@@ -112,15 +118,46 @@ const processNotificationQueue = async () => {
           user.address.lng
         );
 
-        const isWithinRange = distance <= MAX_NOTIFICATION_DISTANCE_KM;
+        // Check user's preferred max distance (or use system default)
+        const userMaxDistance = user.preferences?.maxDistance || MAX_NOTIFICATION_DISTANCE_KM;
+        const isWithinRange = distance <= userMaxDistance;
         
-        if (isWithinRange) {
-          console.log(`   ✅ User ${user._id} is ${distance.toFixed(2)} km away (within range)`);
-        } else {
-          console.log(`   ❌ User ${user._id} is ${distance.toFixed(2)} km away (too far)`);
+        if (!isWithinRange) {
+          console.log(`   ❌ User ${user._id} is ${distance.toFixed(2)} km away (outside their ${userMaxDistance} km preference)`);
+          return false;
         }
 
-        return isWithinRange;
+        // Check price range preferences
+        const minPrice = user.preferences?.minPrice || 0;
+        const maxPrice = user.preferences?.maxPrice || Infinity;
+        const orderAmount = notification.amount || 0;
+
+        if (orderAmount < minPrice || orderAmount > maxPrice) {
+          console.log(`   💰 Order $${orderAmount} outside user ${user._id}'s price range ($${minPrice}-$${maxPrice})`);
+          return false;
+        }
+
+        // Check preferred items (if user has any preferences)
+        const preferredItems = user.preferences?.preferredItems || [];
+        if (preferredItems.length > 0) {
+          const orderItemNames = (notification.orderItems || []).map(item => 
+            item.name?.toLowerCase()
+          );
+          
+          const hasPreferredItem = preferredItems.some(prefItem => 
+            orderItemNames.some(orderItem => 
+              orderItem?.includes(prefItem.toLowerCase())
+            )
+          );
+
+          if (!hasPreferredItem) {
+            console.log(`   🍽️ User ${user._id} has item preferences but order doesn't match`);
+            return false;
+          }
+        }
+
+        console.log(`   ✅ User ${user._id} is ${distance.toFixed(2)} km away and matches all preferences`);
+        return true;
       })
       .map(user => ({
         userId: user._id.toString(),
@@ -149,12 +186,12 @@ const processNotificationQueue = async () => {
       })
       .filter(socketId => socketId !== null);
 
-    console.log(`\n🔔 Processing notification for order ${notification.orderId}`);
+    console.log(`\n📢 Processing notification for order ${notification.orderId}`);
     console.log(`📍 Order location: ${orderLat}, ${orderLng}`);
     console.log(`📊 Total connected users: ${connectedUsers.size}`);
     console.log(`📊 Order cancelled by userId: ${notification.cancelledByUserId}`);
     console.log(`📏 Maximum notification distance: ${MAX_NOTIFICATION_DISTANCE_KM} km`);
-    console.log(`✅ Eligible users (within range): ${eligibleUsers.length}`);
+    console.log(`✅ Eligible users (after all filters): ${eligibleUsers.length}`);
     
     if (eligibleUsers.length > 0) {
       console.log(`📤 Notifying users (sorted by proximity):`);
@@ -166,7 +203,7 @@ const processNotificationQueue = async () => {
     }
 
     if (eligibleUsers.length === 0) {
-      console.log(`⚠️ No eligible users within ${MAX_NOTIFICATION_DISTANCE_KM} km - removing from queue`);
+      console.log(`⚠️ No eligible users match preferences - removing from queue`);
       notificationQueue.shift();
       isProcessingNotification = false;
       processNotificationQueue();
