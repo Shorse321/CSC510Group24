@@ -1,18 +1,23 @@
 name: Admin Panel CI
 
 on:
+  workflow_dispatch:
   push:
+    branches: [ "main" ]
     paths:
-      - 'admin/**' # Only run if admin files change
+      - 'proj3/SE_G25-main/proj2/admin/**'
   pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'proj3/SE_G25-main/proj2/admin/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     defaults:
       run:
-        working-directory: ./admin
+        working-directory: ./proj3/SE_G25-main/proj2/admin
 
     steps:
     - uses: actions/checkout@v4
@@ -22,10 +27,9 @@ jobs:
       with:
         node-version: 18.x
         cache: 'npm'
-        # Point to the admin lock file
-        cache-dependency-path: admin/package-lock.json
+        cache-dependency-path: proj3/SE_G25-main/proj2/admin/package-lock.json
 
     - run: npm ci
-    
-    # Builds the admin panel to check for errors
+
+    # Checks if the admin panel compiles correctly
     - run: npm run build

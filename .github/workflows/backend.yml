@@ -1,19 +1,26 @@
 name: Backend CI
 
 on:
+  workflow_dispatch: # Allows manual run button
   push:
+    branches: [ "main" ]
     paths:
-      - 'backend/**' # Only run if backend files change
+      - 'proj3/SE_G25-main/proj2/backend/**'
   pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'proj3/SE_G25-main/proj2/backend/**'
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
+
+    # Set the folder where commands run
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./proj3/SE_G25-main/proj2/backend
 
+    # Spin up temporary MongoDB
     services:
       mongodb:
         image: mongo:6.0
@@ -37,7 +44,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+        # Point to the specific lock file location
+        cache-dependency-path: proj3/SE_G25-main/proj2/backend/package-lock.json
 
     - run: npm ci
 
