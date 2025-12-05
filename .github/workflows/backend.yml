@@ -5,8 +5,6 @@ on:
     paths:
       - 'backend/**' # Only run if backend files change
   pull_request:
-    paths:
-      - 'backend/**'
 
 jobs:
   build-and-test:
