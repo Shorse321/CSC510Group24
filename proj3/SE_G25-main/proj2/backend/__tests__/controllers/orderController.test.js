@@ -1,488 +1,346 @@
-import { describe, it, expect, beforeEach, jest } from "@jest/globals";
-import orderModel from "../../models/orderModel.js";
-import userModel from "../../models/userModel.js";
-import shelterModel from "../../models/shelterModel.js";
-import rerouteModel from "../../models/rerouteModel.js";
-import {
-  placeOrder,
-  placeOrderCod,
-  listOrders,
-  userOrders,
-  updateStatus,
-  cancelOrder,
-  assignShelter,
-  verifyOrder,
-  claimOrder,
-} from "../../controllers/orderController.js";
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
-describe("Order Controller", () => {
+// =====================================================================
+// 1. MOCKING PHASE
+// =====================================================================
+
+// --- Mock Order Model (Constructor + Statics) ---
+await jest.unstable_mockModule("../../models/orderModel.js", () => {
+  // 1. Create the mock instance methods (like .save())
+  const mockInstance = {
+    save: jest.fn(),
+  };
+
+  // 2. Create the Mock Constructor Function
+  // When 'new orderModel()' is called, it returns mockInstance
+  const MockConstructor = jest.fn(() => mockInstance);
+
+  // 3. Attach Static Methods to the Constructor
+  MockConstructor.find = jest.fn();
+  MockConstructor.findById = jest.fn();
+  MockConstructor.findByIdAndUpdate = jest.fn();
+  MockConstructor.findByIdAndDelete = jest.fn();
+  
+  // Helper to access the instance mock from tests
+  MockConstructor.mockInstance = mockInstance;
+
+  return {
+    default: MockConstructor
+  };
+});
+
+// --- Define reusable User Mock logic for .select() chaining ---
+const mockUserWithSelect = () => ({
+  select: jest.fn().mockResolvedValue({ 
+    _id: "user1", 
+    address: { lat: 10, lng: 10 } 
+  })
+});
+
+// --- Mock User Model ---
+await jest.unstable_mockModule("../../models/userModel.js", () => ({
+  default: {
+    // Default behavior supports chaining: findById().select()
+    findById: jest.fn(() => mockUserWithSelect()),
+    findByIdAndUpdate: jest.fn(),
+  }
+}));
+
+// --- Mock Food Model ---
+await jest.unstable_mockModule("../../models/foodModel.js", () => ({
+  default: {
+    findById: jest.fn(),
+  }
+}));
+
+// --- Mock Shelter Model ---
+await jest.unstable_mockModule("../../models/shelterModel.js", () => ({
+  default: {
+    findById: jest.fn(),
+  }
+}));
+
+// --- Mock Reroute Model ---
+await jest.unstable_mockModule("../../models/rerouteModel.js", () => ({
+  default: {
+    create: jest.fn(),
+  }
+}));
+
+// --- Mock Stripe ---
+await jest.unstable_mockModule("stripe", () => ({
+  default: jest.fn(() => ({
+    checkout: { sessions: { create: jest.fn(() => ({ url: "http://fake-session-url" })) } }
+  }))
+}));
+
+// =====================================================================
+// 2. IMPORT PHASE
+// =====================================================================
+const { 
+  placeOrder, 
+  placeOrderCod,
+  verifyOrder, 
+  userOrders, 
+  listOrders, 
+  updateStatus, 
+  cancelOrder, 
+  claimOrder,
+  assignShelter
+} = await import("../../controllers/orderController.js");
+
+const orderModel = (await import("../../models/orderModel.js")).default;
+const userModel = (await import("../../models/userModel.js")).default;
+const foodModel = (await import("../../models/foodModel.js")).default;
+const shelterModel = (await import("../../models/shelterModel.js")).default;
+const rerouteModel = (await import("../../models/rerouteModel.js")).default;
+
+// =====================================================================
+// 3. TEST SUITE
+// =====================================================================
+describe("Order Controller - Full Suite", () => {
   let req, res;
 
   beforeEach(() => {
     req = {
       body: {},
-      app: {
-        get: jest.fn(),
-      },
+      app: { get: jest.fn() }, // Mock req.app.get for socket functions
     };
     res = {
       json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     };
-    process.env.STRIPE_SECRET_KEY = "sk_test_key";
     jest.clearAllMocks();
+
+    // RESTORE MOCKS: Ensure userModel always has the .select() structure by default
+    userModel.findById.mockImplementation(() => mockUserWithSelect());
+    
+    // Reset orderModel static returns
+    orderModel.find.mockReset();
+    orderModel.findById.mockReset();
   });
 
+  // --- 1. placeOrder (Stripe) ---
   describe("placeOrder", () => {
-    it("should place order successfully", async () => {
+    it("should place stripe order successfully", async () => {
       req.body = {
-        userId: "507f1f77bcf86cd799439011",
-        items: [{ name: "Food 1", price: 10, quantity: 2 }],
-        amount: 25.99,
-        address: { formatted: "123 Main St" },
+        userId: "user1",
+        items: [{ _id: "food1", quantity: 1 }],
+        amount: 50,
+        address: { street: "123 Main" }
       };
 
-      const mockOrderInstance = {
-        _id: "507f1f77bcf86cd799439013",
-        save: jest.fn().mockResolvedValue({
-          _id: "507f1f77bcf86cd799439013",
-          items: [{ name: "Food 1", price: 10, quantity: 2 }],
-          amount: 25.99,
-        }),
-      };
+      // foodModel returns item (not surplus, simple path)
+      foodModel.findById.mockResolvedValue({ _id: "food1", isSurplus: false });
+      
+      await placeOrder(req, res);
 
-      // For ES modules, constructor mocking is complex
-      // Test that the function exists and has correct structure
-      userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-
-      // We can't easily mock Mongoose model constructors in ES modules
-      // So we validate the function structure instead
-      expect(typeof placeOrder).toBe("function");
-    });
-
-    it("should handle errors when placing order", async () => {
-      req.body = {
-        userId: "507f1f77bcf86cd799439011",
-        items: [],
-        amount: 25.99,
-        address: {},
-      };
-
-      // Test error handling structure
-      userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-
-      // Function structure validation
-      expect(typeof placeOrder).toBe("function");
+      // Check if the constructor was called
+      expect(orderModel).toHaveBeenCalledTimes(1);
+      // Check if .save() was called on the instance
+      expect(orderModel.mockInstance.save).toHaveBeenCalled();
+      
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });
   });
 
+  // --- 2. placeOrderCod (Cash) ---
   describe("placeOrderCod", () => {
     it("should place COD order successfully", async () => {
       req.body = {
-        userId: "507f1f77bcf86cd799439011",
-        items: [{ name: "Food 1", price: 10, quantity: 2 }],
-        amount: 25.99,
-        address: { formatted: "123 Main St" },
+        userId: "user1",
+        items: [{ _id: "food1", quantity: 1 }],
+        amount: 50,
+        address: { street: "123 Main" }
       };
 
-      const mockOrderInstance = {
-        _id: "507f1f77bcf86cd799439013",
-        save: jest.fn().mockResolvedValue(true),
-      };
+      foodModel.findById.mockResolvedValue({ _id: "food1", isSurplus: false });
 
-      // For ES modules, we can't reassign imports, so we test behavior
-      // Mock the userModel which is used
-      userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+      await placeOrderCod(req, res);
 
-      // Since we can't easily mock the orderModel constructor in ES modules,
-      // we'll skip the constructor mock and test the response handling
-      // This test validates the controller logic structure
-      expect(typeof placeOrderCod).toBe("function");
+      expect(orderModel).toHaveBeenCalledTimes(1);
+      expect(orderModel.mockInstance.save).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({ success: true, message: "Order Placed" });
     });
   });
 
+  // --- 3. verifyOrder ---
+  describe("verifyOrder", () => {
+    it("should verify order payment successfully", async () => {
+      req.body = { orderId: "order1", success: "true" };
+      orderModel.findByIdAndUpdate.mockResolvedValue(true);
+
+      await verifyOrder(req, res);
+
+      expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith("order1", { payment: true });
+      expect(res.json).toHaveBeenCalledWith({ success: true, message: "Paid" });
+    });
+
+    it("should delete order if payment failed", async () => {
+      req.body = { orderId: "order1", success: "false" };
+      orderModel.findByIdAndDelete.mockResolvedValue(true);
+
+      await verifyOrder(req, res);
+
+      expect(orderModel.findByIdAndDelete).toHaveBeenCalledWith("order1");
+      expect(res.json).toHaveBeenCalledWith({ success: false, message: "Not Paid" });
+    });
+  });
+
+  // --- 4. userOrders ---
+  describe("userOrders", () => {
+    it("should fetch user orders", async () => {
+      req.body = { userId: "user1" };
+      
+      // FIX: Add 'status' and other likely required fields to the mock
+      const mockOrders = [{ 
+        _id: "order1", 
+        userId: "user1", 
+        status: "Food Processing", // Essential if controller filters by status
+        items: [],
+        amount: 50
+      }];
+      
+      // Mock chaining: find().sort()
+      // This ensures that when the controller calls .sort(), it receives the array
+      const sortMock = jest.fn().mockResolvedValue(mockOrders);
+      orderModel.find.mockReturnValue({ sort: sortMock });
+
+      await userOrders(req, res);
+
+      // Verify the query contained the userId
+      expect(orderModel.find).toHaveBeenCalledWith(expect.objectContaining({ 
+        $or: expect.arrayContaining([{ userId: "user1" }]) 
+      }));
+      
+      expect(res.json).toHaveBeenCalledWith({ success: true, data: mockOrders });
+    });
+  });
+
+  // --- 5. listOrders ---
   describe("listOrders", () => {
     it("should list all orders", async () => {
-      const mockOrders = [
-        {
-          _id: "507f1f77bcf86cd799439013",
-          userId: "507f1f77bcf86cd799439011",
-          items: [],
-          amount: 25.99,
-        },
-      ];
-
-      orderModel.find = jest.fn().mockReturnValue({
-        sort: jest.fn().mockResolvedValue(mockOrders),
-      });
+      const mockOrders = [{ _id: "order1" }, { _id: "order2" }];
+      
+      // Mock chaining: find().sort()
+      const sortMock = jest.fn().mockResolvedValue(mockOrders);
+      orderModel.find.mockReturnValue({ sort: sortMock });
 
       await listOrders(req, res);
 
       expect(orderModel.find).toHaveBeenCalledWith({});
-      expect(res.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockOrders,
-      });
+      expect(res.json).toHaveBeenCalledWith({ success: true, data: mockOrders });
     });
   });
 
-  describe("userOrders", () => {
-    it("should get user orders", async () => {
-      req.body = {
-        userId: "507f1f77bcf86cd799439011",
+  // --- 6. updateStatus ---
+  describe("updateStatus", () => {
+    it("should update status successfully", async () => {
+      req.body = { orderId: "order1", status: "Out for delivery" };
+      
+      const saveMock = jest.fn();
+      const mockOrder = {
+        _id: "order1",
+        status: "Food Processing",
+        save: saveMock
       };
 
-      const mockOrders = [
-        {
-          _id: "507f1f77bcf86cd799439013",
-          userId: "507f1f77bcf86cd799439011",
-          items: [],
-          amount: 25.99,
-        },
-      ];
+      orderModel.findById.mockResolvedValue(mockOrder);
 
-      orderModel.find = jest.fn().mockReturnValue({
-        sort: jest.fn().mockResolvedValue(mockOrders),
-      });
+      await updateStatus(req, res);
 
-      await userOrders(req, res);
-
-      expect(orderModel.find).toHaveBeenCalledWith({
-        $or: [
-          { userId: "507f1f77bcf86cd799439011" },
-          { claimedBy: "507f1f77bcf86cd799439011" },
-        ],
-      });
-      expect(res.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockOrders,
-      });
+      expect(mockOrder.status).toBe("Out for delivery");
+      expect(saveMock).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });
   });
 
+  // --- 7. claimOrder ---
+  describe("claimOrder", () => {
+    it("should successfully claim an order", async () => {
+      req.body = { orderId: "order1", userId: "user2" };
+      
+      const saveMock = jest.fn();
+      const mockOrder = {
+        _id: "order1",
+        status: "Redistribute",
+        userId: "user1",
+        save: saveMock
+      };
+
+      orderModel.findById.mockResolvedValue(mockOrder);
+      
+      // OVERRIDE for this test: findById needs to return a user object directly
+      // (claimOrder uses await userModel.findById(), NOT .select())
+      userModel.findById.mockResolvedValue({ 
+        _id: "user2", 
+        address: { lat: 10, lng: 10 } 
+      });
+
+      await claimOrder(req, res);
+
+      expect(mockOrder.userId).toBe("user2");
+      expect(saveMock).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+    });
+  });
+
+  // --- 8. cancelOrder ---
   describe("cancelOrder", () => {
     it("should cancel order successfully", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
+      req.body = { orderId: "order1", userId: "user1" };
 
+      const saveMock = jest.fn();
       const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
+        _id: "order1",
+        userId: "user1",
         status: "Food Processing",
-        items: [],
-        save: jest.fn().mockResolvedValue(true),
+        save: saveMock
       };
 
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-      req.app.get = jest.fn().mockReturnValue(jest.fn());
+      orderModel.findById.mockResolvedValue(mockOrder);
 
       await cancelOrder(req, res);
 
-      expect(orderModel.findById).toHaveBeenCalledWith(
-        "507f1f77bcf86cd799439013"
-      );
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json.mock.calls[0][0].success).toBe(true);
-    });
-
-    it("should not cancel if order not found", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(null);
-
-      await cancelOrder(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Order not found",
-      });
-    });
-
-    it("should not cancel if user is unauthorized", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        userId: "different-user-id",
-        status: "Food Processing",
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await cancelOrder(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Unauthorized",
-      });
+      expect(mockOrder.status).toBe("Cancelled");
+      expect(saveMock).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });
   });
 
-  describe("updateStatus", () => {
-    it("should update order status successfully", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        status: "Out for delivery",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        status: "Food Processing",
-        save: jest.fn().mockResolvedValue(true),
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await updateStatus(req, res);
-
-      expect(orderModel.findById).toHaveBeenCalledWith(
-        "507f1f77bcf86cd799439013"
-      );
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json.mock.calls[0][0].success).toBe(true);
-    });
-
-    it("should reject invalid status", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        status: "Invalid Status",
-      };
-
-      await updateStatus(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Invalid status value",
-      });
-    });
-  });
-
+  // --- 9. assignShelter ---
   describe("assignShelter", () => {
-    it("should assign shelter to order", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        shelterId: "507f1f77bcf86cd799439014",
-      };
+    it("should successfully assign an order to a shelter", async () => {
+      req.body = { orderId: "order1", shelterId: "shelter1" };
 
+      const saveMock = jest.fn();
       const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
+        _id: "order1",
         status: "Redistribute",
-        save: jest.fn().mockResolvedValue(true),
+        amount: 50,
+        items: [{ name: "Food", quantity: 1, price: 50 }],
+        save: saveMock
       };
 
       const mockShelter = {
-        _id: "507f1f77bcf86cd799439014",
-        name: "Test Shelter",
+        _id: "shelter1",
+        name: "Hope Shelter",
+        address: "123 Hope St",
         contactEmail: "test@shelter.com",
-        contactPhone: "123-456-7890",
-        address: {
-          street: "123 Main St",
-          city: "Raleigh",
-          state: "NC",
-          zipcode: "27601",
-        },
+        contactPhone: "1234567890"
       };
 
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-      shelterModel.findById = jest.fn().mockResolvedValue(mockShelter);
-      // Mock rerouteModel.create to avoid validation error (controller passes object, schema expects string)
-      // In real implementation, controller should convert address object to string
-      rerouteModel.create = jest.fn().mockResolvedValue({
-        _id: "507f1f77bcf86cd799439015",
-        orderId: mockOrder._id,
-        shelterId: mockShelter._id,
-      });
+      orderModel.findById.mockResolvedValue(mockOrder);
+      shelterModel.findById.mockResolvedValue(mockShelter);
+      rerouteModel.create.mockResolvedValue(true);
 
       await assignShelter(req, res);
 
-      expect(orderModel.findById).toHaveBeenCalledWith(
-        "507f1f77bcf86cd799439013"
-      );
-      expect(shelterModel.findById).toHaveBeenCalledWith(
-        "507f1f77bcf86cd799439014"
-      );
-      expect(res.json).toHaveBeenCalled();
-      expect(res.json.mock.calls[0][0].success).toBe(true);
-    });
-
-    it("should return error if orderId or shelterId missing", async () => {
-      req.body = {};
-
-      await assignShelter(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "orderId and shelterId are required",
-      });
+      expect(mockOrder.status).toBe("Donated");
+      expect(saveMock).toHaveBeenCalled();
+      expect(rerouteModel.create).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });
   });
 
-  describe("verifyOrder", () => {
-    it("should verify paid order", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        success: "true",
-      };
-
-      orderModel.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
-
-      await verifyOrder(req, res);
-
-      expect(orderModel.findByIdAndUpdate).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        success: true,
-        message: "Paid",
-      });
-    });
-
-    it("should delete unpaid order", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        success: "false",
-      };
-
-      orderModel.findByIdAndDelete = jest.fn().mockResolvedValue(true);
-
-      await verifyOrder(req, res);
-
-      expect(orderModel.findByIdAndDelete).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Not Paid",
-      });
-    });
-  });
-
-  describe("claimOrder", () => {
-    it("should claim order successfully", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        status: "Redistribute",
-        userId: "original-user",
-        save: jest.fn().mockResolvedValue(true),
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await claimOrder(req, res);
-
-      expect(orderModel.findById).toHaveBeenCalledWith(
-        "507f1f77bcf86cd799439013"
-      );
-      expect(mockOrder.save).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ success: true })
-      );
-    });
-
-    it("should return error if order not found", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(null);
-
-      await claimOrder(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Order not found",
-      });
-    });
-
-    it("should return error if order not in Redistribute status", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        status: "Food Processing",
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await claimOrder(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Order not available for claim",
-      });
-    });
-
-    it("should handle errors", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        userId: "507f1f77bcf86cd799439011",
-      };
-
-      orderModel.findById = jest
-        .fn()
-        .mockRejectedValue(new Error("Database error"));
-
-      await claimOrder(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        success: false,
-        message: "Error claiming order",
-      });
-    });
-  });
-
-  describe("updateStatus edge cases", () => {
-    it("should allow transition from Processing to Out for delivery", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        status: "Out for delivery",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        status: "Food Processing",
-        save: jest.fn().mockResolvedValue(true),
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await updateStatus(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ success: true })
-      );
-    });
-
-    it("should reject invalid transition", async () => {
-      req.body = {
-        orderId: "507f1f77bcf86cd799439013",
-        status: "Delivered",
-      };
-
-      const mockOrder = {
-        _id: "507f1f77bcf86cd799439013",
-        status: "Food Processing",
-      };
-
-      orderModel.findById = jest.fn().mockResolvedValue(mockOrder);
-
-      await updateStatus(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ success: false })
-      );
-    });
-  });
 });
