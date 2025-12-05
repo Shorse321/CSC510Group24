@@ -3,13 +3,11 @@ name: Frontend CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
     paths:
       - 'proj3/SE_G25-main/proj2/frontend/**'
   pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'proj3/SE_G25-main/proj2/frontend/**'
+    # paths:
+    #   - 'proj3/SE_G25-main/proj2/frontend/**'
 
 jobs:
   build:

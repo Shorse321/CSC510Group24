@@ -3,13 +3,11 @@ name: Admin Panel CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
     paths:
       - 'proj3/SE_G25-main/proj2/admin/**'
   pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'proj3/SE_G25-main/proj2/admin/**'
+    # paths:
+    #   - 'proj3/SE_G25-main/proj2/admin/**'
 
 jobs:
   build:

@@ -3,13 +3,11 @@ name: Backend CI
 on:
   workflow_dispatch: # Allows manual run button
   push:
-    branches: [ "main" ]
     paths:
       - 'proj3/SE_G25-main/proj2/backend/**'
   pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'proj3/SE_G25-main/proj2/backend/**'
+    # paths:
+    #   - 'proj3/SE_G25-main/proj2/backend/**'
 
 jobs:
   build-and-test:
