@@ -1,0 +1,58 @@
+name: Node.js Backend CI
+
+# Trigger: Run on push or pull request to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Service Container: Spins up a real MongoDB instance for integration tests
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x] # Tests against Node 18 and 20
+
+    steps:
+    # 1. Checkout the code
+    - uses: actions/checkout@v4
+
+    # 2. Install Node.js
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    # 3. Install dependencies
+    - run: npm ci
+
+    # 4. Run the Master Test Command
+    - name: Run Tests
+      run: npm test
+      env:
+        PORT: 4000
+        
+        # DATABASE: Connects to the temporary Service Container defined above
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        
+        # SECRETS: Using a dummy value is fine for testing if your tests 
+        # generate their own tokens using this same key.
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        
+        # STRIPE: Dummy value to prevent initialization crashes
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
