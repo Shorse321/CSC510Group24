@@ -3,9 +3,7 @@ name: Node.js Backend CI
 # Trigger: Run on push or pull request to the main branch
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   build-and-test:
