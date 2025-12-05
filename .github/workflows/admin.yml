@@ -1,0 +1,33 @@
+name: Admin Panel CI
+
+on:
+  push:
+    paths:
+      - 'admin/**' # Only run if admin files change
+  pull_request:
+    paths:
+      - 'admin/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./admin
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: 'npm'
+        # Point to the admin lock file
+        cache-dependency-path: admin/package-lock.json
+
+    - run: npm ci
+    
+    # Builds the admin panel to check for errors
+    - run: npm run build

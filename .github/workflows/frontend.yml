@@ -1,0 +1,33 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - 'frontend/**' # Only run if frontend files change
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: 'npm'
+        # Point to the frontend lock file
+        cache-dependency-path: frontend/package-lock.json
+
+    - run: npm ci
+    
+    # Builds the app to verify there are no crashing syntax errors
+    - run: npm run build
