@@ -1,0 +1,56 @@
+name: Backend CI
+
+on:
+  workflow_dispatch: # Allows manual run button
+  push:
+    paths:
+      - 'proj3/SE_G25-main/proj2/backend/**'
+  pull_request:
+    # paths:
+    #   - 'proj3/SE_G25-main/proj2/backend/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Set the folder where commands run
+    defaults:
+      run:
+        working-directory: ./proj3/SE_G25-main/proj2/backend
+
+    # Spin up temporary MongoDB
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        # Point to the specific lock file location
+        cache-dependency-path: proj3/SE_G25-main/proj2/backend/package-lock.json
+
+    - run: npm ci
+
+    - name: Run Tests
+      run: npm test
+      env:
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"

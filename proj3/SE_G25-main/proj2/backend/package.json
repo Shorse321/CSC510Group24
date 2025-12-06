@@ -7,9 +7,17 @@
   "scripts": {
     "server": "nodemon server.js",
     "lint": "eslint . --ext .js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+    
+    "_comment": "Run everything except the converted modern files",
+    "test:legacy": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathIgnorePatterns=bulkFeature.test.js --testPathIgnorePatterns=orderController.test.js",
+    
+    "_comment2": "Run only the modern files with isolated config",
+    "test:modern": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.bulk.config.mjs",
+    
+    "_comment3": "The master command that CI/GitHub runs",
+    "test": "npm run test:legacy && npm run test:modern",
+    
+    "test:coverage": "npm run test:legacy -- --coverage && npm run test:modern -- --coverage"
   },
   "author": "",
   "license": "ISC",
@@ -36,9 +44,9 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "moduleFileExtensions": ["js", "json"],
+    "moduleFileExtensions": ["js", "json", "mjs"],
     "testMatch": ["**/__tests__/**/*.test.js"],
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.mjs"],
     "collectCoverageFrom": [
       "controllers/**/*.js",
       "models/**/*.js",
