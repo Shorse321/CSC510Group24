@@ -3,6 +3,8 @@ import {
   addFood,
   listFood,
   removeFood,
+  createBulkItem,
+  updateBulkItem
 } from "../controllers/foodController.js";
 import multer from "multer";
 const foodRouter = express.Router();
@@ -31,4 +33,6 @@ foodRouter.post(
 );
 foodRouter.post("/remove", removeFood);
 
+foodRouter.post("/create-bulk", createBulkItem);
+foodRouter.post("/update-bulk", updateBulkItem);
 export default foodRouter;

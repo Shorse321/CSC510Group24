@@ -1,0 +1,33 @@
+name: Admin Panel CI
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'proj3/SE_G25-main/proj2/admin/**'
+  pull_request:
+    # paths:
+    #   - 'proj3/SE_G25-main/proj2/admin/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./proj3/SE_G25-main/proj2/admin
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: 'npm'
+        cache-dependency-path: proj3/SE_G25-main/proj2/admin/package-lock.json
+
+    - run: npm ci
+
+    # Checks if the admin panel compiles correctly
+    - run: npm run build

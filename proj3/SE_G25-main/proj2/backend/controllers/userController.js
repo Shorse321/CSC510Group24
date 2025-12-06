@@ -107,4 +107,59 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser };
+/**
+ * Get user preferences
+ */
+const getPreferences = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await userModel.findById(userId).select('preferences');
+    
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, data: user.preferences });
+  } catch (error) {
+    console.error("getPreferences error:", error);
+    res.json({ success: false, message: "Error fetching preferences" });
+  }
+};
+
+/**
+ * Update user preferences
+ */
+const updatePreferences = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const { maxDistance, minPrice, maxPrice, preferredItems, notificationsEnabled } = req.body;
+
+    const updateData = {};
+    if (maxDistance !== undefined) updateData['preferences.maxDistance'] = maxDistance;
+    if (minPrice !== undefined) updateData['preferences.minPrice'] = minPrice;
+    if (maxPrice !== undefined) updateData['preferences.maxPrice'] = maxPrice;
+    if (preferredItems !== undefined) updateData['preferences.preferredItems'] = preferredItems;
+    if (notificationsEnabled !== undefined) updateData['preferences.notificationsEnabled'] = notificationsEnabled;
+
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    ).select('preferences');
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    res.json({ 
+      success: true, 
+      message: "Preferences updated successfully",
+      data: user.preferences 
+    });
+  } catch (error) {
+    console.error("updatePreferences error:", error);
+    res.json({ success: false, message: "Error updating preferences" });
+  }
+};
+
+export { loginUser, registerUser, getPreferences, updatePreferences };

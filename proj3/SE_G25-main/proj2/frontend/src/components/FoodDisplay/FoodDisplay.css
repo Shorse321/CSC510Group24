@@ -12,3 +12,15 @@
     gap: 30px;
     row-gap: 50px;
 }
+.section-separator {
+  margin: 40px 0;
+  height: 2px;
+  background-color: #e2e2e2;
+  border: none;
+}
+
+.section-title {
+  font-size: 24px; /* Match your existing h2 size */
+  font-weight: 600;
+  margin-bottom: 20px;
+}

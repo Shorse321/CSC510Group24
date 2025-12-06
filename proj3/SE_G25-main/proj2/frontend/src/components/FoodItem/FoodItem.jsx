@@ -4,7 +4,8 @@ import { assets } from "../../assets/assets";
 import { StoreContext } from "../../Context/StoreContext";
 import Food3DViewer from "../Food3DViewer/Food3DViewer";
 
-const FoodItem = ({ image, name, price, desc, id, model3D }) => {
+// Added isSurplus, surplusPrice, surplusQuantity
+const FoodItem = ({ image, name, price, desc, id, model3D, isSurplus, surplusPrice,  surplusQuantity }) => {
   const [itemCount, setItemCount] = useState(0);
   const [show3D, setShow3D] = useState(false);
   const { cartItems, addToCart, removeFromCart, url, currency } =
@@ -64,8 +65,7 @@ const FoodItem = ({ image, name, price, desc, id, model3D }) => {
           </div>
           <p className="food-item-desc">{desc}</p>
           <p className="food-item-price">
-            {currency}
-            {price}
+            {currency}{price}
           </p>
         </div>
       </div>

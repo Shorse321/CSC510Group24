@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../Context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { assets } from "../../assets/assets";
 
 const Cart = () => {
   const {
@@ -26,20 +27,25 @@ const Cart = () => {
         <hr />
         {food_list.map((item, index) => {
           if (cartItems[item._id] > 0) {
+            const imageUrl = item.image && item.image.data
+                ? `data:${item.image.contentType};base64,${item.image.data}`
+                : assets.default_food_image;
             return (
               <div key={index}>
                 <div className="cart-items-title cart-items-item">
-                  <img src={url + "/images/" + item.image} alt="" />
+                  <img src={imageUrl} alt="" /> {/* <--- UPDATED SRC */}
                   <p>{item.name}</p>
                   <p>
-                    {currency}
-                    {item.price}
+                    {currency}{item.price}
                   </p>
+                  
                   <div>{cartItems[item._id]}</div>
+                
                   <p>
                     {currency}
                     {item.price * cartItems[item._id]}
                   </p>
+                  
                   <p
                     className="cart-items-remove-icon"
                     onClick={() => removeFromCart(item._id)}
