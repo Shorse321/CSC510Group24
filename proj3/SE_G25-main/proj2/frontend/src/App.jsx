@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Verify/Verify";
 import NotificationListener from "./components/NotificationListener/NotificationListener";
 import { Toaster } from "react-hot-toast";
+import Preferences from "./pages/Preferences/Preferences";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/myorders" element={<MyOrders />} />
           <Route path="/verify" element={<Verify />} />
+          <Route path="/preferences" element={<Preferences />} />
         </Routes>
       </div>
       <Footer />
