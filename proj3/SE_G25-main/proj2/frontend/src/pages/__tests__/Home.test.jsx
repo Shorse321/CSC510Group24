@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import Home from "../Home/Home";
 
 // Mock the child components
@@ -23,9 +24,13 @@ vi.mock("../../components/AppDownload/AppDownload", () => ({
   default: () => <div data-testid="app-download">App Download Component</div>,
 }));
 
+const renderWithRouter = (component) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
+
 describe("Home", () => {
   it("should render all child components", () => {
-    render(<Home />);
+    renderWithRouter(<Home />);
 
     expect(screen.getByTestId("header")).toBeInTheDocument();
     expect(screen.getByTestId("explore-menu")).toBeInTheDocument();
@@ -34,14 +39,14 @@ describe("Home", () => {
   });
 
   it('should set default category to "All"', () => {
-    render(<Home />);
+    renderWithRouter(<Home />);
 
     const exploreMenu = screen.getByTestId("explore-menu");
     expect(exploreMenu).toHaveTextContent("Category: All");
   });
 
   it("should pass category to child components", () => {
-    render(<Home />);
+    renderWithRouter(<Home />);
 
     const exploreMenu = screen.getByTestId("explore-menu");
     const foodDisplay = screen.getByTestId("food-display");
