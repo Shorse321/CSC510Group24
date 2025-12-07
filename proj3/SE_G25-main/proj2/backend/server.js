@@ -10,6 +10,7 @@ import shelterRouter from "./routes/shelterRoute.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import rerouteRouter from "./routes/rerouteRoute.js";
+import recommendationRouter from "./routes/recommendationRoute.js";
 import userModel from "./models/userModel.js";
 import { calculateDistance } from "./utils/haversine.js";
 
@@ -359,6 +360,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/shelters", shelterRouter);
 app.use("/api/reroutes", rerouteRouter);
+app.use("/api/recommendations", recommendationRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");
