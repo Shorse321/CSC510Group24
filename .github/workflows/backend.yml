@@ -1,4 +1,4 @@
-name: Backend CI
+name: Backend CI with Preferences Tests
 
 on:
   workflow_dispatch: # Allows manual run button
@@ -6,8 +6,6 @@ on:
     paths:
       - 'proj3/SE_G25-main/proj2/backend/**'
   pull_request:
-    # paths:
-    #   - 'proj3/SE_G25-main/proj2/backend/**'
 
 jobs:
   build-and-test:
@@ -42,15 +40,40 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        # Point to the specific lock file location
         cache-dependency-path: proj3/SE_G25-main/proj2/backend/package-lock.json
 
-    - run: npm ci
+    - name: Install dependencies
+      run: npm ci
 
-    - name: Run Tests
+    - name: Run All Tests (including Preferences)
       run: npm test
       env:
+        NODE_ENV: test
         PORT: 4000
         MONGO_URI: "mongodb://localhost:27017/food-del-test" 
         JWT_SECRET: "bytebite_secret_key_12345_dummy"
         STRIPE_SECRET_KEY: "sk_test_dummy_value"
+
+    - name: Run Preferences Tests Specifically
+      run: npm run test:preferences
+      env:
+        NODE_ENV: test
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
+
+    - name: Generate Coverage Report
+      run: npm run test:coverage
+      env:
+        NODE_ENV: test
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
+
+    - name: Upload Coverage to Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-node-${{ matrix.node-version }}
+        path: proj3/SE_G25-main/proj2/backend/coverage/
