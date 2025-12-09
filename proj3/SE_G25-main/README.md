@@ -2,34 +2,78 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17547308.svg)](https://doi.org/10.5281/zenodo.17547336)
 
-# ByteBite
+## Project Health & Status
 
-## Quality Assurance Badges
+### Quality Assurance
+[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
 
-### Code Coverage
-[![codecov](https://codecov.io/gh/shreyas457/SE_G25/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/shreyas457/SE_G25)
+### CI/CD Build Status
+[![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
+[![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml)
+[![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
 
-### Style Checker (ESLint)
-[![ESLint Style Checker](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml)
+### Repository Stats
+![GitHub repo size](https://img.shields.io/github/repo-size/Shorse321/CSC510Group24?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24?style=flat-square)
+![GitHub issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24?style=flat-square)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Shorse321/CSC510Group24?style=flat-square)
+![License](https://img.shields.io/github/license/Shorse321/CSC510Group24?style=flat-square)
 
-### Syntax Checker (ESLint)
-[![ESLint Syntax Checker](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml)
+---
 
-### Code Formatter (Prettier)
-[![Code Formatter (Prettier)](https://github.com/shreyas457/SE_G25/actions/workflows/format.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/format.yml)
+**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
 
-Demo video available on Google Drive:  
-[Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
+---
 
-ByteBite is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G25**.
+**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G24**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
 
-The project has three main capabilities:
+### Built With
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+---
 
-1. Customers place orders from a single restaurant, track status, and pay online or via cash-on-delivery.
-2. When a customer cancels an order, the restaurant can either:
-   - expose the order to other customers so they can claim it, or  
-   - redirect the order to a partner shelter as a donation.
-3. Customers can view selected menu items using a 3D model carousel to obtain a richer view of each dish.
+**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
+
+---
+
+**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G25**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
+
+### Built With
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+
+---
+
+**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
+
+---
+
+**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G25**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
+
+### Built With
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+
+The project has four main capabilities:
+1. **Standard Ordering:** Customers place orders, track status, and pay online or via cash-on-delivery.
+2. **Redistribution Logic:** Cancelled or surplus orders are redirected to a public "claim" queue for other users or assigned to partner shelters.
+3. **Bulk Surplus Sales:** Restaurants can list bulk quantities of surplus items at special rates to minimize end-of-day waste.
+4. **Interactive Visualization:** Customers view menu items via a 3D model carousel for a richer user experience.
 
 The goal is to reduce food waste while maintaining a standard online ordering experience.
 
@@ -112,6 +156,11 @@ The customer-facing frontend supports rendering of 3D models associated with men
 - The frontend uses `three`, `@react-three/fiber`, and `@react-three/drei` to render a 3D carousel of dishes.
 - This allows customers to inspect certain items in a more realistic and interactive way.
 
+
+### 6. Bulk Surplus Sales (New!)
+- **Goal:** Rapidly clear large quantities of specific inventory (e.g., end-of-shift bakery items).
+- **Admin Flow:** Restaurant staff create "Bulk Items" specifying quantity, discounted price, and availability windows.
+- **User Flow:** These items appear in a dedicated "Surplus/Bulk" section of the menu, allowing users to purchase larger quantities at a better value, directly reducing food waste.
 ---
 
 ## Updates & Announcements
@@ -166,15 +215,21 @@ backend/
     rerouteRoute.js
     shelterRoute.js
     userRoute.js
+  tests/
   server.js
   package.json
 
 frontend/
-  src/...
+  src/
+    components/
+    assets/
+    pages/
   package.json
 
 admin/
-  src/...
+  src/
+    components/
+    pages/
   package.json
 
 
