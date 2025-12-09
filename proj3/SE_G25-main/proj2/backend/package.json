@@ -47,17 +47,9 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "mjs"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.test.js"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.mjs"
-    ],
+    "moduleFileExtensions": ["js", "json", "mjs"],
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.mjs"],
     "collectCoverageFrom": [
       "controllers/**/*.js",
       "models/**/*.js",
@@ -68,6 +60,7 @@
       "/node_modules/",
       "/__tests__/"
     ],
+    "coverageReporters": ["lcov", "text", "html"],
     "testTimeout": 30000
   }
 }
