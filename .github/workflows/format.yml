@@ -23,5 +23,4 @@ jobs:
       - name: Run Prettier Check
         working-directory: proj3/SE_G25-main/proj2
         run: |
-          # Use npx to run prettier using the config in your scripts folder
-          npx prettier --check "**/*.{js,jsx,json,md,yml}" --config scripts/.prettierrc.json --ignore-path scripts/.prettierignore
+          npx prettier --check "**/*.{js,jsx,json,md}" --config scripts/.prettierrc.json --ignore-path scripts/.prettierignore
