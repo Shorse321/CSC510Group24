@@ -1,20 +1,17 @@
-# ByteBite
+# ByteBite 🍴
+## Re-imagining food delivery with purpose!
+
+With ByteBite, a cancelled meal doesn’t end up in the trash — it becomes a discounted opportunity for another customer or a warm donation for a nearby shelter. Enjoy a richer ordering experience with live notifications, instant claiming and beautiful 3D dish previews! It’s a food delivery app that loves the planet back.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17547308.svg)](https://doi.org/10.5281/zenodo.17547336)
 
 ## Project Health & Status
 
-### Quality Assurance
-
-[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
-
----
-
-### CI/CD Build Status
-
 [![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
 [![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml)
 [![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
+
+[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
 
 ---
 
@@ -26,9 +23,6 @@
 [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
 ---
-
-
-**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G24**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
 
 ### Built With
 
@@ -42,33 +36,60 @@
 
 ---
 
-**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
+**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/file/d/1ws95d9AsfzAQjkV7fxJZKcYslp2gvSQT/view?usp=sharing)
 
-The project has four main capabilities:
+---
+## Key Features & Improvements 🍴
 
-1. **Standard Ordering:** Customers place orders, track status, and pay online or via cash-on-delivery.
-2. **Redistribution Logic:** Cancelled or surplus orders are redirected to a public "claim" queue for other users or assigned to partner shelters.
-3. **Bulk Surplus Sales:** Restaurants can list bulk quantities of surplus items at special rates to minimize end-of-day waste.
-4. **Interactive Visualization:** Customers view menu items via a 3D model carousel for a richer user experience.
+### Core Modules 🌟
 
-The goal is to reduce food waste while maintaining a standard online ordering experience.
+- **Cancel-to-Redistribute 🔄**  
+  Converts canceled orders into **real-time redistributable offers** that users can claim instantly.
 
+- **Shelter Distribution Pipeline 🏠**  
+  Connects surplus food with **partner shelters and NGOs**, minimizing waste and maximizing community impact.
+
+- **3D Visualization 🎨🖼️**  
+  Provides **interactive 3D previews** of meals, giving users a realistic and engaging menu experience.
+
+- **Admin Dashboard 📊🛠️**  
+  Centralizes management for **menu, orders, and shelter redistribution**, making operations efficient and seamless.
+
+---
+
+### Advanced Enhancements ✨
+
+- **Smart Customer Matching 📍**  
+  Uses **location-based notifications** so only nearby and relevant users are alerted to canceled meals.  
+  Includes **smart map previews** to visualize the journey of redistributed orders.
+
+- **Personalized Recommendation Engine 🤖💡**  
+  Suggests dishes based on **past orders and nutritional preferences**, boosting engagement with tailored meal recommendations.
+
+- **Basic Preference Filters 🎯**  
+  Allows customers to tag **food preferences, notifications, and budget**, ensuring recommendations remain meaningful and targeted.
+
+- **Restaurant Surplus Quick List 🏪⚡**  
+  Enables restaurants to **bulk-list extra items at discounted rates**, expanding reuse opportunities beyond cancellations.
 ---
 
 ## System Overview
 
-The system consists of three applications:
+### Backend (`backend/`)
 
-- `backend/`  
-  Node.js + Express + MongoDB API exposing authentication, menu, cart, order, shelter, and reroute (donation history) endpoints.
+- Node.js + Express + MongoDB API  
+- Provides authentication, menu, cart, order, shelter, and reroute endpoints  
+- JWT-based authenticated operations
 
-- `frontend/`  
-  React + Vite customer-facing web application for browsing the menu, placing orders, claiming redistributed orders, and viewing 3D models of dishes (via `three`, `@react-three/fiber`, and `@react-three/drei`).
+### Frontend (`frontend/`)
 
-- `admin/`  
-  React + Vite restaurant admin dashboard for managing menu items, monitoring orders, updating statuses, and assigning cancelled orders to partner shelters.
+- React + Vite customer-facing application  
+- Browse menu, place orders, claim redistributed orders, view 3D models
 
-The backend exposes REST endpoints under `/api/*` and uses JSON Web Tokens (JWT) for authenticated operations.
+### Admin (`admin/`)
+
+- React + Vite restaurant admin dashboard  
+- Manage menu items, monitor orders, update statuses, assign orders to shelters
 
 ---
 
@@ -76,168 +97,232 @@ The backend exposes REST endpoints under `/api/*` and uses JSON Web Tokens (JWT)
 
 ### 1. Customer Ordering
 
-- Customers register and log in.
-- Customers browse the menu, add items to their cart, and place orders.
-- Orders are stored in MongoDB with a finite-state status model:
-  - `Food Processing`
-  - `Out for delivery`
-  - `Delivered`
-  - `Redistribute`
-  - `Cancelled`
-  - `Claimed`
-- Payment can be completed either by:
-  - Stripe-based flow (`/api/order/place` + `/api/order/verify`), or
-  - Cash-on-delivery (`/api/order/placecod`).
+- Registration and login  
+- Menu browsing, cart management, order placement  
+- Orders stored in MongoDB with finite-state statuses:
+  - `Food Processing`  
+  - `Out for delivery`  
+  - `Delivered`  
+  - `Redistribute`  
+  - `Cancelled`  
+  - `Claimed`  
+- Payment via Stripe or cash-on-delivery
 
 ### 2. Cancellation and Redistribution Queue
 
-When a customer cancels an order:
+- Orders can be cancelled if status permits  
+- Cancelled orders enter `Redistribute` queue  
+- Real-time notifications sent via Socket.IO
 
-- The backend validates that the cancelling user is either the original owner or (if already claimed) the current owner.
-- If the status allows cancellation (for example, `Food Processing` or `Out for delivery`), the status is set to `Redistribute`.
-- A queue notification is emitted via Socket.IO so that interested clients can display the cancelled order to other customers.
+### 3. Restaurant-to-Shelter Donation
 
-### 3. Claiming a Cancelled Order (Customer-to-Customer)
+- Assign cancelled/redistributed orders to partner shelters  
+- Shelter metadata stored in `reroutes` collection  
+- `/api/reroutes` supports paginated access for admin dashboard
 
-- Redistributable orders (status `Redistribute`) can be claimed by other authenticated customers via the `/api/order/claim` endpoint.
-- When a claim succeeds:
-  - Ownership of the order is transferred to the claimant.
-  - The order status is set back to `Food Processing`.
-  - The order now appears in the claimant’s order history.
-- Shelters do not claim orders directly from the queue. Only customers claim orders. Restaurant staff remain responsible for reassigning orders to shelters.
+### 4. 3D Menu Visualization
 
-### 4. Restaurant-to-Shelter Donation
+- Optional 3D model uploads for menu items  
+- Rendered using `three`, `@react-three/fiber`, and `@react-three/drei`  
+- Interactive 3D carousel enhances user experience
 
-The restaurant can donate cancelled or redistributable orders to shelters:
+### 5. Claiming Cancelled Orders
 
-- Partner shelters are stored in the `shelter` collection and may be seeded via `/api/shelters/seed`.
-- Active shelters can be listed via `/api/shelters/list`.
-- Restaurant staff use the admin dashboard to assign an order to a shelter, which calls `/api/order/assign-shelter` on the backend.
-- `assign-shelter`:
-  - Validates the order and shelter.
-  - Ensures the order is in a suitable state (`Redistribute` or `Cancelled`).
-  - Attaches shelter metadata to the order.
-  - Records a donation entry in the `reroutes` collection.
-- Donation history is available via `/api/reroutes`, which supports pagination and is designed to back the shelter-history view in the admin interface.
+- Redistributable orders claimable by other customers  
+- Ownership and status updated upon claim  
+- Shelters are assigned by restaurant staff only
+- Claim notifications sent based on proximity preferences of users
+- Maps to visualise order location, journey and shelters
 
-Shelters are passive recipients in this model: they do not directly interact with the API to “claim” food. The restaurant manages all redirection.
+### 6. Bulk Surplus Sales
 
-### 5. 3D Menu Visualization
+- Create bulk items with quantity, discounted price, availability  
+- Appears in dedicated "Surplus/Bulk" section on frontend
 
-The customer-facing frontend supports rendering of 3D models associated with menu items:
+### 7. User Notification Preferences
 
-- When the restaurant uploads a dish, it may attach:
-  - A standard 2D image, and
-  - An optional 3D model asset.
-- The frontend uses `three`, `@react-three/fiber`, and `@react-three/drei` to render a 3D carousel of dishes.
-- This allows customers to inspect certain items in a more realistic and interactive way.
+- Users set preferences for:
+  - Distance filters  
+  - Enable/disable notifications  
+  - Price range  
+  - Specific items  
 
-### 6. Bulk Surplus Sales (New!)
+### 8. Personalized Rule-Based Meal Recommendations
 
-- **Goal:** Rapidly clear large quantities of specific inventory (e.g., end-of-shift bakery items).
-- **Admin Flow:** Restaurant staff create "Bulk Items" specifying quantity, discounted price, and availability windows.
-- **User Flow:** These items appear in a dedicated "Surplus/Bulk" section of the menu, allowing users to purchase larger quantities at a better value, directly reducing food waste.
-
-### 7. User Notifcation Preferances (New!)
-
-- **Goal:** Users receive only notifactions of redistributed order that they want (e.g., user wants only to be notified of orders greater than $50).
-- **User Flow:** User selects their profile icon in the top right. User selects preferences. User is prompted with the many preferences option including: how far away a notification can come from, enable/disable notifications, price range of a notification, and selecting which items to be notified of.
+- Taste profile based on past orders, preferences, menu tags  
+- Scores dishes using deterministic rules:
+  - Preference and category matching  
+  - Price comfort range  
+  - Frequently ordered item similarity  
+  - Highlights good surplus/value deals  
+- Cold-start recommendations available for new users  
+- Ranked list with rationale shown on Cart/Menu pages
 
 ---
-
-### 8. Personalized Rule-Based Meal Recommendations (New!)
-
-- Builds a **taste profile** for each user based on past orders, spending patterns, saved preferences, and menu tags.
-- Detects preferred categories, usual price range, and behavioral traits (e.g., value-seeker, loyal customer).
-- Scores every dish using deterministic rules:
-  - Matches on user preference tags and categories
-  - Checks whether the item fits the user’s price comfort range
-  - Boosts items similar to frequently ordered dishes
-  - Highlights good surplus/value deals
-- Provides **cold-start recommendations** for users with no purchase history.
-- Returns a ranked list with clear reasons (e.g., “Matches spicy preference”, “Within your usual price range”).
-- Shown on the Cart/Menu pages to help users quickly discover relevant and personalized meal options.
-
-## Updates & Announcements
-
-We post short updates whenever we ship features or milestones.
-
-- Full changelog: see **[docs/updates.md](docs/updates.md)**
-- Latest highlights:
-  — Claim Order feature: cancelled → Redistribute → Claimed, with real-time pop-ups.
 
 ## Project Stats
 
-- **Partner Shelters/NGOs:** 10 (registered for end-of-day surplus donations)
-- **Redistributed Meals:** 15+ (successfully reassigned through the Claim Order module)
-- **Active Contributors:** 4(core developers from Team 25 – SE Project Group)
-- **Intelligent Modules:** 4 (Cancel-to-Redistribute, Shelter Pipeline, and Real-time Claim Notifications, 3D Visualization)
+- **Partner Shelters/NGOs:** 10  
+- **Active Contributors:** 4 (core developers from Team G24)  
+- **Intelligent Modules:** 4 (Cancel-to-Redistribute, Shelter Pipeline, Real-time Claim Notifications, 3D Visualization)
 
-> _ByteBite transforms canceled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community._
+> _ByteBite transforms cancelled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community._
+## Repository Structure
 
-## Partners & Collaborators
+```proj3/SE_G25-main/
+├── .github/
+│   └── workflows/
+├── docs/
+├── proj1/
+├── proj2/
+├── admin/
+├── frontend/
+│   ├── public/
+│   └── src/
+│       ├── Context/
+│       ├── __tests__/
+│       ├── assets/
+│       ├── components/
+│       │   ├── AppDownload/
+│       │   ├── ExploreMenu/
+│       │   ├── Food3DViewer/
+│       │   ├── FoodDisplay/
+│       │   ├── FoodItem/
+│       │   ├── Footer/
+│       │   ├── Header/
+│       │   ├── LoginPopup/
+│       │   ├── Navbar/
+│       │   └── NotificationListener/
+│       └── pages/
+│           ├── Cart/
+│           ├── Home/
+│           ├── MyOrders/
+│           ├── PlaceOrder/
+│           ├── Preferences/
+│           └── Verify/
+├── backend/
+│   ├── __tests__/
+│   ├── config/
+│   ├── controllers/
+│   │   ├── cartController.js
+│   │   ├── foodController.js
+│   │   ├── orderController.js
+│   │   ├── recommendationController.js
+│   │   ├── rerouteController.js
+│   │   ├── shelterController.js
+│   │   └── userController.js
+│   ├── middleware/
+│   ├── models/
+│   │   ├── foodModel.js
+│   │   ├── orderModel.js
+│   │   ├── rerouteModel.js
+│   │   ├── shelterModel.js
+│   │   └── userModel.js
+│   ├── routes/
+│   │   ├── cartRoute.js
+│   │   ├── foodRoute.js
+│   │   ├── orderRoute.js
+│   │   ├── recommendationRoute.js
+│   │   ├── rerouteRoute.js
+│   │   ├── shelterRoute.js
+│   │   └── userRoute.js
+│   ├── services/
+│   ├── uploads/
+│   ├── utils/
+│   ├── jest.bulk.config.mjs
+│   ├── jest.setup.mjs
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── server.js
+│   └── test_log.txt
+├── scripts/
+├── .eslintrc.cjs
+├── .gitignore
+├── .prettierignore
+├── .prettierrc.json
+├── API.md
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── ENV_TEMPLATE.md
+├── GETTING_STARTED.md
+├── LICENSE.md
+├── README.md
+├── docs-config.json
+├── package.json
+├── package-lock.json
+└── run-all-tests.sh
+```
+## Open Communications Protocols
 
-| Partner / Role                                     | Contribution                                                                                  |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Team 24 – ByteBite (NCSU SE Project Fall 2025)** | Core development team responsible for full-stack architecture, backend API, and workflow flow |
-| **NCSU Department of Computer Science**            | Provided project framework, evaluation, and academic guidance                                 |
-| **OpenAI (ChatGPT) & Anthropic (Claude)**          | Assisted in idea exploration, UI refinement, and code documentation                           |
+**StackShack** communicates using **open and standard web protocols**:
+
+- The application runs on **HTTP/HTTPS** using REST-style Flask routes.
+- All client–server interactions use **JSON** as the data-interchange format.
+- The API endpoints can be accessed by any system that supports standard HTTP requests.
+
+## Cross-platform support Check
+
+Tested on macOS, Windows and Linux laptops using Python 3.8+.
 
 ---
 
-## Repository Structure
+## Accessibility Standards
 
-```text
-proj2/
-  API.md
-  CHANGLOG.md
-  CODE_OF_CONDUCT.md
-  CONTRIBUTING.md
-  ENV_TEMPLATE.md
-  GETTING_STARTED.md
-  LICENSE.md
-  README.md
-  admin/
-    public/
-    src/
-      __tests__/
-      assets/
-      components/
-      pages/
-      test/
-      App.jsx
-  backend/
-    __tests__/
-    config/
-    controllers/
-    middleware/
-    models/
-    routes/
-    services/
-    utils/
-    uploads/
-    server.js
-    package.json
-  docs/
-    backend.md
-    frontend.md
-    index.html
-  docs-config.json
-  frontend/
-    public/
-    src/
-      Context/
-      __tests__/
-      assets/
-      components/
-      pages/
-      test/
-      App.jsx
-    package.json
-  package-lock.json
-  package.json
-  run-all-tests.sh
-  scripts/
-    generate-docs.js
-  team.config.js
-```
+- The user interface is designed following **WCAG 2.1** and **ARIA8** best practices wherever possible.  
+- All buttons, input fields and navigation elements are keyboard-accessible.  
+- Color choices maintain strong contrast for readability.  
+- Semantic HTML tags (`<header>`, `<nav>`, `<main>`, `<footer>`) are used to improve screen-reader compatibility.  
+- Dynamic content (like modals and alerts) is handled with proper ARIA labels and roles.
+
+---
+
+## Documentation Accessibility
+
+- All documentation, including the `README.md` and `docs/` pages, follows **plain language** principles and is compatible with **Markdown renderers** that support screen readers.  
+- Headings (`#`, `##`, `###`) are structured hierarchically for screen-reader navigation.  
+- Text alternatives (`alt` attributes) are provided for all embedded images (e.g., logos, architecture diagrams).  
+- Hyperlinks use descriptive text rather than generic labels like “click here”.
+
+---
+
+## Security Notes
+
+- Never commit `.env` file to Git
+- Use strong passwords in production
+- Keep dependencies up to date
+
+---
+
+## Support
+
+For issues or questions:
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
+3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
+
+---
+
+## Team
+
+**Group 24**
+- Adam Myers
+- Akash R
+- Sailesh Sridhar
+- Swetha Manivasagam
+
+Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
+No funding was received for driving this project to completion.
+**Course:** 
+
+CSC 510 - Software Engineering
+
+All team members have the following roles and responsibilities
+| **Role** | **Responsibility** |
+|-----------|--------------------|
+| **Project Maintainers** | Oversee code quality, merge pull requests and manage releases |
+| **Core Developers** | Implement new features, conduct testing and manage database schemas |
+| **Contributors** | Report issues, submit pull requests (PRs) and improve documentation |
+| **Reviewers** | Conduct peer reviews and ensure adherence to code conventions |
+
+---
