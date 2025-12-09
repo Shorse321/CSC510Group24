@@ -12,6 +12,11 @@
 - Release 2 - StackShack 1.1 November 6, 2025
 - Release 3 - StackShack 1.2 November 6, 2025
 
+### Project 3
+- Release 1 - Bytebite 2.1 November 23, 2025
+- Release 2 - Bytebite 2.2 December 9, 2025
+- Release 3 - Bytebite 2.3 December 9, 2025
+
 ## Stackshack 1.0
 - Menu management
 - Authentication management
@@ -37,3 +42,25 @@
 - Payment integration
 - Inventory (ingredients availability) management
 
+## ByteBite 2.1 ## 
+*November 23, 2025*  
+- All previous features  
+- Proximity-based notification sending 
+- Map visualization feature** (delivery tracking, shelter locations, proximity map)
+
+## ByteBite 2.2 ##
+*December 9, 2025*  
+- All previous features
+- Proximity-based notification sending 
+- Map visualization feature** (delivery tracking, shelter locations, proximity map) 
+- Bulk booking support
+- Advanced user preferences
+
+## ByteBite 2.3 ##
+*December 9, 2025*  
+- All previous features
+- Proximity-based notification sending 
+- Map visualization feature** (delivery tracking, shelter locations, proximity map) 
+- Bulk booking support
+- Advanced user preferences
+- Food recommendation setup
