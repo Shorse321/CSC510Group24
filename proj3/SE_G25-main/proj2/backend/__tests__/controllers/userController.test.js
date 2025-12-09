@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import jwt from "jsonwebtoken";
 import userModel from "../../models/userModel.js";
 import { loginUser, registerUser } from "../../controllers/userController.js";
 
@@ -26,45 +27,33 @@ describe("User Controller", () => {
         password: "password123",
       };
 
-      // Mock the validator and bcrypt
-      const originalIsEmail = validator.isEmail;
-      const originalGenSalt = bcrypt.genSalt;
-      const originalHash = bcrypt.hash;
-
+      // Mock dependencies
       validator.isEmail = jest.fn().mockReturnValue(true);
       bcrypt.genSalt = jest.fn().mockResolvedValue("salt");
       bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
-
       userModel.findOne = jest.fn().mockResolvedValue(null);
 
-      // Mock userModel constructor
-      const mockUserInstance = {
+      // Mock the save method
+      const mockSave = jest.fn().mockResolvedValue({
         _id: "507f1f77bcf86cd799439011",
         name: "Test User",
         email: "test@example.com",
-        save: jest.fn().mockResolvedValue({
-          _id: "507f1f77bcf86cd799439011",
-          name: "Test User",
-          email: "test@example.com",
-        }),
-      };
+      });
 
-      // For ES modules, constructor mocking is complex
-      // Since we can't execute the full function without proper Mongoose setup,
-      // we test that the function structure is correct
-      expect(typeof registerUser).toBe("function");
+      // Mock userModel constructor
+      const OriginalUserModel = userModel;
+      global.userModel = jest.fn().mockImplementation(() => ({
+        save: mockSave,
+      }));
 
-      // Validate mocks are set up correctly
-      userModel.findOne = jest.fn().mockResolvedValue(null);
+      // ✅ ACTUALLY CALL THE FUNCTION
+      await registerUser(req, res);
 
-      // Test that the function exists and can be called
-      // Note: Full execution requires Mongoose model constructor mocking
-      // which is complex with ES modules
-
-      // Restore
-      validator.isEmail = originalIsEmail;
-      bcrypt.genSalt = originalGenSalt;
-      bcrypt.hash = originalHash;
+      // Verify the function was executed
+      expect(userModel.findOne).toHaveBeenCalledWith({ email: "test@example.com" });
+      expect(validator.isEmail).toHaveBeenCalledWith("test@example.com");
+      expect(res.json).toHaveBeenCalled();
+      expect(res.json.mock.calls[0][0].success).toBe(true);
     });
 
     it("should return error if user already exists", async () => {
@@ -80,6 +69,7 @@ describe("User Controller", () => {
 
       await registerUser(req, res);
 
+      expect(userModel.findOne).toHaveBeenCalledWith({ email: "test@example.com" });
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "User already exists",
@@ -98,6 +88,7 @@ describe("User Controller", () => {
 
       await registerUser(req, res);
 
+      expect(validator.isEmail).toHaveBeenCalledWith("invalid-email");
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Please enter a valid email",
@@ -139,6 +130,87 @@ describe("User Controller", () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Error",
+      });
+    });
+
+    // NEW TEST CASES
+    it("should hash password before saving", async () => {
+      req.body = {
+        name: "Test User",
+        email: "test@example.com",
+        password: "password123",
+      };
+
+      validator.isEmail = jest.fn().mockReturnValue(true);
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+      bcrypt.genSalt = jest.fn().mockResolvedValue("salt");
+      bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
+
+      const mockSave = jest.fn().mockResolvedValue({
+        _id: "507f1f77bcf86cd799439011",
+      });
+
+      global.userModel = jest.fn().mockImplementation(() => ({
+        save: mockSave,
+      }));
+
+      await registerUser(req, res);
+
+      expect(bcrypt.genSalt).toHaveBeenCalled();
+      expect(bcrypt.hash).toHaveBeenCalledWith("password123", "salt");
+    });
+
+    it("should return error for missing name", async () => {
+      req.body = {
+        name: "",
+        email: "test@example.com",
+        password: "password123",
+      };
+
+      validator.isEmail = jest.fn().mockReturnValue(true);
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+
+      await registerUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: "Error",
+      });
+    });
+
+    it("should validate email format before checking existence", async () => {
+      req.body = {
+        name: "Test User",
+        email: "notanemail",
+        password: "password123",
+      };
+
+      validator.isEmail = jest.fn().mockReturnValue(false);
+
+      await registerUser(req, res);
+
+      expect(validator.isEmail).toHaveBeenCalledWith("notanemail");
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: "Please enter a valid email",
+      });
+    });
+
+    it("should check password length (minimum 8 characters)", async () => {
+      req.body = {
+        name: "Test User",
+        email: "test@example.com",
+        password: "short",
+      };
+
+      validator.isEmail = jest.fn().mockReturnValue(true);
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+
+      await registerUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: "Please enter a strong password",
       });
     });
   });
@@ -183,6 +255,7 @@ describe("User Controller", () => {
 
       await loginUser(req, res);
 
+      expect(userModel.findOne).toHaveBeenCalledWith({ email: "test@example.com" });
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "User does not exist",
@@ -206,6 +279,7 @@ describe("User Controller", () => {
 
       await loginUser(req, res);
 
+      expect(bcrypt.compare).toHaveBeenCalledWith("wrongpassword", "hashedPassword");
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Invalid credentials",
@@ -227,6 +301,119 @@ describe("User Controller", () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Error",
+      });
+    });
+
+    // NEW TEST CASES
+    it("should generate JWT token on successful login", async () => {
+      req.body = {
+        email: "test@example.com",
+        password: "password123",
+      };
+
+      const mockUser = {
+        _id: "507f1f77bcf86cd799439011",
+        email: "test@example.com",
+        password: "hashedPassword",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(mockUser);
+      bcrypt.compare = jest.fn().mockResolvedValue(true);
+
+      await loginUser(req, res);
+
+      const response = res.json.mock.calls[0][0];
+      expect(response.token).toBeDefined();
+      expect(typeof response.token).toBe("string");
+    });
+
+    it("should compare provided password with stored hash", async () => {
+      req.body = {
+        email: "test@example.com",
+        password: "mypassword",
+      };
+
+      const mockUser = {
+        _id: "507f1f77bcf86cd799439011",
+        email: "test@example.com",
+        password: "storedHashedPassword",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(mockUser);
+      bcrypt.compare = jest.fn().mockResolvedValue(true);
+
+      await loginUser(req, res);
+
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        "mypassword",
+        "storedHashedPassword"
+      );
+    });
+
+    it("should handle missing email in request", async () => {
+      req.body = {
+        password: "password123",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+
+      await loginUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: "User does not exist",
+      });
+    });
+
+    it("should handle missing password in request", async () => {
+      req.body = {
+        email: "test@example.com",
+      };
+
+      const mockUser = {
+        _id: "507f1f77bcf86cd799439011",
+        email: "test@example.com",
+        password: "hashedPassword",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(mockUser);
+      bcrypt.compare = jest.fn().mockResolvedValue(false);
+
+      await loginUser(req, res);
+
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: "Invalid credentials",
+      });
+    });
+
+    it("should query database with exact email match", async () => {
+      req.body = {
+        email: "user@example.com",
+        password: "password123",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+
+      await loginUser(req, res);
+
+      expect(userModel.findOne).toHaveBeenCalledWith({
+        email: "user@example.com",
+      });
+    });
+
+    it("should handle case-sensitive email lookup", async () => {
+      req.body = {
+        email: "Test@Example.com",
+        password: "password123",
+      };
+
+      userModel.findOne = jest.fn().mockResolvedValue(null);
+
+      await loginUser(req, res);
+
+      expect(userModel.findOne).toHaveBeenCalledWith({
+        email: "Test@Example.com",
       });
     });
   });
