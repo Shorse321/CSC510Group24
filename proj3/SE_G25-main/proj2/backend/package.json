@@ -7,18 +7,23 @@
   "scripts": {
     "server": "nodemon server.js",
     "lint": "eslint . --ext .js",
+    
     "_comment": "Run everything except the converted modern files",
-    "test:legacy": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathIgnorePatterns=bulkFeature.test.js --testPathIgnorePatterns=orderController.test.js",
+    "test:legacy": "node --experimental-vm-modules ./node_modules/.bin/jest --testPathIgnorePatterns=bulkFeature.test.js --testPathIgnorePatterns=orderController.test.js",
+    
     "_comment2": "Run only the modern files with isolated config",
-    "test:modern": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.bulk.config.mjs",
+    "test:modern": "node --experimental-vm-modules ./node_modules/.bin/jest --config jest.bulk.config.mjs",
     
-    "_comment3": "Run preferences tests",
-    "test:preferences": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/controllers/userPreferences.test.js",
+    "_comment3": "The master command that CI/GitHub runs",
+    "test": "npm run test:legacy && npm run test:modern",
     
-    "_comment4": "The master command that CI/GitHub runs",
-    "test": "npm run test:legacy && npm run test:modern && npm run test:preferences",
+    "test:legacy:coverage": "node --experimental-vm-modules ./node_modules/.bin/jest --testPathIgnorePatterns=bulkFeature.test.js --testPathIgnorePatterns=orderController.test.js --coverage --coverageReporters=lcov --coverageReporters=text",
     
-    "test:coverage": "npm run test:legacy -- --coverage && npm run test:modern -- --coverage && npm run test:preferences -- --coverage"
+    "test:modern:coverage": "node --experimental-vm-modules ./node_modules/.bin/jest --config jest.bulk.config.mjs --coverage --coverageReporters=lcov --coverageReporters=text",
+    
+    "test:coverage": "npm run test:legacy:coverage && npm run test:modern:coverage",
+    
+     "test:preferences": "node --experimental-vm-modules ./node_modules/.bin/jest preferences"
   },
   "author": "",
   "license": "ISC",
@@ -66,6 +71,11 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/__tests__/"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "html"
     ],
     "testTimeout": 30000
   }
