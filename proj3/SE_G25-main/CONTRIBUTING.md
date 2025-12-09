@@ -1,6 +1,8 @@
 # Contributing to ByteBite
 
 Thank you for your interest in contributing to **ByteBite** — a smart food redistribution system that connects restaurants, users, and shelters to reduce food waste.  
+This project is developed by **Team G25 (CSC510 — Fall 2025)** and improved by **Team G24 (CSC510 — Fall 2025)**.
+
 We welcome all contributions — from bug fixes and feature enhancements to documentation and testing support.
 
 ---
@@ -19,9 +21,9 @@ Here are several ways to get involved:
 
 ## Project Tech Stack
 
-- **Frontend:** React + Vite + CSS   
-- **Backend:** Node.js + Express.js + MongoDB (Mongoose)  
-- **Realtime:** Socket.IO   
+- `backend/`: Node.js + Express API, MongoDB data models.
+- `frontend/`: React + Vite customer-facing application (including 3D menu views).
+- `admin/`: React + Vite dashboard for restaurant staff.  
 
 ---
 
@@ -39,11 +41,9 @@ Follow these steps to contribute:
 3. **Create a New Branch**
    ```bash
     git checkout -b feature/<short-feature-name>
-
 4. **Make your changes**
 - Implement your fix or feature in the appropriate directory.
 - Run the project locally to verify it doesn’t break existing features.
-
 5. **Commit your changes**
    ```bash
     git commit -m "feat: add <short-description>"
@@ -51,16 +51,12 @@ Follow these steps to contribute:
 6. **Push your branch**
    ```bash
     git push origin feature/<short-feature-name>
-
 7. **Make your changes**
 - Go to your forked repository on GitHub.
 - Click Compare & pull request.
 - Clearly describe what your contribution does and why it’s needed.
-
 ---
-
 ## Code Style Guidelines
-
 Please follow these conventions to maintain consistency across the project:
  
 - Follow **semantic commit messages**:  
@@ -71,31 +67,34 @@ Please follow these conventions to maintain consistency across the project:
 - Keep functions **modular, reusable, and well-documented**.  
 - Use **environment variables** for all API keys and secrets.  
 - Add **inline comments** for complex logic or new routes.  
-
 ---
-
 ## Testing
-
 Before submitting a Pull Request, make sure to test your changes thoroughly:
-
 1. Run the backend server:
    ```bash
+   npm install
    npm run server
 2. Run the frontend server:
    ```bash
+   npm install
    npm run dev
-3. Check that your branch merges cleanly with main and passes all basic functionality checks.
-
+3. Run the admin server:
+   ```bash
+   npm install
+   npm run dev
+4. Check that your branch merges cleanly with main and passes all basic functionality checks.
 ---
-
 ## Communication and Support
-
 - Use GitHub Issues to report bugs or request new features.
 - For larger ideas, use GitHub Discussions.
 - Tag maintainers in your PR description for review and feedback.
+---
+##Team G24 Discord Support
+
+Join our support/community channel:
+👉 https://discord.gg/R9bttnvf
 
 ## Contributor License & Intellectual Property
-
 - All contributions remain the intellectual property of their authors.
 - By submitting a Pull Request, you agree to license your work under the project’s MIT License.
 - This allows the ByteBite team to use, modify, and distribute your contribution with proper attribution.
