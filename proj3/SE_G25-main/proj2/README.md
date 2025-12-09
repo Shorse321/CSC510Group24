@@ -1,112 +1,94 @@
-# ByteBite
+# ByteBite 🍴
+## Re-imagining food delivery with purpose!
 
-## 🧪 Quality Assurance Badges
+With ByteBite, a cancelled meal doesn’t end up in the trash — it becomes a discounted opportunity for another customer or a warm donation for a nearby shelter. Enjoy a richer ordering experience with live notifications, instant claiming and beautiful 3D dish previews! It’s a food delivery app that loves the planet back.
 
-### 🧩 Code Coverage
-[![codecov](https://codecov.io/gh/shreyas457/SE_G25/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/shreyas457/SE_G25)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17547308.svg)](https://doi.org/10.5281/zenodo.17547336)
 
-**Workflow:** [.github/workflows/coverage.yml](../.github/workflows/coverage.yml)  
-**Config:** [Jest Config (Backend)](../backend/jest.config.js) · [Vitest Config (Frontend)](../frontend/vitest.config.js) · [Vitest Config (Admin)](../admin/vitest.config.js)
+## Project Health & Status
 
----
+[![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
+[![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml)
+[![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
 
-### 🎯 Style Checker (ESLint)
-[![ESLint Style Checker](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml)
-
-**Workflow:** [.github/workflows/lint.yml](../.github/workflows/lint.yml)  
-**Config:** [Backend](../backend/.eslintrc.cjs) · [Frontend](../frontend/.eslintrc.cjs) · [Admin](../admin/.eslintrc.cjs)
+[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
 
 ---
 
-### 🧠 Syntax Checker (ESLint)
-[![ESLint Syntax Checker](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/lint.yml)
+### Repository Stats
 
-*(Same workflow as Style Checker)*  
-**Workflow:** [.github/workflows/lint.yml](../.github/workflows/lint.yml)  
-**Config:** [Backend](../backend/.eslintrc.cjs) · [Frontend](../frontend/.eslintrc.cjs) · [Admin](../admin/.eslintrc.cjs)
+[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
+[![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
 ---
 
-### 💅 Code Formatter (Prettier)
-[![Code Formatter (Prettier)](https://github.com/shreyas457/SE_G25/actions/workflows/format.yml/badge.svg?branch=feat/env-config)](https://github.com/shreyas457/SE_G25/actions/workflows/format.yml)
+### Built With
 
-**Workflow:** [.github/workflows/format.yml](../.github/workflows/format.yml)  
-**Config:** [.prettierrc.json](../.prettierrc.json) · [.prettierignore](../.prettierignore)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+
+---
+
+**Demo video available on Google Drive:** [Click here to access](https://drive.google.com/file/d/1ws95d9AsfzAQjkV7fxJZKcYslp2gvSQT/view?usp=sharing)
+
+---
+## Key Features & Improvements 🍴
+
+<img src="../ss1.png" width="600" />
+
+- **Cancel-to-Redistribute 🔄**  
+  Converts canceled orders into **real-time redistributable offers** that users can claim instantly.
+
+- **Shelter Distribution Pipeline 🏠**  
+  Connects surplus food with **partner shelters and NGOs**, minimizing waste and maximizing community impact.
+
+- **3D Visualization 🎨🖼️**  
+  Provides **interactive 3D previews** of meals, giving users a realistic and engaging menu experience.
+
+- **Admin Dashboard 📊🛠️**  
+  Centralizes management for **menu, orders and shelter redistribution**, making operations efficient and seamless.
+
+- **Smart Customer Matching 📍**  
+  Uses **location-based notifications** so only nearby and relevant users are alerted to canceled meals.  
+  Includes **smart map previews** to visualize the journey of redistributed orders.
+
+<img src="../ss2.png" width="500" />
 
 
-ByteBite is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G25**.
+- **Personalized Recommendation Engine 🤖💡**  
+  Suggests dishes based on **past orders and nutritional preferences**, boosting engagement with tailored meal recommendations.
 
-The project has three main capabilities:
+- **Basic Preference Filters 🎯**  
+  Allows customers to tag **food preferences, notifications and budget**, ensuring recommendations remain meaningful and targeted.
 
-1. Customers place orders from a single restaurant, track status, and pay online or via cash-on-delivery.
-2. When a customer cancels an order, the restaurant can either:
-   - expose the order to other customers so they can claim it, or  
-   - redirect the order to a partner shelter as a donation.
-3. Customers can view selected menu items using a 3D model carousel to obtain a richer view of each dish.
-
-The goal is to reduce food waste while maintaining a standard online ordering experience.
-
+- **Restaurant Surplus Quick List 🏪⚡**  
+  Enables restaurants to **bulk-list extra items at discounted rates**, expanding reuse opportunities beyond cancellations.
 ---
 
 ## System Overview
 
-The system consists of three applications:
+### Backend (`backend/`)
 
-- `backend/`  
-  Node.js + Express + MongoDB API exposing authentication, menu, cart, order, shelter, and reroute (donation history) endpoints.
+- Node.js + Express + MongoDB API  
+- Provides authentication, menu, cart, order, shelter, and reroute endpoints  
+- JWT-based authenticated operations
 
-- `frontend/`  
-  React + Vite customer-facing web application for browsing the menu, placing orders, claiming redistributed orders, and viewing 3D models of dishes (via `three`, `@react-three/fiber`, and `@react-three/drei`).
+### Frontend (`frontend/`)
 
-- `admin/`  
-  React + Vite restaurant admin dashboard for managing menu items, monitoring orders, updating statuses, and assigning cancelled orders to partner shelters.
+- React + Vite customer-facing application  
+- Browse menu, place orders, claim redistributed orders, view 3D models
 
-The backend exposes REST endpoints under `/api/*` and uses JSON Web Tokens (JWT) for authenticated operations.
+### Admin (`admin/`)
 
----
-
-## Development Tools & Configuration
-
-This project uses several automated tools for code quality, formatting, and testing:
-
-### Style & Syntax Checkers
-- **ESLint**: JavaScript/JSX linting
-  - Backend: [`.eslintrc.cjs`](./backend/.eslintrc.cjs)
-  - Frontend: [`.eslintrc.cjs`](./frontend/.eslintrc.cjs)
-  - Admin: [`.eslintrc.cjs`](./admin/.eslintrc.cjs)
-
-### Code Formatters
-- **Prettier**: Code formatting
-  - Config: [`.prettierrc.json`](./.prettierrc.json)
-  - Ignore: [`.prettierignore`](./.prettierignore)
-
-### Testing & Coverage
-- **Jest**: Backend testing framework
-  - Config: [`package.json`](./backend/package.json#L34-L51) (Jest section)
-  - Coverage: v8 provider with HTML, JSON, LCOV reports
-
-- **Vitest**: Frontend & Admin testing framework
-  - Frontend Config: [`vite.config.js`](./frontend/vite.config.js)
-  - Admin Config: [`vite.config.js`](./admin/vite.config.js)
-  - Coverage: v8 provider with multiple report formats
-
-### Running Tools
-```bash
-# Linting
-cd backend && npm run lint    # (if lint script exists)
-cd frontend && npm run lint
-cd admin && npm run lint
-
-# Testing
-cd backend && npm test
-cd frontend && npm test
-cd admin && npm test
-
-# Coverage
-cd backend && npm run test:coverage
-cd frontend && npm run test:coverage
-cd admin && npm run test:coverage
-```
+- React + Vite restaurant admin dashboard  
+- Manage menu items, monitor orders, update statuses, assign orders to shelters
 
 ---
 
@@ -114,146 +96,166 @@ cd admin && npm run test:coverage
 
 ### 1. Customer Ordering
 
-- Customers register and log in.
-- Customers browse the menu, add items to their cart, and place orders.
-- Orders are stored in MongoDB with a finite-state status model:
-  - `Food Processing`
-  - `Out for delivery`
-  - `Delivered`
-  - `Redistribute`
-  - `Cancelled`
-  - `Claimed`
-- Payment can be completed either by:
-  - Stripe-based flow (`/api/order/place` + `/api/order/verify`), or
-  - Cash-on-delivery (`/api/order/placecod`).
+- Registration and login  
+- Menu browsing, cart management, order placement  
+- Orders stored in MongoDB with finite-state statuses:
+  - `Food Processing`  
+  - `Out for delivery`  
+  - `Delivered`  
+  - `Redistribute`  
+  - `Cancelled`  
+  - `Claimed`  
+- Payment via Stripe or cash-on-delivery
 
 ### 2. Cancellation and Redistribution Queue
 
-When a customer cancels an order:
+- Orders can be cancelled if status permits  
+- Cancelled orders enter `Redistribute` queue  
+- Real-time notifications sent via Socket.IO
 
-- The backend validates that the cancelling user is either the original owner or (if already claimed) the current owner.
-- If the status allows cancellation (for example, `Food Processing` or `Out for delivery`), the status is set to `Redistribute`.
-- A queue notification is emitted via Socket.IO so that interested clients can display the cancelled order to other customers.
+### 3. Restaurant-to-Shelter Donation
 
-### 3. Claiming a Cancelled Order (Customer-to-Customer)
+- Assign cancelled/redistributed orders to partner shelters  
+- Shelter metadata stored in `reroutes` collection  
+- `/api/reroutes` supports paginated access for admin dashboard
 
-- Redistributable orders (status `Redistribute`) can be claimed by other authenticated customers via the `/api/order/claim` endpoint.
-- When a claim succeeds:
-  - Ownership of the order is transferred to the claimant.
-  - The order status is set back to `Food Processing`.
-  - The order now appears in the claimant’s order history.
-- Shelters do not claim orders directly from the queue. Only customers claim orders. Restaurant staff remain responsible for reassigning orders to shelters.
+### 4. 3D Menu Visualization
 
-### 4. Restaurant-to-Shelter Donation
+- Optional 3D model uploads for menu items  
+- Rendered using `three`, `@react-three/fiber`, and `@react-three/drei`  
+- Interactive 3D carousel enhances user experience
 
-The restaurant can donate cancelled or redistributable orders to shelters:
+### 5. Claiming Cancelled Orders
 
-- Partner shelters are stored in the `shelter` collection and may be seeded via `/api/shelters/seed`.
-- Active shelters can be listed via `/api/shelters/list`.
-- Restaurant staff use the admin dashboard to assign an order to a shelter, which calls `/api/order/assign-shelter` on the backend.
-- `assign-shelter`:
-  - Validates the order and shelter.
-  - Ensures the order is in a suitable state (`Redistribute` or `Cancelled`).
-  - Attaches shelter metadata to the order.
-  - Records a donation entry in the `reroutes` collection.
-- Donation history is available via `/api/reroutes`, which supports pagination and is designed to back the shelter-history view in the admin interface.
+- Redistributable orders claimable by other customers  
+- Ownership and status updated upon claim  
+- Shelters are assigned by restaurant staff only
+- Claim notifications sent based on proximity preferences of users
+- Maps to visualise order location, journey and shelters
 
-Shelters are passive recipients in this model: they do not directly interact with the API to “claim” food. The restaurant manages all redirection.
+### 6. Bulk Surplus Sales
 
-### 5. 3D Menu Visualization
+- Create bulk items with quantity, discounted price, availability  
+- Appears in dedicated "Surplus/Bulk" section on frontend
 
-The customer-facing frontend supports rendering of 3D models associated with menu items:
+### 7. User Notification Preferences
 
-- When the restaurant uploads a dish, it may attach:
-  - A standard 2D image, and
-  - An optional 3D model asset.
-- The frontend uses `three`, `@react-three/fiber`, and `@react-three/drei` to render a 3D carousel of dishes.
-- This allows customers to inspect certain items in a more realistic and interactive way.
+- Users set preferences for:
+  - Distance filters  
+  - Enable/disable notifications  
+  - Price range  
+  - Specific items  
+
+### 8. Personalized Rule-Based Meal Recommendations
+
+- Taste profile based on past orders, preferences, menu tags  
+- Scores dishes using deterministic rules:
+  - Preference and category matching  
+  - Price comfort range  
+  - Frequently ordered item similarity  
+  - Highlights good surplus/value deals  
+- Cold-start recommendations available for new users  
+- Ranked list with rationale shown on Cart/Menu pages
 
 ---
 
-## Updates & Announcements
-
-We post short updates whenever we ship features or milestones.
-
-- Full changelog: see **[docs/updates.md](docs/updates.md)**
-- Latest highlights:
-   — Claim Order feature: cancelled → Redistribute → Claimed, with real-time pop-ups.
 ## Project Stats
 
-- **Partner Shelters/NGOs:** 10 (registered for end-of-day surplus donations)
-- **Redistributed Meals:** 15+ (successfully reassigned through the Claim Order module)
-- **Active Contributors:** 4(core developers from Team 25 – SE Project Group)
-- **Intelligent Modules:** 4 (Cancel-to-Redistribute, Shelter Pipeline, and Real-time Claim Notifications, 3D Visualization)
+- **Partner Shelters/NGOs:** 10  
+- **Active Contributors:** 4 (core developers from Team G24)  
+- **Intelligent Modules:** 4 (Cancel-to-Redistribute, Shelter Pipeline, Real-time Claim Notifications, 3D Visualization)
 
-> *ByteBite transforms canceled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community.*
- 
-## Partners & Collaborators
-
-| Partner / Role | Contribution |
-|----------------|---------------|
-| **Team 25 – ByteBite (NCSU SE Project Fall 2025)** | Core development team responsible for full-stack architecture, backend API, and workflow flow |
-| **NCSU Department of Computer Science** | Provided project framework, evaluation, and academic guidance |
-| **OpenAI (ChatGPT) & Anthropic (Claude)** | Assisted in idea exploration, UI refinement, and code documentation |
-
----
+> _ByteBite transforms cancelled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community._
 ## Repository Structure
 
-```text
-backend/
-  config/db.js
-  controllers/
-    cartController.js
-    foodController.js
-    orderController.js
-    rerouteController.js
-    shelterController.js
-    userController.js
-  middleware/
-    auth.js
-  models/
-    foodModel.js
-    orderModel.js
-    rerouteModel.js
-    shelterModel.js
-    userModel.js
-  routes/
-    cartRoute.js
-    foodRoute.js
-    orderRoute.js
-    rerouteRoute.js
-    shelterRoute.js
-    userRoute.js
-  server.js
-  package.json
-
-frontend/
-  src/...
-  package.json
-
-admin/
-  src/...
-  package.json
-
+```proj3/SE_G25-main/
+├── .github/
+│   └── workflows/
+├── docs/
+├── proj1/
+├── proj2/
+├── admin/
+├── frontend/
+│   ├── public/
+│   └── src/
+│       ├── Context/
+│       ├── __tests__/
+│       ├── assets/
+│       ├── components/
+│       │   ├── AppDownload/
+│       │   ├── ExploreMenu/
+│       │   ├── Food3DViewer/
+│       │   ├── FoodDisplay/
+│       │   ├── FoodItem/
+│       │   ├── Footer/
+│       │   ├── Header/
+│       │   ├── LoginPopup/
+│       │   ├── Navbar/
+│       │   └── NotificationListener/
+│       └── pages/
+│           ├── Cart/
+│           ├── Home/
+│           ├── MyOrders/
+│           ├── PlaceOrder/
+│           ├── Preferences/
+│           └── Verify/
+├── backend/
+│   ├── __tests__/
+│   ├── config/
+│   ├── controllers/
+│   │   ├── cartController.js
+│   │   ├── foodController.js
+│   │   ├── orderController.js
+│   │   ├── recommendationController.js
+│   │   ├── rerouteController.js
+│   │   ├── shelterController.js
+│   │   └── userController.js
+│   ├── middleware/
+│   ├── models/
+│   │   ├── foodModel.js
+│   │   ├── orderModel.js
+│   │   ├── rerouteModel.js
+│   │   ├── shelterModel.js
+│   │   └── userModel.js
+│   ├── routes/
+│   │   ├── cartRoute.js
+│   │   ├── foodRoute.js
+│   │   ├── orderRoute.js
+│   │   ├── recommendationRoute.js
+│   │   ├── rerouteRoute.js
+│   │   ├── shelterRoute.js
+│   │   └── userRoute.js
+│   ├── services/
+│   ├── uploads/
+│   ├── utils/
+│   ├── jest.bulk.config.mjs
+│   ├── jest.setup.mjs
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── server.js
+│   └── test_log.txt
+├── scripts/
+├── .eslintrc.cjs
+├── .gitignore
+├── .prettierignore
+├── .prettierrc.json
+├── API.md
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── ENV_TEMPLATE.md
+├── GETTING_STARTED.md
+├── LICENSE.md
+├── README.md
+├── docs-config.json
+├── package.json
+├── package-lock.json
+└── run-all-tests.sh
 ```
-## Project Resources
-
-Demo video available on Google Drive:  
-[Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
-
-
 ## Running the Distributable Builds (Frontend / Admin / Backend)
-
-After every successful CI run, GitHub Actions automatically generates build artifacts for each component of the project.
-You can find and download them under the Artifacts section of the workflow run — typically named:
-
-- frontend-build.zip
-- admin-build.zip
----
 
 Step 1:
 - Download and Extract the Artifacts
-- Go to your repository → Actions → ByteBite CI.
 - Open the latest successful workflow run on main or dev.
 - Scroll to Artifacts and download the build ZIPs.
 - Extract them locally, for example:
@@ -313,3 +315,78 @@ Step 4:
 In your backend’s configuration: origin: process.env.FRONTEND_URL || "http://localhost:5173",
 
 If you’re previewing both frontend (5173) and admin (5174), include both origins in your CORS settings.
+
+
+## Open Communications Protocols
+
+**StackShack** communicates using **open and standard web protocols**:
+
+- The application runs on **HTTP/HTTPS** using REST-style Flask routes.
+- All client–server interactions use **JSON** as the data-interchange format.
+- The API endpoints can be accessed by any system that supports standard HTTP requests.
+
+## Cross-platform support Check
+
+Tested on macOS, Windows and Linux laptops using Python 3.8+.
+
+---
+
+## Accessibility Standards
+
+- The user interface is designed following **WCAG 2.1** and **ARIA8** best practices wherever possible.  
+- All buttons, input fields and navigation elements are keyboard-accessible.  
+- Color choices maintain strong contrast for readability.  
+- Semantic HTML tags (`<header>`, `<nav>`, `<main>`, `<footer>`) are used to improve screen-reader compatibility.  
+- Dynamic content (like modals and alerts) is handled with proper ARIA labels and roles.
+
+---
+
+## Documentation Accessibility
+
+- All documentation, including the `README.md` and `docs/` pages, follows **plain language** principles and is compatible with **Markdown renderers** that support screen readers.  
+- Headings (`#`, `##`, `###`) are structured hierarchically for screen-reader navigation.  
+- Text alternatives (`alt` attributes) are provided for all embedded images (e.g., logos, architecture diagrams).  
+- Hyperlinks use descriptive text rather than generic labels like “click here”.
+
+---
+
+## Security Notes
+
+- Never commit `.env` file to Git
+- Use strong passwords in production
+- Keep dependencies up to date
+
+---
+
+## Support
+
+For issues or questions:
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
+3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
+
+---
+
+## Team
+
+**Group 24**
+- Adam Myers
+- Akash R
+- Sailesh Sridhar
+- Swetha Manivasagam
+
+Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
+No funding was received for driving this project to completion.
+**Course:** 
+
+CSC 510 - Software Engineering
+
+All team members have the following roles and responsibilities
+| **Role** | **Responsibility** |
+|-----------|--------------------|
+| **Project Maintainers** | Oversee code quality, merge pull requests and manage releases |
+| **Core Developers** | Implement new features, conduct testing and manage database schemas |
+| **Contributors** | Report issues, submit pull requests (PRs) and improve documentation |
+| **Reviewers** | Conduct peer reviews and ensure adherence to code conventions |
+
+---
