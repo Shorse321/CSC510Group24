@@ -1,6 +1,8 @@
 # Contributing to ByteBite
 
 Thank you for your interest in contributing to **ByteBite** — a smart food redistribution system that connects restaurants, users, and shelters to reduce food waste.  
+This project is developed by **Team G25 (CSC510 — Fall 2025)** and improved by **Team G24 (CSC510 — Fall 2025)**.
+
 We welcome all contributions — from bug fixes and feature enhancements to documentation and testing support.
 
 ---
@@ -86,6 +88,12 @@ Before submitting a Pull Request, make sure to test your changes thoroughly:
 - Use GitHub Issues to report bugs or request new features.
 - For larger ideas, use GitHub Discussions.
 - Tag maintainers in your PR description for review and feedback.
+---
+##Team G24 Discord Support
+
+Join our support/community channel:
+👉 https://discord.gg/R9bttnvf
+
 ## Contributor License & Intellectual Property
 - All contributions remain the intellectual property of their authors.
 - By submitting a Pull Request, you agree to license your work under the project’s MIT License.
