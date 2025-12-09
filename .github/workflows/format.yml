@@ -1,0 +1,26 @@
+name: Format Checker
+
+on:
+  push:
+    paths:
+      - 'proj3/SE_G25-main/proj2/**'
+  pull_request:
+    paths:
+      - 'proj3/SE_G25-main/proj2/**'
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Run Prettier Check
+        working-directory: proj3/SE_G25-main/proj2
+        run: |
+          # Use npx to run prettier using the config in your scripts folder
+          npx prettier --check "**/*.{js,jsx,json,md,yml}" --config scripts/.prettierrc.json --ignore-path scripts/.prettierignore

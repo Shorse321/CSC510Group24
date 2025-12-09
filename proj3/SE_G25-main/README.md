@@ -6,6 +6,7 @@
 
 ### Quality Assurance
 [![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
+**Config:** [Jest Config (Backend)](backend/package.json) · [Vite Config (Frontend)](frontend/vite.config.js) · [Vite Config (Admin)](admin/vite.config.js)
 
 ### CI/CD Build Status
 [![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
@@ -18,9 +19,22 @@
 [![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
 [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
+### 🎯 Synatax & Style Checker (ESLint)
+[![ESLint Syntax Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
+**Workflow:** [.github/workflows/lint.yml](../../../../.github/workflows/lint.yml)  
+**Config:** [Backend](backend/.eslintrc.cjs) · [Frontend](frontend/.eslintrc.cjs) · [Admin](admin/.eslintrc.cjs)
+
+[![ESLint Style Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
+**Workflow:** [.github/workflows/lint.yml](../../../../.github/workflows/lint.yml)  
+**Config:** [Backend](backend/.eslintrc.cjs) · [Frontend](frontend/.eslintrc.cjs) · [Admin](admin/.eslintrc.cjs)
+
+[![Code Formatter (Prettier)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml)
+
+**Workflow:** [.github/workflows/format.yml](../../../../.github/workflows/format.yml)  
+**Config:** [.prettierrc.json](scripts/.prettierrc.json) · [.prettierignore](scripts/.prettierignore)
 ---
 
-**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G25**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
+**ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G24**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
 
 ### Built With
 ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
