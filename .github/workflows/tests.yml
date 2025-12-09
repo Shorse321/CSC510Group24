@@ -52,15 +52,6 @@ jobs:
         JWT_SECRET: "bytebite_secret_key_12345_dummy"
         STRIPE_SECRET_KEY: "sk_test_dummy_value"
 
-    - name: Run Preferences Tests Specifically
-      run: npm run test:preferences
-      env:
-        NODE_ENV: test
-        PORT: 4000
-        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
-        JWT_SECRET: "bytebite_secret_key_12345_dummy"
-        STRIPE_SECRET_KEY: "sk_test_dummy_value"
-
     - name: Generate Coverage Report
       run: npm run test:coverage
       env:
