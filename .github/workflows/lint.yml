@@ -1,13 +1,11 @@
 name: Lint Checker
 
 on:
-workflow_dispatch
+  workflow_dispatch:
   push:
-    paths:
-      - 'proj3/SE_G25-main/proj2/**'
+    branches: [ "**" ]
   pull_request:
-    paths:
-      - 'proj3/SE_G25-main/proj2/**'
+    branches: [ "**" ]
 
 jobs:
   eslint:
@@ -20,7 +18,6 @@ jobs:
         with:
           node-version: 18.x
 
-      # --- Backend Linting ---
       - name: Install Backend Deps
         run: |
           cd proj3/SE_G25-main/proj2/backend
@@ -31,19 +28,16 @@ jobs:
           cd proj3/SE_G25-main/proj2/backend
           npm run lint
 
-      # --- Frontend Linting ---
       - name: Install Frontend Deps
         run: |
           cd proj3/SE_G25-main/proj2/frontend
           npm install
           
       - name: Lint Frontend
-        # Only run if the script exists
         run: |
           cd proj3/SE_G25-main/proj2/frontend
           if npm run | grep -q "lint"; then npm run lint; else echo "No lint script found, skipping"; fi
 
-      # --- Admin Linting ---
       - name: Install Admin Deps
         run: |
           cd proj3/SE_G25-main/proj2/admin
