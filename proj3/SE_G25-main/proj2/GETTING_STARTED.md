@@ -51,14 +51,67 @@ npm run server
 
 By default, the server listens on `http://localhost:4000` and exposes the following API routes:
 
-| Module | Base Path |
-|---------|------------|
-| User | `http://localhost:4000/api/user` |
-| Food | `http://localhost:4000/api/food` |
-| Cart | `http://localhost:4000/api/cart` |
-| Order | `http://localhost:4000/api/order` |
-| Shelters | `http://localhost:4000/api/shelters` |
-| Reroutes | `http://localhost:4000/api/reroutes` |
+| Module            | Base Path                                   |
+| ----------------- | ------------------------------------------- |
+| User              | `http://localhost:4000/api/user`            |
+| Food              | `http://localhost:4000/api/food`            |
+| Cart              | `http://localhost:4000/api/cart`            |
+| Order             | `http://localhost:4000/api/order`           |
+| Shelters          | `http://localhost:4000/api/shelters`        |
+| Reroutes          | `http://localhost:4000/api/reroutes`        |
+| Recommendations   | `http://localhost:4000/api/recommendations` |
+
+### Rule-Based Recommendation API
+
+The new rule engine surfaces curated meals for every authenticated user by combining:
+
+- Historical purchases (top categories, frequently re-ordered dishes)
+- Stored preference tags (strings saved via `/api/user/preferences`)
+- Item attributes (category, price, surplus discounts)
+
+Request personalized meals:
+
+```bash
+curl -X GET "http://localhost:4000/api/recommendations/meals?limit=5" \
+  -H "token: <JWT from /api/user/login>"
+```
+
+Query parameters:
+
+- `limit` (optional): cap the number of meals (default `10`, max `50`)
+- `debug` (optional, `true/false`): include the computed user profile & rules applied (useful for QA)
+
+Sample response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "recommendations": [
+      {
+        "foodId": "665fa4...",
+        "name": "Greek Salad",
+        "category": "Salad",
+        "price": 12,
+        "isSurplus": false,
+        "score": 64.5,
+        "reasons": [
+          "Within preferred price range",
+          "Popular category: Salad",
+          "Matches preference tags (salad)"
+        ],
+        "appliedRules": [
+          "price_alignment",
+          "category_affinity",
+          "tag_match"
+        ]
+      }
+    ]
+  }
+}
+```
+
+When `debug=true`, the `data.profile` payload shows the exact tags, price bands, and rules used so that the behavior remains transparent during testing.
 
 ---
 
@@ -119,6 +172,7 @@ http://localhost:5174
 ```
 
 This interface allows restaurant staff to:
+
 - Manage menu items and categories.
 - Track customer orders in real time.
 - Redistribute or assign cancelled orders to partner shelters.
@@ -127,13 +181,13 @@ This interface allows restaurant staff to:
 
 ## Data Model Overview (High-Level)
 
-| Model | Description |
-|--------|--------------|
-| **user** | Stores user credentials, contact details, and cart data. Authentication is handled through JWT. |
-| **food** | Represents menu items, including price, category, images, and optional 3D model references. |
-| **order** | Tracks customer orders including items, total amount, address, status, and payment flag. Orders can transition through a finite-state model (`Food Processing`, `Out for Delivery`, `Delivered`, `Redistribute`, `Cancelled`,`Claimed`). They may also be reassigned to new customers or shelters. |
-| **shelter** | Represents registered partner shelters, including contact and address details and an `active` flag. |
-| **reroutes** | Maintains a record of redistributed or donated orders, including shelter details, order contents, and timestamps. |
+| Model        | Description                                                                                                                                                                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **user**     | Stores user credentials, contact details, and cart data. Authentication is handled through JWT.                                                                                                                                                                                                    |
+| **food**     | Represents menu items, including price, category, images, and optional 3D model references.                                                                                                                                                                                                        |
+| **order**    | Tracks customer orders including items, total amount, address, status, and payment flag. Orders can transition through a finite-state model (`Food Processing`, `Out for Delivery`, `Delivered`, `Redistribute`, `Cancelled`,`Claimed`). They may also be reassigned to new customers or shelters. |
+| **shelter**  | Represents registered partner shelters, including contact and address details and an `active` flag.                                                                                                                                                                                                |
+| **reroutes** | Maintains a record of redistributed or donated orders, including shelter details, order contents, and timestamps.                                                                                                                                                                                  |
 
 ---
 
@@ -156,6 +210,7 @@ This interface allows restaurant staff to:
 ## Next Steps
 
 After setup, you can:
+
 - Access the customer interface at `http://localhost:5173`
 - Access the admin dashboard at `http://localhost:5174`
 - Use MongoDB Compass or `mongosh` to inspect the database
@@ -164,5 +219,5 @@ After setup, you can:
 ---
 
 **Maintainers:**  
-*Developed and maintained by NCSU Team G25 (2025).*  
+_Developed and maintained by NCSU Team G25 (2025)._  
 Licensed under the [MIT License](LICENSE).
