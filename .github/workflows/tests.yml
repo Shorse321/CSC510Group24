@@ -1,7 +1,7 @@
 name: Backend CI with Preferences Tests
 
 on:
-  workflow_dispatch: # Allows manual run button
+  workflow_dispatch:
   push:
     paths:
       - 'proj3/SE_G25-main/proj2/backend/**'
@@ -11,12 +11,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # Set the folder where commands run
     defaults:
       run:
         working-directory: ./proj3/SE_G25-main/proj2/backend
 
-    # Spin up temporary MongoDB
     services:
       mongodb:
         image: mongo:6.0
@@ -77,3 +75,13 @@ jobs:
       with:
         name: coverage-report-node-${{ matrix.node-version }}
         path: proj3/SE_G25-main/proj2/backend/coverage/
+
+    # ✅ Upload to Codecov (only run once, not for each matrix version)
+    - name: Upload coverage to Codecov
+      if: matrix.node-version == '20.x'
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: proj3/SE_G25-main/proj2/backend/coverage/lcov.info
+        flags: proj3-backend
+        fail_ci_if_error: true
