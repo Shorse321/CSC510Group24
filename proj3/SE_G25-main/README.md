@@ -5,6 +5,7 @@
 ## Project Health & Status
 
 ### Quality Assurance
+
 [![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
 
 **Config:** [Jest Config (Backend)](backend/package.json) · [Vite Config (Frontend)](frontend/vite.config.js) · [Vite Config (Admin)](admin/vite.config.js)
@@ -12,6 +13,7 @@
 ---
 
 ### CI/CD Build Status
+
 [![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
 [![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml)
 [![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
@@ -19,6 +21,7 @@
 ---
 
 ### Repository Stats
+
 [![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors)
 [![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
@@ -45,6 +48,7 @@
 **ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G24**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
 
 ### Built With
+
 ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
@@ -58,6 +62,7 @@
 **Demo video available on Google Drive:** [Click here to access](https://drive.google.com/drive/folders/1cu_q0Fzv2eirk6KWtg8ypfO_mJUwBUOG)
 
 The project has four main capabilities:
+
 1. **Standard Ordering:** Customers place orders, track status, and pay online or via cash-on-delivery.
 2. **Redistribution Logic:** Cancelled or surplus orders are redirected to a public "claim" queue for other users or assigned to partner shelters.
 3. **Bulk Surplus Sales:** Restaurants can list bulk quantities of surplus items at special rates to minimize end-of-day waste.
@@ -144,16 +149,31 @@ The customer-facing frontend supports rendering of 3D models associated with men
 - The frontend uses `three`, `@react-three/fiber`, and `@react-three/drei` to render a 3D carousel of dishes.
 - This allows customers to inspect certain items in a more realistic and interactive way.
 
-
 ### 6. Bulk Surplus Sales (New!)
+
 - **Goal:** Rapidly clear large quantities of specific inventory (e.g., end-of-shift bakery items).
 - **Admin Flow:** Restaurant staff create "Bulk Items" specifying quantity, discounted price, and availability windows.
 - **User Flow:** These items appear in a dedicated "Surplus/Bulk" section of the menu, allowing users to purchase larger quantities at a better value, directly reducing food waste.
 
 ### 7. User Notifcation Preferances (New!)
+
 - **Goal:** Users receive only notifactions of redistributed order that they want (e.g., user wants only to be notified of orders greater than $50).
 - **User Flow:** User selects their profile icon in the top right. User selects preferences. User is prompted with the many preferences option including: how far away a notification can come from, enable/disable notifications, price range of a notification, and selecting which items to be notified of.
+
 ---
+
+### 8. Personalized Rule-Based Meal Recommendations (New!)
+
+- Builds a **taste profile** for each user based on past orders, spending patterns, saved preferences, and menu tags.
+- Detects preferred categories, usual price range, and behavioral traits (e.g., value-seeker, loyal customer).
+- Scores every dish using deterministic rules:
+  - Matches on user preference tags and categories
+  - Checks whether the item fits the user’s price comfort range
+  - Boosts items similar to frequently ordered dishes
+  - Highlights good surplus/value deals
+- Provides **cold-start recommendations** for users with no purchase history.
+- Returns a ranked list with clear reasons (e.g., “Matches spicy preference”, “Within your usual price range”).
+- Shown on the Cart/Menu pages to help users quickly discover relevant and personalized meal options.
 
 ## Updates & Announcements
 
@@ -161,7 +181,8 @@ We post short updates whenever we ship features or milestones.
 
 - Full changelog: see **[docs/updates.md](docs/updates.md)**
 - Latest highlights:
-   — Claim Order feature: cancelled → Redistribute → Claimed, with real-time pop-ups.
+  — Claim Order feature: cancelled → Redistribute → Claimed, with real-time pop-ups.
+
 ## Project Stats
 
 - **Partner Shelters/NGOs:** 10 (registered for end-of-day surplus donations)
@@ -169,57 +190,71 @@ We post short updates whenever we ship features or milestones.
 - **Active Contributors:** 4(core developers from Team 25 – SE Project Group)
 - **Intelligent Modules:** 4 (Cancel-to-Redistribute, Shelter Pipeline, and Real-time Claim Notifications, 3D Visualization)
 
-> *ByteBite transforms canceled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community.*
- 
+> _ByteBite transforms canceled and surplus orders into redistributable meals — connecting restaurants, users, and shelters in real time to reduce food waste and support the community._
+
 ## Partners & Collaborators
 
-| Partner / Role | Contribution |
-|----------------|---------------|
-| **Team 25 – ByteBite (NCSU SE Project Fall 2025)** | Core development team responsible for full-stack architecture, backend API, and workflow flow |
-| **NCSU Department of Computer Science** | Provided project framework, evaluation, and academic guidance |
-| **OpenAI (ChatGPT) & Anthropic (Claude)** | Assisted in idea exploration, UI refinement, and code documentation |
+| Partner / Role                                     | Contribution                                                                                  |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Team 24 – ByteBite (NCSU SE Project Fall 2025)** | Core development team responsible for full-stack architecture, backend API, and workflow flow |
+| **NCSU Department of Computer Science**            | Provided project framework, evaluation, and academic guidance                                 |
+| **OpenAI (ChatGPT) & Anthropic (Claude)**          | Assisted in idea exploration, UI refinement, and code documentation                           |
 
 ---
+
 ## Repository Structure
 
 ```text
-backend/
-  config/db.js
-  controllers/
-    cartController.js
-    foodController.js
-    orderController.js
-    rerouteController.js
-    shelterController.js
-    userController.js
-  middleware/
-    auth.js
-  models/
-    foodModel.js
-    orderModel.js
-    rerouteModel.js
-    shelterModel.js
-    userModel.js
-  routes/
-    cartRoute.js
-    foodRoute.js
-    orderRoute.js
-    rerouteRoute.js
-    shelterRoute.js
-    userRoute.js
-  tests/
-  server.js
+proj2/
+  API.md
+  CHANGLOG.md
+  CODE_OF_CONDUCT.md
+  CONTRIBUTING.md
+  ENV_TEMPLATE.md
+  GETTING_STARTED.md
+  LICENSE.md
+  README.md
+  admin/
+    public/
+    src/
+      __tests__/
+      assets/
+      components/
+      pages/
+      test/
+      App.jsx
+  backend/
+    __tests__/
+    config/
+    controllers/
+    middleware/
+    models/
+    routes/
+    services/
+    utils/
+    uploads/
+    server.js
+    package.json
+  docs/
+    backend.md
+    frontend.md
+    index.html
+  docs-config.json
+  frontend/
+    public/
+    src/
+      Context/
+      __tests__/
+      assets/
+      components/
+      pages/
+      test/
+      App.jsx
+    package.json
+  package-lock.json
   package.json
-
-frontend/
-  src/
-    components/
-    assets/
-    pages/
-  package.json
-
-admin/
-  src/
-    components/
-    pages/
-  package.json
+  run-all-tests.sh
+  scripts/
+    generate-docs.js
+  team.config.js
+```
