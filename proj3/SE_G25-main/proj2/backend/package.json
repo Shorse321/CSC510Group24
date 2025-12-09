@@ -23,7 +23,7 @@
     
     "test:coverage": "npm run test:legacy:coverage && npm run test:modern:coverage",
     
-    "test:preferences": "node --experimental-vm-modules ./node_modules/.bin/jest --testMatch='**/__tests__/preferences.test.js'"
+     "test:preferences": "node --experimental-vm-modules ./node_modules/.bin/jest preferences"
   },
   "author": "",
   "license": "ISC",
