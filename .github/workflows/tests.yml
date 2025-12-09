@@ -1,96 +1,79 @@
-# .github/workflows/tests.yml
-name: Tests, Linting, & Coverage
+name: Backend CI with Preferences Tests
 
 on:
+  workflow_dispatch: # Allows manual run button
   push:
+    paths:
+      - 'proj3/SE_G25-main/proj2/backend/**'
   pull_request:
-  schedule:
-    # Run every day at 2 AM UTC
-    - cron: '0 2 * * *'
-  workflow_dispatch:
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
-    
+
+    # Set the folder where commands run
     defaults:
       run:
-        working-directory: ./proj2/stackshack 
+        working-directory: ./proj3/SE_G25-main/proj2/backend
+
+    # Spin up temporary MongoDB
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
       with:
-        python-version: "3.9"
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: proj3/SE_G25-main/proj2/backend/package-lock.json
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-cov
+      run: npm ci
 
-    - name: Run tests with coverage
-      run: |
-        PYTHONPATH=. pytest tests/ \
-          --cov=models \
-          --cov=controllers \
-          --cov=routes \
-          --cov-report=xml \
-          --cov-report=term
+    - name: Run All Tests (including Preferences)
+      run: npm test
+      env:
+        NODE_ENV: test
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
 
-    - name: Upload coverage report to GitHub
+    - name: Run Preferences Tests Specifically
+      run: npm run test:preferences
+      env:
+        NODE_ENV: test
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
+
+    - name: Generate Coverage Report
+      run: npm run test:coverage
+      env:
+        NODE_ENV: test
+        PORT: 4000
+        MONGO_URI: "mongodb://localhost:27017/food-del-test" 
+        JWT_SECRET: "bytebite_secret_key_12345_dummy"
+        STRIPE_SECRET_KEY: "sk_test_dummy_value"
+
+    - name: Upload Coverage to Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
-        path: ./proj2/stackshack/coverage.xml
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./proj2/stackshack/coverage.xml
-        fail_ci_if_error: false
-
-
-  lint:
-    runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: ./proj2/stackshack
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.9"
-
-    - name: Install linting and security tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install black ruff bandit pip-audit
-      working-directory: .
-
-    - name: Run Black (Formatter Check)
-      run: |
-        # --check flag verifies formatting without changing files
-        black --check .
-        
-    - name: Run Ruff (Style & Syntax Check)
-      run: |
-        ruff check .
-
-    - name: Run Bandit (Code Security Scan)
-      # Scans all files recursively, ignores venv, reports medium+ issues
-      run: |
-        bandit -r . -x venv -ll
-        
-    - name: Run pip-audit (Dependency Scan)
-      run: |
-        pip-audit -r requirements.txt
+        name: coverage-report-node-${{ matrix.node-version }}
+        path: proj3/SE_G25-main/proj2/backend/coverage/
