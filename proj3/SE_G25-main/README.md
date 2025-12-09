@@ -12,17 +12,12 @@
 ---
 
 ### CI/CD Build Status
-[![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
-[![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml) 
-[![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
+[![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml) [![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml) [![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
 
 ---
 
 ### Repository Stats
-[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE) 
-[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors) 
-[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main) 
-[![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
+[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE) [![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors) [![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main) [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
 ---
 
