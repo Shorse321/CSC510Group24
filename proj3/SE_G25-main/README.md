@@ -26,7 +26,7 @@
 
 ---
 
-### 🎯 Syntax & Style Checker (ESLint)
+### Syntax & Style Checker (ESLint)
 [![ESLint Syntax Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
 [![ESLint Style Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
 
@@ -35,7 +35,7 @@
 
 ---
 
-### 💅 Code Formatter (Prettier)
+### Code Formatter (Prettier)
 [![Code Formatter (Prettier)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml)
 
 **Workflow:** [.github/workflows/format.yml](../../../../.github/workflows/format.yml)  
@@ -223,7 +223,3 @@ admin/
     components/
     pages/
   package.json
-
-
-
-
