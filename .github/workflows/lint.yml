@@ -1,0 +1,54 @@
+name: Lint Checker
+
+on:
+  push:
+    paths:
+      - 'proj3/SE_G25-main/proj2/**'
+  pull_request:
+    paths:
+      - 'proj3/SE_G25-main/proj2/**'
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      # --- Backend Linting ---
+      - name: Install Backend Deps
+        run: |
+          cd proj3/SE_G25-main/proj2/backend
+          npm install
+      
+      - name: Lint Backend
+        run: |
+          cd proj3/SE_G25-main/proj2/backend
+          npm run lint
+
+      # --- Frontend Linting ---
+      - name: Install Frontend Deps
+        run: |
+          cd proj3/SE_G25-main/proj2/frontend
+          npm install
+          
+      - name: Lint Frontend
+        # Only run if the script exists
+        run: |
+          cd proj3/SE_G25-main/proj2/frontend
+          if npm run | grep -q "lint"; then npm run lint; else echo "No lint script found, skipping"; fi
+
+      # --- Admin Linting ---
+      - name: Install Admin Deps
+        run: |
+          cd proj3/SE_G25-main/proj2/admin
+          npm install
+          
+      - name: Lint Admin
+        run: |
+          cd proj3/SE_G25-main/proj2/admin
+          if npm run | grep -q "lint"; then npm run lint; else echo "No lint script found, skipping"; fi
