@@ -21,21 +21,6 @@
 
 ---
 
-### Syntax & Style Checker (ESLint)
-[![Lint Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
-
-**Workflow:** [.github/workflows/lint.yml](.github/workflows/lint.yml)  
-**Config:** [Backend](backend/.eslintrc.cjs) · [Frontend](frontend/.eslintrc.cjs) · [Admin](admin/.eslintrc.cjs)
-
----
-
-### Code Formatter (Prettier)
-[![Format Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml)
-
-**Workflow:** [.github/workflows/format.yml](.github/workflows/format.yml)  
-**Config:** [.prettierrc.json](scripts/.prettierrc.json) · [.prettierignore](scripts/.prettierignore)
-
----
 
 **ByteBite** is a single-restaurant food-ordering and food-redistribution system built by **NCSU Team G24**. The platform bridges the gap between commercial food service and community support by integrating standard ordering with intelligent surplus redistribution.
 
