@@ -1,7 +1,7 @@
 # Getting Started with ByteBite
 
 This document provides detailed instructions for setting up and running the **ByteBite** system on a local or development environment.  
-ByteBite is a food-ordering and redistribution platform built by **NCSU Team G25**, designed for a **single restaurant** that can redirect cancelled orders to partner shelters, thereby reducing food waste and supporting community well-being.
+ByteBite is a food-ordering and redistribution platform built by **NCSU Team G25** and improved by **NCSU Team G25**, designed for a **restaurants** that can redirect cancelled orders to partner shelters, thereby reducing food waste and supporting community well-being.
 
 ---
 
@@ -183,27 +183,11 @@ This interface allows restaurant staff to:
 
 | Model        | Description                                                                                                                                                                                                                                                                                        |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **user**     | Stores user credentials, contact details, and cart data. Authentication is handled through JWT.                                                                                                                                                                                                    |
+| **user**     | Stores user credentials, contact details, address (latitude and longitudes) and cart data. Authentication is handled through JWT.                                                                                                                                                                                                    |
 | **food**     | Represents menu items, including price, category, images, and optional 3D model references.                                                                                                                                                                                                        |
 | **order**    | Tracks customer orders including items, total amount, address, status, and payment flag. Orders can transition through a finite-state model (`Food Processing`, `Out for Delivery`, `Delivered`, `Redistribute`, `Cancelled`,`Claimed`). They may also be reassigned to new customers or shelters. |
 | **shelter**  | Represents registered partner shelters, including contact and address details and an `active` flag.                                                                                                                                                                                                |
-| **reroutes** | Maintains a record of redistributed or donated orders, including shelter details, order contents, and timestamps.                                                                                                                                                                                  |
-
----
-
-## Limitations and Future Work
-
-- **Configuration management:**  
-  The database and environment configurations are currently local; parameterization for multiple deployment environments is recommended.
-
-- **Shelter access:**  
-  Shelters currently lack a separate authenticated dashboard. Future iterations may include a shelter-facing portal for donation tracking.
-
-- **3D model validation:**  
-  The 3D model upload process assumes correctly formatted assets and lacks server-side validation or compression.
-
-- **Testing and monitoring:**  
-  Automated testing, structured logging, and application monitoring are minimal and can be enhanced for production deployment.
+| **reroutes** | Maintains a record of redistributed or donated orders, including shelter details, order contents and timestamps.                                                                                                                                                                                  |
 
 ---
 
@@ -219,5 +203,5 @@ After setup, you can:
 ---
 
 **Maintainers:**  
-_Developed and maintained by NCSU Team G25 (2025)._  
+_Developed and maintained by NCSU Team G24, 25 (2025)._  
 Licensed under the [MIT License](LICENSE).
