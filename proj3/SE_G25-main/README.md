@@ -41,7 +41,7 @@ With ByteBite, a cancelled meal doesn’t end up in the trash — it becomes a d
 ---
 ## Key Features & Improvements 🍴
 
-### Core Modules 🌟
+<img src="ss1.png" width="600" />
 
 - **Cancel-to-Redistribute 🔄**  
   Converts canceled orders into **real-time redistributable offers** that users can claim instantly.
@@ -53,21 +53,20 @@ With ByteBite, a cancelled meal doesn’t end up in the trash — it becomes a d
   Provides **interactive 3D previews** of meals, giving users a realistic and engaging menu experience.
 
 - **Admin Dashboard 📊🛠️**  
-  Centralizes management for **menu, orders, and shelter redistribution**, making operations efficient and seamless.
-
----
-
-### Advanced Enhancements ✨
+  Centralizes management for **menu, orders and shelter redistribution**, making operations efficient and seamless.
 
 - **Smart Customer Matching 📍**  
   Uses **location-based notifications** so only nearby and relevant users are alerted to canceled meals.  
   Includes **smart map previews** to visualize the journey of redistributed orders.
 
+<img src="ss2.png" width="500" />
+
+
 - **Personalized Recommendation Engine 🤖💡**  
   Suggests dishes based on **past orders and nutritional preferences**, boosting engagement with tailored meal recommendations.
 
 - **Basic Preference Filters 🎯**  
-  Allows customers to tag **food preferences, notifications, and budget**, ensuring recommendations remain meaningful and targeted.
+  Allows customers to tag **food preferences, notifications and budget**, ensuring recommendations remain meaningful and targeted.
 
 - **Restaurant Surplus Quick List 🏪⚡**  
   Enables restaurants to **bulk-list extra items at discounted rates**, expanding reuse opportunities beyond cancellations.
