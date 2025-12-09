@@ -351,7 +351,10 @@ io.on("connection", (socket) => {
 app.use(express.json());
 app.use(cors());
 
-connectDB();
+// Only connect to DB if not in test mode (tests handle their own connections)
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 app.use("/api/user", userRouter);
 app.use("/api/food", foodRouter);
@@ -364,6 +367,12 @@ app.get("/", (req, res) => {
   res.send("API Working");
 });
 
-httpServer.listen(port, () =>
-  console.log(`Server started on http://localhost:${port}`)
-);
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(port, () =>
+    console.log(`Server started on http://localhost:${port}`)
+  );
+}
+
+// Export for testing
+export default httpServer;
