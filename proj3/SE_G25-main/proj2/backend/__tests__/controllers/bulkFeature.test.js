@@ -1,8 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
-// =====================================================================
-// 1. MOCKING PHASE
-// =====================================================================
 const saveMock = jest.fn();
 
 // Create a Spy Class for the constructor so we can track 'new foodModel()'
@@ -19,16 +16,10 @@ await jest.unstable_mockModule("../../models/foodModel.js", () => ({
   default: FoodModelMock
 }));
 
-// =====================================================================
-// 2. IMPORT PHASE
-// =====================================================================
 // Import controller AFTER mocks are defined
 const { createBulkItem, updateBulkItem } = await import("../../controllers/foodController.js");
 const foodModel = FoodModelMock;
 
-// =====================================================================
-// 3. TEST SUITE (30 Cases)
-// =====================================================================
 describe("Bulk Order Feature - Comprehensive Test Suite", () => {
   let req, res;
 
@@ -42,9 +33,7 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
     saveMock.mockClear();
   });
 
-  // ---------------------------------------------------------
-  // GROUP 1: createBulkItem (Positive Tests)
-  // ---------------------------------------------------------
+
   describe("createBulkItem - Positive Flows", () => {
     
     it("1. Should successfully create a bulk item when inputs are valid", async () => {
@@ -147,9 +136,6 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
     });
   });
 
-  // ---------------------------------------------------------
-  // GROUP 2: createBulkItem (Negative/Error Tests)
-  // ---------------------------------------------------------
   describe("createBulkItem - Negative Flows", () => {
 
     it("11. Should return error if original Item ID is not found", async () => {
@@ -195,9 +181,6 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
     });
   });
 
-  // ---------------------------------------------------------
-  // GROUP 3: updateBulkItem (Positive Tests)
-  // ---------------------------------------------------------
   describe("updateBulkItem - Positive Flows", () => {
 
     it("16. Should successfully update an existing bulk pack", async () => {
@@ -254,9 +237,6 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
     });
   });
 
-  // ---------------------------------------------------------
-  // GROUP 4: updateBulkItem (Negative/Error Tests)
-  // ---------------------------------------------------------
   describe("updateBulkItem - Negative Flows", () => {
 
     it("21. Should handle database errors during update", async () => {
@@ -298,9 +278,6 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
     });
   });
 
-  // ---------------------------------------------------------
-  // GROUP 5: Integrity Checks (Ensure Data Safety)
-  // ---------------------------------------------------------
   describe("Data Integrity Checks", () => {
 
     it("25. Should NOT update the name field during updateBulkItem", async () => {
@@ -345,20 +322,16 @@ describe("Bulk Order Feature - Comprehensive Test Suite", () => {
       expect(res.json).toHaveBeenCalled();
     });
 
-    // --- FIXED TEST CASE 30 ---
+
     it("30. Should handle malformed IDs gracefully", async () => {
       req.body = { id: "INVALID_ID_FORMAT", price: 90, inventoryCount: 5 };
       
-      // Force the mock to throw an error synchronously when called
-      // This ensures it triggers the catch block in your controller
       foodModel.findByIdAndUpdate.mockImplementation(() => {
         throw new Error("CastError");
       });
       
       await updateBulkItem(req, res);
-      
-      // Verify that res.json was called with success: false
-      // checking 'objectContaining' allows the message to vary slightly without failing
+
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({ success: false })
       );

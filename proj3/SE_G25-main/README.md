@@ -5,7 +5,6 @@
 ## Project Health & Status
 
 ### Quality Assurance
-
 [![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/branch/main/graph/badge.svg?token=ENTA0IQ3HM)](https://codecov.io/gh/Shorse321/CSC510Group24)
 
 **Config:** [Jest Config (Backend)](backend/package.json) · [Vite Config (Frontend)](frontend/vite.config.js) · [Vite Config (Admin)](admin/vite.config.js)
@@ -13,18 +12,16 @@
 ---
 
 ### CI/CD Build Status
-
 [![Backend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/backend.yml)
-[![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml)
+[![Frontend CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/frontend.yml) 
 [![Admin Panel CI](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/admin.yml)
 
 ---
 
 ### Repository Stats
-
-[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE)
-[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors)
-[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
+[![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE) 
+[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors) 
+[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main) 
 [![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
 
 ---
@@ -32,7 +29,7 @@
 ### Syntax & Style Checker (ESLint)
 [![Lint Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/lint.yml)
 
-**Workflow:** [.github/workflows/lint.yml](.github/workflows/lint.yml)
+**Workflow:** [.github/workflows/lint.yml](.github/workflows/lint.yml)  
 **Config:** [Backend](backend/.eslintrc.cjs) · [Frontend](frontend/.eslintrc.cjs) · [Admin](admin/.eslintrc.cjs)
 
 ---
@@ -40,7 +37,7 @@
 ### Code Formatter (Prettier)
 [![Format Checker](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/format.yml)
 
-**Workflow:** [.github/workflows/format.yml](.github/workflows/format.yml)
+**Workflow:** [.github/workflows/format.yml](.github/workflows/format.yml)  
 **Config:** [.prettierrc.json](scripts/.prettierrc.json) · [.prettierignore](scripts/.prettierignore)
 
 ---
@@ -258,3 +255,75 @@ proj2/
     generate-docs.js
   team.config.js
 ```
+
+## Running the Distributable Builds (Frontend / Admin / Backend)
+
+After every successful CI run, GitHub Actions automatically generates build artifacts for each component of the project.
+You can find and download them under the Artifacts section of the workflow run — typically named:
+
+- frontend-build.zip
+- admin-build.zip
+---
+
+Step 1:
+- Download and Extract the Artifacts
+- Go to your repository → Actions → ByteBite CI.
+- Open the latest successful workflow run on main or dev.
+- Scroll to Artifacts and download the build ZIPs.
+- Extract them locally, for example:
+
+```bash
+   /ByteBite/builds/frontend/
+   /ByteBite/builds/admin/
+```
+Each folder will contain a dist/ directory with production-ready static files built using npm run build.
+
+Step 2: 
+- Start the Backend Server
+- The backend must be running so that the frontend and admin dashboards can communicate with it.
+
+```bash
+   cd proj2/backend
+   npm install
+   npm run server
+```
+
+By default, the backend API starts on http://localhost:4000
+
+Step 3: 
+- Serve the Frontend or Admin Build
+- You can run the static builds using either Node’s HTTP server or Vite’s preview mode.
+
+Option A – Using http-server (recommended for distributables)
+```bash
+   cd /path/to/frontend/dist
+   npx http-server -p 5173
+
+   cd /path/to/admin/dist
+   npx http-server -p 5174
+```
+
+Install once if you don’t already have it:
+
+```bash
+npm install -g http-server
+```
+
+Now visit:
+Frontend: http://localhost:5173
+Admin: http://localhost:5174
+
+Option B – Using Vite Preview (for Vite projects)
+```bash
+cd proj2/frontend
+npm run preview
+```
+This serves the optimized build on http://localhost:4173
+
+Step 4: 
+- Verify Backend and Frontend Connection
+- Make sure your backend allows requests from your local frontend/admin builds.
+
+In your backend’s configuration: origin: process.env.FRONTEND_URL || "http://localhost:5173",
+
+If you’re previewing both frontend (5173) and admin (5174), include both origins in your CORS settings.

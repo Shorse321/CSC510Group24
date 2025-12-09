@@ -1,6 +1,7 @@
 name: Format Checker
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'proj3/SE_G25-main/proj2/**'
