@@ -1,13 +1,19 @@
 export default {
-  testEnvironment: "node",
+  testEnvironment: 'node',
   transform: {},
-  moduleFileExtensions: ["js", "mjs", "json"],
-  // Run these specific files in the isolated "Modern" environment
-  testMatch: [
-    "**/__tests__/controllers/bulkFeature.test.js",
-    "**/__tests__/controllers/orderController.test.js"
+  moduleFileExtensions: ['js', 'json', 'mjs'],
+  testMatch: ['**/__tests__/**/bulkFeature.test.js', '**/__tests__/**/orderController.test.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.mjs'],
+  collectCoverageFrom: [
+    'controllers/**/*.js',
+    'models/**/*.js',
+    'middleware/**/*.js',
+    'routes/**/*.js'
   ],
-  testTimeout: 30000,
-  // Disable the setup file here to prevent path resolution errors
-  setupFilesAfterEnv: [] 
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/__tests__/'
+  ],
+  coverageReporters: ['lcov', 'text', 'html'],
+  testTimeout: 30000
 };
