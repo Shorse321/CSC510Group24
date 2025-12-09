@@ -127,6 +127,10 @@ The customer-facing frontend supports rendering of 3D models associated with men
 - **Goal:** Rapidly clear large quantities of specific inventory (e.g., end-of-shift bakery items).
 - **Admin Flow:** Restaurant staff create "Bulk Items" specifying quantity, discounted price, and availability windows.
 - **User Flow:** These items appear in a dedicated "Surplus/Bulk" section of the menu, allowing users to purchase larger quantities at a better value, directly reducing food waste.
+
+### 7. User Notifcation Preferances (New!)
+- **Goal:** Users receive only notifactions of redistributed order that they want (e.g., user wants only to be notified of orders greater than $50).
+- **User Flow:** User selects their profile icon in the top right. User selects preferences. User is prompted with the many preferences option including: how far away a notification can come from, enable/disable notifications, price range of a notification, and selecting which items to be notified of.
 ---
 
 ## Updates & Announcements
@@ -197,6 +201,7 @@ admin/
     components/
     pages/
   package.json
+
 
 
 
